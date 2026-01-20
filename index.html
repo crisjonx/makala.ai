@@ -1,136 +1,312 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>makala.ai</title>
   <link rel="icon" href="/makala.ico" />
 
+  <!-- Fonts + markdown + sanitizer -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
 
   <style>
     :root{
-      --bg1:#071226; --bg2:#081028; --glass: rgba(255,255,255,0.03);
-      --accent-a:#7c3aed; --accent-b:#06b6d4; --muted: #9aa4b2;
+      --bg:#050406;
+      --card-bg: rgba(255,255,255,0.02);
+      --glass: rgba(255,255,255,0.04);
+      --muted: #bdb5bf;
+      --pink-1: #ff2fa6;
+      --pink-2: #ff57c8;
+      --accent-grad: linear-gradient(90deg, var(--pink-1), var(--pink-2));
     }
-    html,body{height:100%;}
+    html,body{height:100%}
     body{
-      margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-      background: radial-gradient(600px 400px at 10% 10%, rgba(124,58,237,0.06), transparent),
-                  radial-gradient(600px 400px at 90% 90%, rgba(6,182,212,0.04), transparent),
-                  linear-gradient(180deg,var(--bg1),var(--bg2));
-      color:#e6eef7;display:flex;align-items:center;justify-content:center;padding:32px;
+      margin:0;
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      background: radial-gradient(800px 500px at 10% 10%, rgba(255,47,166,0.06), transparent),
+                  radial-gradient(800px 500px at 90% 80%, rgba(255,87,200,0.04), transparent),
+                  var(--bg);
+      color: #fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:28px;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
     }
 
-    /* animated gradient halo */
-    .halo{position:fixed;inset:-20%;z-index:0;filter:blur(80px);opacity:0.8;pointer-events:none;background:conic-gradient(from 180deg at 50% 50%, rgba(124,58,237,0.18), rgba(6,182,212,0.12), rgba(124,58,237,0.12));animation:rotate 12s linear infinite}
-    @keyframes rotate{to{transform:rotate(360deg)}}
+    /* animated halo */
+    .halo {
+      position:fixed;
+      inset:-20%;
+      z-index:0;
+      filter: blur(128px) saturate(120%);
+      pointer-events:none;
+      background: conic-gradient(from 180deg at 50% 50%, rgba(255,47,166,0.16), rgba(255,87,200,0.12), rgba(255,47,166,0.12));
+      animation: rotate 14s linear infinite;
+      opacity:0.9;
+    }
+    @keyframes rotate { to { transform: rotate(360deg); } }
 
-    .frame{position:relative;z-index:1; width:760px; max-width:calc(100% - 48px); height:640px; display:grid;grid-template-columns:360px 1fr;gap:22px;}
+    /* container */
+    .wrap{
+      position:relative;
+      z-index:1;
+      width:820px;
+      max-width:calc(100% - 48px);
+      height:660px;
+      display:flex;
+      align-items:stretch;
+      gap:20px;
+    }
 
-    /* left panel */
-    .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:14px;padding:18px;backdrop-filter:blur(8px);box-shadow:0 12px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.04)}
-    .brand{display:flex;align-items:center;gap:12px}
+    /* unified card */
+    .card {
+      flex:1;
+      border-radius:16px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.04);
+      box-shadow: 0 18px 50px rgba(0,0,0,0.6);
+      backdrop-filter: blur(8px);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+
+    /* header (brand) */
+    .card-head {
+      display:flex;
+      align-items:center;
+      gap:14px;
+      padding:18px 20px;
+      border-bottom: 1px solid rgba(255,255,255,0.03);
+      background: linear-gradient(90deg, rgba(255,47,166,0.02), rgba(255,87,200,0.01));
+    }
     .logo {
-  width:52px;
-  height:52px;
-  border-radius:12px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:700;
-  box-shadow:0 8px 30px rgba(124,58,237,0.14);
-  background: none; /* remove gradient */
-}
+      width:56px;
+      height:56px;
+      border-radius:12px;
+      background: linear-gradient(180deg, rgba(255,47,166,0.18), rgba(255,87,200,0.12));
+      display:flex;align-items:center;justify-content:center;font-weight:700;
+      box-shadow:0 8px 30px rgba(255,47,166,0.08);
+      overflow:hidden;
+    }
+    .brand-title h1{margin:0;font-size:18px}
+    .brand-title p{margin:0;color:var(--muted);font-size:13px}
 
-    .brand h1{font-size:18px;margin:0}
-    .brand p{margin:0;color:var(--muted);font-size:13px}
+    /* inner layout */
+    .card-body {
+      display:flex;
+      flex:1;
+      gap:20px;
+      padding:18px;
+      align-items:stretch;
+    }
 
-    .small{font-size:13px;color:var(--muted);margin-top:12px}
+    /* left summary panel (small) */
+    .left {
+      width:300px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.01), transparent);
+      border-radius:12px;
+      padding:14px;
+      border: 1px solid rgba(255,255,255,0.025);
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .left h3{margin:0;font-size:15px}
+    .left p{margin:0;color:var(--muted);font-size:13px;line-height:1.4}
+    .badge {
+      margin-top:auto;
+      display:inline-block;
+      padding:8px 10px;
+      border-radius:999px;
+      font-weight:600;
+      background: linear-gradient(90deg, rgba(255,47,166,0.12), rgba(255,87,200,0.08));
+      color:#ffdff4;
+      font-size:13px;
+      border:1px solid rgba(255,255,255,0.02);
+    }
 
-    /* right — chat */
-    .chat{display:flex;flex-direction:column;height:100%;border-radius:14px;overflow:hidden}
-    .chat-header{padding:18px;border-bottom:1px solid rgba(255,255,255,0.03);background:linear-gradient(90deg, rgba(124,58,237,0.03), rgba(6,182,212,0.02));display:flex;align-items:center;gap:12px}
-    .chat-header h2{margin:0;font-size:16px}
+    /* chat column */
+    .chat-col {
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      border-radius:12px;
+      overflow:hidden;
+      background: linear-gradient(180deg, rgba(0,0,0,0.14), rgba(0,0,0,0.06));
+      border:1px solid rgba(255,255,255,0.02);
+    }
 
-    .messages{flex:1;padding:18px;display:flex;flex-direction:column;gap:12px;overflow-y:auto;background:linear-gradient(180deg, rgba(255,255,255,0.006), transparent)}
+    .chat-top {
+      padding:14px 16px;
+      border-bottom:1px solid rgba(255,255,255,0.03);
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+    .chat-top h2{margin:0;font-size:15px}
 
-    .bubble{max-width:78%;padding:12px 14px;border-radius:12px;line-height:1.45;box-shadow:0 6px 18px rgba(2,6,23,0.6);opacity:0;transform:translateY(8px);animation:pop .18s forwards}
-    @keyframes pop{to{opacity:1;transform:none}}
+    .messages {
+      flex:1;
+      padding:18px;
+      overflow:auto;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+      background:
+        linear-gradient(180deg, rgba(255,255,255,0.003), transparent);
+    }
 
-    .user{align-self:flex-end;background:linear-gradient(90deg,#0b1220,#111827);border:1px solid rgba(255,255,255,0.03)}
-    .bot{align-self:flex-start;background:linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));color:#e6eef7;border:1px solid rgba(255,255,255,0.03)}
+    .bubble {
+      max-width:78%;
+      padding:12px 14px;
+      border-radius:12px;
+      line-height:1.45;
+      box-shadow:0 8px 22px rgba(0,0,0,0.6);
+      opacity:0;
+      transform: translateY(8px);
+      animation: pop .18s forwards;
+      word-break: break-word;
+    }
+    @keyframes pop { to { opacity:1; transform:none; } }
 
-    /* typing indicator */
-    .typing{display:inline-flex;gap:6px;padding:8px 10px;border-radius:10px}
-    .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.35);animation:blink 1s infinite}
-    .dot:nth-child(2){animation-delay:.15s}.dot:nth-child(3){animation-delay:.3s}
-    @keyframes blink{0%{opacity:.2}50%{opacity:1}100%{opacity:.2}}
+    .user {
+      align-self:flex-end;
+      background: linear-gradient(90deg, rgba(20,20,20,1), rgba(28,28,28,1));
+      border: 1px solid rgba(255,255,255,0.02);
+      color: #ffdff4;
+    }
 
-    /* input */
-    .input-bar{display:flex;align-items:center;gap:12px;padding:14px;border-top:1px solid rgba(255,255,255,0.03);background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent)}
-    .input{flex:1;background:transparent;border-radius:10px;padding:12px 14px;border:1px solid rgba(255,255,255,0.04);outline:none;color:inherit}
-    .send{background:linear-gradient(90deg,var(--accent-a),var(--accent-b));border:none;padding:10px 14px;border-radius:10px;color:white;font-weight:700;cursor:pointer}
+    .bot {
+      align-self:flex-start;
+      background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border: 1px solid rgba(255,255,255,0.03);
+      color: #fff6fc;
+    }
 
-    /* markdown styles */
-    .bot .markdown{color:#e6eef7}
-    .bot pre{background:#071026;padding:10px;border-radius:8px;overflow:auto;font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;font-size:13px}
-    .bot code{background:rgba(255,255,255,0.03);padding:2px 6px;border-radius:6px}
+    /* Markdown and code blocks */
+    .bot .markdown { color: #fff6fc; }
+    .bot pre {
+      background: rgba(0,0,0,0.45);
+      padding:10px;border-radius:8px;overflow:auto;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;
+      font-size:13px;
+      border: 1px solid rgba(255,255,255,0.02);
+    }
+    .bot code { background: rgba(255,255,255,0.02); padding:2px 6px;border-radius:6px }
+
+    /* typing */
+    .typing { display:inline-flex; gap:6px; padding:8px 10px; border-radius:10px; }
+    .dot { width:8px; height:8px; border-radius:50%; background: rgba(255,255,255,0.32); animation: blink 1s infinite; }
+    .dot:nth-child(2){ animation-delay:.12s } .dot:nth-child(3){ animation-delay:.24s }
+    @keyframes blink { 0%{opacity:.25}50%{opacity:1}100%{opacity:.25} }
+
+    /* input bar */
+    .input-bar {
+      display:flex;
+      gap:12px;
+      padding:14px 16px;
+      border-top:1px solid rgba(255,255,255,0.03);
+      background: linear-gradient(180deg, rgba(0,0,0,0.03), transparent);
+    }
+    .input {
+      flex:1;
+      padding:12px 14px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.04);
+      background: rgba(255,255,255,0.01);
+      color: #fff;
+      outline:none;
+      font-size:15px;
+    }
+    .send {
+      background: var(--accent-grad);
+      border:none;
+      color:white;
+      padding:10px 16px;
+      border-radius:10px;
+      font-weight:700;
+      cursor:pointer;
+      box-shadow: 0 8px 20px rgba(255,47,166,0.12);
+    }
 
     /* responsive */
-    @media (max-width:880px){.frame{grid-template-columns:1fr;height:90vh;width:calc(100% - 32px)} }
+    @media (max-width: 920px) {
+      .wrap { width:100%; height:92vh; gap:12px; }
+      .card-body { padding:12px }
+      .left { display:none; }
+    }
   </style>
 </head>
 <body>
   <div class="halo" aria-hidden></div>
-  <div class="frame">
 
-    <div class="card">
-      <div class="brand">
-  <div class="logo">
-    <img src="makala.png" alt="makala logo" style="width:100%;height:100%;border-radius:12px;object-fit:cover;">
-  </div>
-  <div>
-    <h1>makala.ai</h1>
-    <p>intelligent assistant</p>
-  </div>
-</div>
-      <p class="small">fast and professional, guaranteed to get you an A+. best ai assistant of 2026 (source: trust me bro)</p>
-    </div>
+  <div class="wrap" role="application" aria-label="Makala AI">
+    <div class="card" role="region" aria-label="Makala unified card">
 
-    <div class="chat card">
-      <div class="chat-header">
-        <h2>makala.ai</h2></h2>
+      <!-- header -->
+      <div class="card-head">
+        <div class="logo">
+          <!-- replace makala.png with your image; keep in repo root -->
+          <img src="makala.png" alt="makala" style="width:100%;height:100%;object-fit:cover;">
+        </div>
+        <div class="brand-title">
+          <h1>makala.ai</h1>
+          <p>intelligent assistant</p>
+        </div>
       </div>
 
-      <div id="messages" class="messages" role="log" aria-live="polite"></div>
+      <!-- body -->
+      <div class="card-body">
+        <div class="left" aria-hidden>
+          <h3>About Makala</h3>
+          <p>Fast, sleek, and helpful. Ask Makala anything — it supports Markdown, code blocks, lists, and more.</p>
+          <div class="badge">Black & Pink theme</div>
+        </div>
 
-      <div class="input-bar">
-        <input id="input" class="input" placeholder="Ask me anything..." />
-        <button id="sendBtn" class="send">send</button>
+        <div class="chat-col" role="main">
+          <div class="chat-top">
+            <h2>makala.ai</h2>
+          </div>
+
+          <div id="messages" class="messages" role="log" aria-live="polite"></div>
+
+          <div class="input-bar">
+            <input id="input" class="input" placeholder="Ask me anything..." aria-label="Message input" />
+            <button id="sendBtn" class="send" aria-label="Send message">Send</button>
+          </div>
+        </div>
       </div>
-    </div>
 
+    </div>
   </div>
 
   <script>
-    // Simple chat + markdown rendering using marked.js
+    // frontend: markdown + DOMPurify sanitization + send to /api/chat
     const messages = document.getElementById('messages');
     const input = document.getElementById('input');
     const sendBtn = document.getElementById('sendBtn');
 
-    function appendBubble(html, klass, isHtml=false){
-      const d = document.createElement('div');
-      d.className = 'bubble ' + klass;
-      if(isHtml) d.innerHTML = html; else d.textContent = html;
-      // allow markdown blocks to be styled
-      if(klass === 'bot') d.classList.add('markdown');
-      messages.appendChild(d);
+    function appendBubble(htmlOrText, klass, isHtml = false) {
+      const el = document.createElement('div');
+      el.className = 'bubble ' + klass;
+      if (isHtml) {
+        // sanitize HTML from markdown
+        el.innerHTML = DOMPurify.sanitize(htmlOrText, {ALLOWED_TAGS: false});
+      } else {
+        el.textContent = htmlOrText;
+      }
+      if (klass === 'bot') el.classList.add('markdown');
+      messages.appendChild(el);
       messages.scrollTop = messages.scrollHeight;
+      return el;
     }
 
-    function showTyping(){
+    function showTyping() {
       const t = document.createElement('div');
       t.className = 'bubble bot typing';
       t.id = '__typing';
@@ -139,52 +315,63 @@
       messages.scrollTop = messages.scrollHeight;
     }
 
-    function removeTyping(){
+    function removeTyping() {
       const t = document.getElementById('__typing');
-      if(t) t.remove();
+      if (t) t.remove();
     }
 
-    async function send(){
+    async function send() {
       const text = input.value.trim();
-      if(!text) return;
-      appendBubble(escapeHtml(text), 'user');
+      if (!text) return;
+      appendBubble(escapeHtml(text), 'user', false);
       input.value = '';
-
       showTyping();
       sendBtn.disabled = true;
 
-      try{
+      try {
         const resp = await fetch('/api/chat', {
-          method:'POST', headers:{'Content-Type':'application/json'},
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ message: text })
         });
+
+        if (!resp.ok) {
+          const err = await resp.text();
+          removeTyping();
+          sendBtn.disabled = false;
+          appendBubble('Error: ' + err, 'bot', false);
+          return;
+        }
 
         const data = await resp.json();
         removeTyping();
         sendBtn.disabled = false;
 
         const md = data && data.reply ? data.reply : 'No response.';
-        // convert markdown -> HTML (marked.js)
         const parsed = marked.parse(md);
+        // sanitize and insert
         appendBubble(parsed, 'bot', true);
-
-      }catch(err){
+      } catch (e) {
         removeTyping();
         sendBtn.disabled = false;
-        appendBubble('Network error. Try again.', 'bot');
+        appendBubble('Network error. Try again.', 'bot', false);
       }
     }
 
     sendBtn.addEventListener('click', send);
-    input.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        send();
+      }
+    });
 
-    // escape user's text to avoid HTML injection
-    function escapeHtml(unsafe){
-      return unsafe.replace(/[&<>"]+/g, (m)=>({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[m]));
+    function escapeHtml(unsafe) {
+      return unsafe.replace(/[&<>"]/g, (m) => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;' }[m]));
     }
 
-    // welcome
-    appendBubble('hey i\'m makala. ask me anything.', 'bot');
+    // welcome message
+    appendBubble("Hi — I'm Makala. Ask me anything. (Markdown and code supported.)", 'bot', false);
   </script>
 </body>
 </html>
