@@ -24,17 +24,21 @@ app.post("/api/chat", async (req,res)=>{
   try{
     const userMessage = req.body.message;
 
-    // Hugging Face Inference API (text-generation model)
-    // You can pick an open-chat model like 'OpenAssistant/oasst-sft-1-pythia-12b'
+    // Hugging Face Router API
+    // Example chat model: OpenAssistant/oasst-sft-1-pythia-12b
     const model = "OpenAssistant/oasst-sft-1-pythia-12b";
 
-    const response = await fetch(`https://api-inference.huggingface.co/models/${model}`, {
+    const response = await fetch(`https://router.huggingface.co/models/${model}`, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${HF_API_KEY}`,
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ inputs: userMessage })
+      body: JSON.stringify({
+        inputs: [
+          { role: "user", content: userMessage }
+        ]
+      })
     });
 
     if(!response.ok){
@@ -43,8 +47,8 @@ app.post("/api/chat", async (req,res)=>{
     }
 
     const data = await response.json();
-    // Hugging Face usually returns [{ generated_text: "..." }]
-    const reply = Array.isArray(data) && data[0]?.generated_text ? data[0].generated_text : "No reply";
+    // router returns a "generated_text" string
+    const reply = data?.generated_text || "No reply";
 
     res.json({ reply });
   } catch(err){
