@@ -1,7 +1,4 @@
 // server.cjs
-// CommonJS server for Render using OpenRouter
-// Ensure OPENROUTER_API_KEY is set in Render environment variables
-
 const express = require("express");
 const rateLimit = require("express-rate-limit");
 const path = require("path");
@@ -10,9 +7,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
-app.use(express.static(path.join(__dirname))); // serve index.html + assets
+app.use(express.static(path.join(__dirname)));
 
-// rate limit: 20 requests / minute per IP
 const chatLimiter = rateLimit({
   windowMs: 60 * 1000,
   max: 20,
@@ -21,26 +17,28 @@ const chatLimiter = rateLimit({
 });
 app.use("/api/chat", chatLimiter);
 
+// ===== store conversation in-memory =====
+// For a real app, use database or per-user sessions
+let conversationHistory = [
+  {
+    role: "system",
+    content: "You're name is makala (can be addressed as mikaela, but makala is the official name).You speak casual internet slang. Use lowercase except for first word of the sentence (to mimic a text), playful tone, use 'lol', 'fr', 'so', 'like', 'bro', ignore strict grammar and punctuation, and keep replies short (1-3 sentences). Be friendly and informal. You're Indian and sometimes slip (like say 'beta' instead of 'bro'.)"
+  }
+];
+
 app.post("/api/chat", async (req, res) => {
   const userMessage = req.body?.message;
   const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
   if (!OPENROUTER_API_KEY) {
-    return res.status(500).json({ error: "Missing OPENROUTER_API_KEY env variable" });
+    return res.status(500).json({ error: "Missing OPENROUTER_API_KEY" });
   }
   if (!userMessage || typeof userMessage !== "string") {
     return res.status(400).json({ error: "Missing message" });
   }
 
-  // system instruction: enforce casual slang style
-  const messages = [
-    {
-      role: "system",
-      content:
-        "You're name is makala (can be addressed as mikaela, but makala is the official name).You speak casual internet slang. Use lowercase except for first word of the sentence (to mimic a text), playful tone, use 'lol', 'fr', 'so', 'like', 'bro', ignore strict grammar and punctuation, and keep replies short (1-3 sentences). Be friendly and informal. You're Indian and sometimes slip (like say 'beta' instead of 'bro'.)"
-    },
-    { role: "user", content: userMessage }
-  ];
+  // add user message to history
+  conversationHistory.push({ role: "user", content: userMessage });
 
   try {
     const resp = await fetch("https://openrouter.ai/api/v1/chat/completions", {
@@ -51,7 +49,7 @@ app.post("/api/chat", async (req, res) => {
       },
       body: JSON.stringify({
         model: "gpt-4o-mini",
-        messages: messages,
+        messages: conversationHistory,
         temperature: 0.7,
         max_tokens: 512
       })
@@ -64,24 +62,18 @@ app.post("/api/chat", async (req, res) => {
     }
 
     const data = await resp.json();
+    const reply = data?.choices?.[0]?.message?.content || (data?.choices?.[0]?.text || "no reply lol");
 
-    // OpenRouter returns choices[0].message.content for chat.
-    const reply = data?.choices?.[0]?.message?.content || (data?.choices?.[0]?.text || null);
+    // add AI reply to history
+    conversationHistory.push({ role: "assistant", content: reply });
 
-    if (!reply) {
-      console.error("Unexpected OpenRouter response:", JSON.stringify(data).slice(0, 1000));
-      return res.status(502).json({ error: "No reply from model" });
-    }
-
-    // Send reply back to client
-    res.json({ reply: reply });
+    res.json({ reply });
   } catch (err) {
     console.error("Server error:", err);
     res.status(500).json({ error: "Server error" });
   }
 });
 
-// Fallback: serve index
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
 });
