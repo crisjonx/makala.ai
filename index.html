@@ -226,12 +226,18 @@ function saveHistory(){ localStorage.setItem('makala_history', JSON.stringify(hi
 function saveTheme(t){ localStorage.setItem('makala_theme', t); }
 function saveTitle(t){ localStorage.setItem('makala_title', t); }
 
+/* helper: trim trailing newlines/spaces (keeps internal newlines) */
+function rtrimNewlines(s){
+  return s.replace(/\r/g,'').replace(/\n+$/,'');
+}
+
 /* append user msg — use textContent so newlines preserved by white-space:pre-wrap */
 function appendUserBubble(text){
+  const cleaned = rtrimNewlines(text);
   const row = document.createElement('div'); row.className = 'row user';
   const bubble = document.createElement('div'); bubble.className = 'bubble';
   // preserve multi-line user text
-  bubble.textContent = text;
+  bubble.textContent = cleaned;
   row.appendChild(bubble);
   messagesEl.appendChild(row);
   messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -239,13 +245,14 @@ function appendUserBubble(text){
 
 /* append bot html (markdown) — sanitized */
 function appendBotBubbleHtml(html){
+  const cleaned = rtrimNewlines(html);
   const row = document.createElement('div'); row.className = 'row bot';
   const avatar = document.createElement('div'); avatar.className = 'avatar';
   const img = document.createElement('img'); img.src = 'makala.png'; img.alt = 'makala';
   avatar.appendChild(img);
 
   const bubble = document.createElement('div'); bubble.className = 'bubble bot markdown';
-  bubble.innerHTML = DOMPurify.sanitize(marked.parse(html)); // sanitized markdown
+  bubble.innerHTML = DOMPurify.sanitize(marked.parse(cleaned)); // sanitized markdown
   row.appendChild(avatar); row.appendChild(bubble);
   messagesEl.appendChild(row);
   messagesEl.scrollTop = messagesEl.scrollHeight;
@@ -294,7 +301,8 @@ function splitIntoSentences(text){
 }
 
 /* reveal reply by sentence (works with multi-paragraph replies because markdown blocks are preserved) */
-async function revealReplyBySentence(replyText){
+async function revealReplyBySentence(rawReplyText){
+  const replyText = rtrimNewlines(rawReplyText);
   removeTyping();
   const row = document.createElement('div'); row.className = 'row bot';
   const avatar = document.createElement('div'); avatar.className = 'avatar';
@@ -319,17 +327,43 @@ async function revealReplyBySentence(replyText){
   return bubble;
 }
 
-/* maybe generate conversation title */
-function maybeGenerateTitle(){
-  if (localStorage.getItem('makala_title')) return;
-  const userMessages = history.filter(h => h.role === 'user' && h.content.trim().length > 3);
-  if (userMessages.length >= 2){
-    const candidate = userMessages[0].content.split(/\s+/).slice(0,6).join(' ');
-    const title = candidate.length ? (candidate + '…') : 'makala.ai';
+/* generate a short title candidate from text (first few words, capitalized) */
+function titleFromText(s){
+  if(!s) return null;
+  // remove punctuation at ends, split into words, take up to 5 words
+  const cleaned = s.replace(/[?!.]+$/,'').trim();
+  const words = cleaned.split(/\s+/).slice(0,5);
+  if(words.length === 0) return null;
+  const title = words.join(' ');
+  // Capitalize first letter
+  return title.charAt(0).toUpperCase() + title.slice(1);
+}
+
+/* create conversation title from first or second usable user message */
+function generateTitleIfNeeded(){
+  if(localStorage.getItem('makala_title')) return; // don't overwrite existing title
+  const userMessages = history.filter(h => h.role === 'user' && h.content && h.content.trim().length > 0);
+  // find first usable (length>3 non-whitespace)
+  const usable = userMessages.filter(u => u.content.trim().length > 3);
+  if(usable.length === 0) return; // nothing usable yet
+  // prefer first usable; if the first usable is a one-word greeting, try second usable
+  let candidateText = usable[0].content.trim();
+  if(candidateText.split(/\s+/).length <= 2 && usable.length >= 2){
+    // short — use the second usable
+    candidateText = usable[1].content.trim();
+  }
+  const title = titleFromText(candidateText);
+  if(title){
     document.title = title;
     titleText.textContent = title;
     saveTitle(title);
   }
+}
+
+/* maybe generate title after a new user message */
+function maybeGenerateTitleAfterUser(){
+  // call generateTitleIfNeeded (this checks localStorage)
+  generateTitleIfNeeded();
 }
 
 /* theme handling */
@@ -345,19 +379,26 @@ themeSelect.addEventListener('change', ()=> applyTheme(themeSelect.value));
 
 /* send flow — Enter sends, Shift+Enter inserts newline (textarea) */
 async function send(){
-  const text = input.value.replace(/\r/g,'').trim();
-  if(!text){
+  // keep raw value for multi-line content, but trim trailing newlines for storage/display
+  const rawValue = input.value.replace(/\r/g,'');
+  const trimmedForCheck = rtrimNewlines(rawValue).trim();
+  if(!trimmedForCheck){
     input.classList.add('shake');
     input.focus();
     setTimeout(()=> input.classList.remove('shake'), 360);
     return;
   }
 
-  history.push({ role:'user', content: input.value.replace(/\r/g,'') }); // save raw text incl newlines
+  // save raw content but strip trailing newlines when storing to avoid phantom blank line
+  const storedUserContent = rtrimNewlines(rawValue);
+  history.push({ role:'user', content: storedUserContent }); // save raw text incl internal newlines
   saveHistory();
-  appendUserBubble(input.value.replace(/\r/g,''));
+  appendUserBubble(storedUserContent);
   input.value = '';
   input.style.height = ''; // reset size
+
+  // attempt to set title after this user message (first or second usable)
+  maybeGenerateTitleAfterUser();
 
   // Build messages for server: system + history
   const messages = [{ role:'system', content: SYSTEM_PROMPT }, ...history.map(h => ({ role: h.role, content: h.content }))];
@@ -385,22 +426,22 @@ async function send(){
     }
 
     const data = await resp.json();
-    const reply = data?.reply || 'no response lol';
+    // strip trailing newlines on reply to avoid the phantom extra line
+    const replyRaw = (data?.reply || 'no response lol').replace(/\r/g,'');
+    const reply = rtrimNewlines(replyRaw);
 
     history.push({ role:'assistant', content: reply });
     trimHistory(12);
     saveHistory();
 
     await revealReplyBySentence(reply);
-    maybeGenerateTitle();
-
+    // title already handled after user message
   } catch (e) {
     removeTyping(); sendBtn.disabled = false;
     appendBotBubbleHtml('network error lol');
     console.error(e);
   } finally {
-    removeTyping();
-    sendBtn.disabled = false;
+    removeTyping(); sendBtn.disabled = false;
   }
 }
 
@@ -433,7 +474,7 @@ clearBtn.addEventListener('click', () => {
   input.focus();
 });
 
-/* restore saved history on load (already done earlier) */
+/* default title */
 if (!localStorage.getItem('makala_title')) { document.title = 'makala.ai'; }
 </script>
 </body>
