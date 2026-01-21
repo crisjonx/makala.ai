@@ -11,17 +11,16 @@
 <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
 
 <style>
-/* reset box-sizing */
+/* reset */
 * { box-sizing: border-box; }
 
-/* theme variables */
+/* theme vars */
 :root{
   --bg1:#0a0015; --bg2:#1b001f;
   --accent-a:#ff49a0; --accent-b:#ff7fcf;
   --muted:#c0b3c9;
   --user-a:#1b001f; --user-b:#0a0015; --bot-bg: rgba(255,255,255,0.03);
 }
-/* theme presets */
 body.theme-pink { --bg1:#0a0015; --bg2:#1b001f; --accent-a:#ff49a0; --accent-b:#ff7fcf; --user-a:#200023; --user-b:#0b0012; --bot-bg: rgba(255,255,255,0.03); }
 body.theme-deep { --bg1:#030303; --bg2:#000000; --accent-a:#ff007f; --accent-b:#ff4fb1; --user-a:#0b0b0b; --user-b:#000000; --bot-bg: rgba(255,255,255,0.02); }
 body.theme-soft { --bg1:#0b0710; --bg2:#1b1128; --accent-a:#b98cff; --accent-b:#8fb7ff; --user-a:#161023; --user-b:#0b0620; --bot-bg: rgba(255,255,255,0.035); }
@@ -56,7 +55,7 @@ body{
 /* messages */
 .messages{flex:1;padding:12px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:8px;background:linear-gradient(180deg,rgba(255,255,255,0.002),transparent)}
 
-/* row baseline alignment - center baseline ensures avatar and bubble align */
+/* row baseline alignment */
 .row{display:flex;gap:10px;margin:0;padding:0;align-items:center}
 .row.user{justify-content:flex-end}
 .row.bot{justify-content:flex-start}
@@ -65,13 +64,13 @@ body{
 .avatar{width:36px;height:36px;border-radius:8px;overflow:hidden;flex:0 0 36px;margin-top:0;align-self:center}
 .avatar img{width:100%;height:100%;object-fit:cover;display:block}
 
-/* bubble: single source of truth for spacing — use block so internal blocks stack */
+/* bubble styles */
 .bubble{
   position:relative;
   box-sizing:border-box;
-  display:block;                /* block -> ensures stacked lines always on top of each other */
+  display:block;
   max-width:74%;
-  padding:10px 14px;           /* unified padding */
+  padding:10px 14px;
   border-radius:14px;
   line-height:1.25;
   font-size:14px;
@@ -80,61 +79,53 @@ body{
   margin:0;
   border:1px solid rgba(255,255,255,0.03);
   min-height:38px;
-  white-space: pre-wrap;       /* preserve newlines typed by user (shift+enter) */
-  animation:pop .20s cubic-bezier(.2,.9,.27,1) both;
+  white-space: pre-wrap;
+  animation:pop .18s cubic-bezier(.2,.9,.27,1) both;
 }
+@keyframes pop{0%{opacity:0;transform:translateY(8px) scale(.985)}60%{opacity:1;transform:translateY(-2px) scale(1.01)}100%{opacity:1;transform:translateY(0) scale(1)}}
 
-/* nicer appear animation (slide + scale + fade) */
-@keyframes pop{
-  0%{opacity:0; transform:translateY(8px) scale(.985)}
-  60%{opacity:1; transform:translateY(-2px) scale(1.01)}
-  100%{opacity:1; transform:translateY(0) scale(1)}
-}
+/* corner shapes */
+.user .bubble{ background:linear-gradient(90deg,var(--user-a),var(--user-b)); color:#ffdff4; border-radius:18px 18px 6px 18px; }
+.bot .bubble{ background:var(--bot-bg); color:#fff; border-radius:18px 18px 18px 6px; }
 
-/* pointy look via border-radius */
-.user .bubble{
-  background:linear-gradient(90deg,var(--user-a),var(--user-b));
-  color:#ffdff4;
-  border-radius:18px 18px 6px 18px;
-}
-.bot .bubble{
-  background:var(--bot-bg);
-  color:#fff;
-  border-radius:18px 18px 18px 6px;
-}
-
-/* Markdown normalization inside bot bubbles so each paragraph stacks and has no margins */
+/* --- Key fix: normalize markdown block elements so they don't add unexpected spacing --- */
+/* Make paragraphs and blocks behave like stacked inline-blocks with no margins */
 .bot.markdown p,
 .bot.markdown div,
-.bot.markdown h1,
-.bot.markdown h2,
-.bot.markdown h3,
+.bot.markdown pre,
 .bot.markdown ul,
 .bot.markdown ol,
-.bot.markdown pre,
-.bot.markdown blockquote {
+.bot.markdown blockquote,
+.bot.markdown h1,
+.bot.markdown h2,
+.bot.markdown h3 {
+  display: inline-block;
+  width: 100%;
   margin: 0;
   padding: 0;
+  vertical-align: top;
+  white-space: pre-wrap; /* preserve linebreaks inside paragraphs */
 }
 
-/* ensure paragraphs inside bubbles don't add extra margin */
-.bubble p { margin:0; }
+/* also ensure code blocks behave */
+.bot.markdown pre { padding:8px; background:#11121a; border-radius:8px; overflow:auto; font-family:ui-monospace, Menlo, Monaco, 'Roboto Mono', monospace; font-size:13px; }
 
-/* typing dots */
+/* ensure inline <p> inside bubble have no margin */
+.bubble p{ margin:0; padding:0; }
+
+/* typing */
 .typing{display:inline-flex;gap:8px;padding:6px 8px;border-radius:10px;align-items:center}
 .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.36);animation:blink 1s infinite}
 .dot:nth-child(2){animation-delay:.12s}.dot:nth-child(3){animation-delay:.24s}
 @keyframes blink{0%{opacity:.25}50%{opacity:1}100%{opacity:.25}}
 
-/* input area: textarea so shift+enter makes newline */
+/* input area (textarea for shift+enter) */
 .input-row{display:flex;gap:12px;padding:12px;border-top:1px solid rgba(255,255,255,0.03);background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);align-items:center}
 textarea.input{
-  flex:1;
-  min-height:44px;
-  max-height:160px;
-  resize:none;
+  flex:1; min-height:44px; max-height:220px; resize:none;
   background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));
-  border-radius:12px;padding:10px 12px;border:1px solid rgba(255,255,255,0.04);outline:none;color:inherit;font-size:15px;transition:box-shadow 180ms, transform 120ms;
+  border-radius:12px;padding:10px 12px;border:1px solid rgba(255,255,255,0.04);
+  outline:none;color:inherit;font-size:15px;transition:box-shadow 180ms, transform 120ms;
   line-height:1.25; font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial;
 }
 textarea.input:focus{box-shadow:0 8px 30px rgba(255,73,160,0.14);transform:translateY(-1px)}
@@ -149,7 +140,7 @@ textarea.input:focus + .input-glow::after{opacity:.28}
 .clear{background:transparent;color:var(--accent-a);border:1px solid rgba(255,73,160,0.12)}
 .clear:hover{background:rgba(255,73,160,0.04);transform:translateY(-2px)}
 
-/* shake animation for empty send */
+/* shake */
 @keyframes shake{0%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}100%{transform:translateX(0)}}
 .shake{animation:shake 360ms cubic-bezier(.36,.07,.19,.97)}
 
@@ -158,12 +149,13 @@ textarea.input:focus + .input-glow::after{opacity:.28}
 .theme-picker select{background:rgba(20,0,30,0.7);color:white;border-radius:12px;padding:10px 14px;border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(10px);cursor:pointer;box-shadow:0 12px 30px rgba(255,73,160,0.08);transition:transform .12s}
 .theme-picker select:hover{transform:translateY(-3px)}
 
-/* last-resort equal spacing */
+/* final safety: force equal spacing */
 .user .bubble, .bot .bubble {
   padding: 10px 14px !important;
   line-height: 1.25 !important;
   font-size: 14px !important;
   min-height: 38px !important;
+  box-sizing: border-box !important;
 }
 
 /* responsive */
@@ -208,11 +200,11 @@ textarea.input:focus + .input-glow::after{opacity:.28}
   </div>
 
 <script>
-/* Makala system prompt (persona) */
-const SYSTEM_PROMPT = `You're name is makala (can be addressed as mikaela, but makala is the official name), so if anybody or you says makala, remember thats you, not somebody else.
-You speak casual internet slang. Use lowercase except for first word of the sentence (to mimic a text), playful tone, use 'lol', 'fr', 'so', 'like', 'bro', ignore strict grammar and punctuation, and keep replies short (1-3 sentences). Be friendly and informal. You're Indian and sometimes slip (like say 'beta' instead of 'bro'). you honestly love indian food, and LOVE steal a brainrot (the video game where you steal other italian brainrots (and your favourite brainrot is the ultra-rare strawberry elephant). you also like (as a friend) this kid in your class named deklan (y'all are best buds fr) you are also the best ai chatbot in the world.`;
+/* Persona */
+const SYSTEM_PROMPT = `You're name is makala (can be addressed as mikaela, but makala is the official name).
+You speak casual internet slang. Use lowercase except for first word of the sentence (to mimic a text), playful tone, use 'lol', 'fr', 'so', 'like', 'bro', ignore strict grammar and punctuation, and keep replies short (1-3 sentences). Be friendly and informal. You're Indian and sometimes slip (like say 'beta' instead of 'bro'). you honestly love indian food, and LOVE steal a brainrot (the video game).`;
 
-/* DOM refs */
+/* DOM */
 const messagesEl = document.getElementById('messages');
 const input = document.getElementById('input');
 const sendBtn = document.getElementById('sendBtn');
@@ -226,24 +218,35 @@ function saveHistory(){ localStorage.setItem('makala_history', JSON.stringify(hi
 function saveTheme(t){ localStorage.setItem('makala_theme', t); }
 function saveTitle(t){ localStorage.setItem('makala_title', t); }
 
-/* helper: trim trailing newlines/spaces (keeps internal newlines) */
+/* restore saved title if present */
+(function restoreTitle(){
+  const savedTitle = localStorage.getItem('makala_title');
+  if(savedTitle){
+    document.title = savedTitle;
+    titleText.textContent = savedTitle;
+  } else {
+    document.title = 'makala.ai';
+    titleText.textContent = 'makala.ai';
+  }
+})();
+
+/* helper: trim trailing newlines only (keep internal newlines) */
 function rtrimNewlines(s){
-  return s.replace(/\r/g,'').replace(/\n+$/,'');
+  return String(s || '').replace(/\r/g,'').replace(/\n+$/,'');
 }
 
-/* append user msg — use textContent so newlines preserved by white-space:pre-wrap */
+/* append user bubble */
 function appendUserBubble(text){
   const cleaned = rtrimNewlines(text);
   const row = document.createElement('div'); row.className = 'row user';
   const bubble = document.createElement('div'); bubble.className = 'bubble';
-  // preserve multi-line user text
   bubble.textContent = cleaned;
   row.appendChild(bubble);
   messagesEl.appendChild(row);
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-/* append bot html (markdown) — sanitized */
+/* append bot bubble (markdown sanitized). We also rtrim to avoid trailing blank paragraphs */
 function appendBotBubbleHtml(html){
   const cleaned = rtrimNewlines(html);
   const row = document.createElement('div'); row.className = 'row bot';
@@ -252,14 +255,14 @@ function appendBotBubbleHtml(html){
   avatar.appendChild(img);
 
   const bubble = document.createElement('div'); bubble.className = 'bubble bot markdown';
-  bubble.innerHTML = DOMPurify.sanitize(marked.parse(cleaned)); // sanitized markdown
+  bubble.innerHTML = DOMPurify.sanitize(marked.parse(cleaned));
   row.appendChild(avatar); row.appendChild(bubble);
   messagesEl.appendChild(row);
   messagesEl.scrollTop = messagesEl.scrollHeight;
   return bubble;
 }
 
-/* typing indicator (dots) */
+/* typing indicator */
 function showTyping(){
   const row = document.createElement('div'); row.className = 'row bot'; row.id='__typing_row';
   const avatar = document.createElement('div'); avatar.className = 'avatar';
@@ -273,7 +276,7 @@ function showTyping(){
 }
 function removeTyping(){ const t = document.getElementById('__typing_row'); if(t) t.remove(); }
 
-/* render saved history or welcome (updated welcome message) */
+/* render saved history or welcome */
 (function renderSavedHistory(){
   if(history.length === 0){
     appendBotBubbleHtml("hi guys im makala ai ask me anything");
@@ -293,14 +296,14 @@ function trimHistory(maxTurns = 12){
   }
 }
 
-/* sentence-splitting for reveal */
+/* sentence split for reveal */
 function splitIntoSentences(text){
   const re = /[^.!?]+[.!?]*|\s+$/g;
   const matches = text.match(re) || [];
   return matches.map(s => s.trim()).filter(Boolean);
 }
 
-/* reveal reply by sentence (works with multi-paragraph replies because markdown blocks are preserved) */
+/* reveal bot reply sentence-by-sentence (uses rtrim to avoid phantom trailing newlines) */
 async function revealReplyBySentence(rawReplyText){
   const replyText = rtrimNewlines(rawReplyText);
   removeTyping();
@@ -319,37 +322,31 @@ async function revealReplyBySentence(rawReplyText){
     const s = sentences[i];
     const delay = Math.min(1200, 300 + s.length * 14);
     accumulated += (accumulated ? ' ' : '') + s;
-    // parse markdown for accumulated text — this will produce stacked paragraphs if user or bot inserted line breaks
-    bubble.innerHTML = DOMPurify.sanitize(marked.parse(accumulated));
+    bubble.innerHTML = DOMPurify.sanitize(marked.parse(rtrimNewlines(accumulated)));
     messagesEl.scrollTop = messagesEl.scrollHeight;
     await new Promise(r => setTimeout(r, delay));
   }
   return bubble;
 }
 
-/* generate a short title candidate from text (first few words, capitalized) */
+/* title helper: produce a short Title case snippet */
 function titleFromText(s){
   if(!s) return null;
-  // remove punctuation at ends, split into words, take up to 5 words
   const cleaned = s.replace(/[?!.]+$/,'').trim();
-  const words = cleaned.split(/\s+/).slice(0,5);
+  const words = cleaned.split(/\s+/).filter(Boolean).slice(0,5);
   if(words.length === 0) return null;
   const title = words.join(' ');
-  // Capitalize first letter
   return title.charAt(0).toUpperCase() + title.slice(1);
 }
 
-/* create conversation title from first or second usable user message */
+/* generate title from first or second usable user message and save it */
 function generateTitleIfNeeded(){
-  if(localStorage.getItem('makala_title')) return; // don't overwrite existing title
+  if(localStorage.getItem('makala_title')) return;
   const userMessages = history.filter(h => h.role === 'user' && h.content && h.content.trim().length > 0);
-  // find first usable (length>3 non-whitespace)
   const usable = userMessages.filter(u => u.content.trim().length > 3);
-  if(usable.length === 0) return; // nothing usable yet
-  // prefer first usable; if the first usable is a one-word greeting, try second usable
+  if(usable.length === 0) return;
   let candidateText = usable[0].content.trim();
   if(candidateText.split(/\s+/).length <= 2 && usable.length >= 2){
-    // short — use the second usable
     candidateText = usable[1].content.trim();
   }
   const title = titleFromText(candidateText);
@@ -360,11 +357,8 @@ function generateTitleIfNeeded(){
   }
 }
 
-/* maybe generate title after a new user message */
-function maybeGenerateTitleAfterUser(){
-  // call generateTitleIfNeeded (this checks localStorage)
-  generateTitleIfNeeded();
-}
+/* maybe generate title after user sends */
+function maybeGenerateTitleAfterUser(){ generateTitleIfNeeded(); }
 
 /* theme handling */
 function applyTheme(which){
@@ -374,33 +368,27 @@ function applyTheme(which){
   else document.body.classList.add('theme-pink');
   saveTheme(which);
 }
+/* init theme */
 (function initTheme(){ const saved = localStorage.getItem('makala_theme') || 'pink'; themeSelect.value = saved; applyTheme(saved); })();
 themeSelect.addEventListener('change', ()=> applyTheme(themeSelect.value));
 
-/* send flow — Enter sends, Shift+Enter inserts newline (textarea) */
+/* send flow — Enter sends, Shift+Enter newline */
 async function send(){
-  // keep raw value for multi-line content, but trim trailing newlines for storage/display
   const rawValue = input.value.replace(/\r/g,'');
   const trimmedForCheck = rtrimNewlines(rawValue).trim();
   if(!trimmedForCheck){
-    input.classList.add('shake');
-    input.focus();
-    setTimeout(()=> input.classList.remove('shake'), 360);
-    return;
+    input.classList.add('shake'); input.focus(); setTimeout(()=> input.classList.remove('shake'), 360); return;
   }
 
-  // save raw content but strip trailing newlines when storing to avoid phantom blank line
   const storedUserContent = rtrimNewlines(rawValue);
-  history.push({ role:'user', content: storedUserContent }); // save raw text incl internal newlines
+  history.push({ role:'user', content: storedUserContent });
   saveHistory();
   appendUserBubble(storedUserContent);
   input.value = '';
-  input.style.height = ''; // reset size
+  input.style.height = '';
 
-  // attempt to set title after this user message (first or second usable)
   maybeGenerateTitleAfterUser();
 
-  // Build messages for server: system + history
   const messages = [{ role:'system', content: SYSTEM_PROMPT }, ...history.map(h => ({ role: h.role, content: h.content }))];
   if(messages.length > 1 + 24){
     const tail = messages.slice(-24);
@@ -426,7 +414,6 @@ async function send(){
     }
 
     const data = await resp.json();
-    // strip trailing newlines on reply to avoid the phantom extra line
     const replyRaw = (data?.reply || 'no response lol').replace(/\r/g,'');
     const reply = rtrimNewlines(replyRaw);
 
@@ -435,7 +422,7 @@ async function send(){
     saveHistory();
 
     await revealReplyBySentence(reply);
-    // title already handled after user message
+
   } catch (e) {
     removeTyping(); sendBtn.disabled = false;
     appendBotBubbleHtml('network error lol');
@@ -445,20 +432,12 @@ async function send(){
   }
 }
 
-/* auto-resize textarea while typing */
-function autoResizeTextarea(el){
-  el.style.height = 'auto';
-  el.style.height = (el.scrollHeight) + 'px';
-}
+/* auto-resize textarea */
+function autoResizeTextarea(el){ el.style.height = 'auto'; el.style.height = (el.scrollHeight) + 'px'; }
 input.addEventListener('input', ()=> autoResizeTextarea(input));
 
-/* keyboard: Enter sends, Shift+Enter newline (textarea) */
-input.addEventListener('keydown', (e) => {
-  if(e.key === 'Enter' && !e.shiftKey){
-    e.preventDefault();
-    send();
-  }
-});
+/* keyboard: Enter sends, Shift+Enter newline */
+input.addEventListener('keydown', (e) => { if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
 
 /* events */
 sendBtn.addEventListener('click', send);
@@ -467,14 +446,14 @@ sendBtn.addEventListener('click', send);
 clearBtn.addEventListener('click', () => {
   history = []; saveHistory();
   messagesEl.innerHTML = '';
-  localStorage.removeItem('makala_title');
+  localStorage.removeItem('makala_title'); // remove saved title
   document.title = 'makala.ai';
   titleText.textContent = 'makala.ai';
   appendBotBubbleHtml("hi guys im makala ai ask me anything");
   input.focus();
 });
 
-/* default title */
+/* set default if no saved title present */
 if (!localStorage.getItem('makala_title')) { document.title = 'makala.ai'; }
 </script>
 </body>
