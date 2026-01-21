@@ -11,11 +11,14 @@
 <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
 
 <style>
+/* normalize and base */
+*{box-sizing: border-box;}
 :root{
   --bg1:#0a0015; --bg2:#1b001f;
   --accent-a:#ff49a0; --accent-b:#ff7fcf;
   --muted:#c0b3c9;
-  --user-a:#1b001f; --user-b:#0a0015; --bot-bg: rgba(255,255,255,0.03);
+  --user-a: #1b001f; --user-b: #0a0015;
+  --bot-bg: rgba(255,255,255,0.03);
 }
 
 /* themes */
@@ -53,7 +56,7 @@ body{
 /* messages */
 .messages{flex:1;padding:12px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;background:linear-gradient(180deg,rgba(255,255,255,0.002),transparent)}
 
-/* rows - center baseline for avatar + bubble */
+/* row baseline alignment - important */
 .row{display:flex;gap:10px;margin:0;padding:0;align-items:center}
 .row.user{justify-content:flex-end}
 .row.bot{justify-content:flex-start}
@@ -62,27 +65,30 @@ body{
 .avatar{width:36px;height:36px;border-radius:8px;overflow:hidden;flex:0 0 36px;margin-top:0;align-self:center}
 .avatar img{width:100%;height:100%;object-fit:cover;display:block}
 
-/* bubble base */
+/* bubble base — make this the single source of truth for spacing */
 .bubble{
   position:relative;
-  box-sizing:border-box;             /* ensure padding counts in size */
-  display:inline-block;              /* consistent sizing */
+  box-sizing:border-box;             /* ensure padding included reliably */
+  display:inline-block;
   vertical-align:middle;
   max-width:74%;
-  padding:10px 14px;                 /* unified, slightly larger for comfortable tap targets */
+  padding:8px 12px;                  /* unified small compact padding */
   border-radius:14px;
-  line-height:1.25;
+  line-height:1.22;                  /* unified line-height */
   font-size:14px;
   box-shadow:0 6px 18px rgba(20,0,30,0.6);
   word-break:break-word;
   margin:0;
   border:1px solid rgba(255,255,255,0.03);
-  animation:pop .14s ease-out forwards;
-  min-height:36px;                    /* ensures visual parity even with short text */
+  min-height: 34px;                  /* ensures same baseline/height */
+  display: inline-flex;
+  align-items: center;               /* vertically center inline content */
+  gap:6px;
+  animation:pop .12s ease-out forwards;
 }
 @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* pointy look via border-radius only */
+/* pointy corners via border-radius only */
 .user .bubble{
   background:linear-gradient(90deg,var(--user-a),var(--user-b));
   color:#ffdff4;
@@ -94,20 +100,23 @@ body{
   border-radius:18px 18px 18px 6px;
 }
 
-/* ensure both bubble types are identical in spacing (last resort) */
-.user .bubble,
-.bot .bubble {
-  padding: 10px 14px !important;
-  margin: 0 !important;
-  line-height: 1.25 !important;
-  font-size: 14px !important;
-  min-height: 36px !important;
-  box-sizing: border-box !important;
+/* IMPORTANT: markdown output contains <p> and other tags that have default margins.
+   Normalize those inside bot bubbles so the visual height matches user bubbles. */
+.bot.markdown p,
+.bot.markdown div,
+.bot.markdown h1,
+.bot.markdown h2,
+.bot.markdown h3,
+.bot.markdown ul,
+.bot.markdown ol,
+.bot.markdown pre,
+.bot.markdown blockquote {
+  margin: 0;
+  padding: 0;
 }
 
-/* markdown & code */
-.bot.markdown pre{background:#11121a;padding:8px;border-radius:8px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,'Roboto Mono',monospace;font-size:13px}
-.bot.markdown code{background:rgba(255,255,255,0.03);padding:2px 6px;border-radius:6px}
+/* ensure inline elements inside bubbles don't add extra spacing */
+.bubble p, .bubble > p, .bubble > div { margin:0; padding:0; }
 
 /* typing */
 .typing{display:inline-flex;gap:8px;padding:6px 8px;border-radius:10px;align-items:center}
@@ -135,10 +144,22 @@ body{
 @keyframes shake{0%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}100%{transform:translateX(0)}}
 .shake{animation:shake 360ms cubic-bezier(.36,.07,.19,.97)}
 
-/* theme picker */
+/* theme picker bottom-right */
 .theme-picker{position:fixed;right:18px;bottom:18px;z-index:30}
 .theme-picker select{background:rgba(20,0,30,0.7);color:white;border-radius:12px;padding:10px 14px;border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(10px);cursor:pointer;box-shadow:0 12px 30px rgba(255,73,160,0.08);transition:transform .12s}
 .theme-picker select:hover{transform:translateY(-3px)}
+
+/* last-resort force equality (overrides) */
+.user .bubble,
+.bot .bubble {
+  padding: 8px 12px !important;
+  margin: 0 !important;
+  line-height: 1.22 !important;
+  font-size: 14px !important;
+  min-height: 34px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+}
 
 /* responsive */
 @media(max-width:880px){.chat-card{width:calc(100% - 32px);height:84vh}.messages{padding:10px}.logo{width:34px;height:34px}.avatar{display:none}}
@@ -211,6 +232,7 @@ function appendBotBubbleHtml(html){
   const img = document.createElement('img'); img.src = 'makala.png'; img.alt = 'makala';
   avatar.appendChild(img);
   const bubble = document.createElement('div'); bubble.className = 'bubble bot markdown';
+  // sanitize and insert markdown — paragraph margins are normalized in CSS
   bubble.innerHTML = DOMPurify.sanitize(marked.parse(html));
   row.appendChild(avatar);
   row.appendChild(bubble);
@@ -233,10 +255,10 @@ function showTyping(){
 }
 function removeTyping(){ const t = document.getElementById('__typing_row'); if(t) t.remove(); }
 
-/* render saved history or welcome */
+/* render saved history or welcome (updated welcome msg as requested) */
 (function renderSavedHistory(){
   if(history.length === 0){
-    appendBotBubbleHtml("hey im makala lol ask me anything fr");
+    appendBotBubbleHtml("hi guys im makala ai ask me anything");
   } else {
     history.forEach(turn => {
       if(turn.role === 'user') appendUserBubble(turn.content);
@@ -286,7 +308,7 @@ async function revealReplyBySentence(replyText){
   return bubble;
 }
 
-/* maybe generate title */
+/* maybe generate conversation title */
 function maybeGenerateTitle(){
   if (localStorage.getItem('makala_title')) return;
   const userMessages = history.filter(h => h.role === 'user' && h.content.trim().length > 3);
@@ -299,7 +321,7 @@ function maybeGenerateTitle(){
   }
 }
 
-/* theme */
+/* theme apply */
 function applyTheme(which){
   document.body.classList.remove('theme-deep','theme-pink','theme-soft');
   if(which === 'deep') document.body.classList.add('theme-deep');
@@ -308,7 +330,7 @@ function applyTheme(which){
   saveTheme(which);
 }
 
-/* init theme */
+/* init theme dropdown */
 (function initTheme(){
   const saved = localStorage.getItem('makala_theme') || 'pink';
   themeSelect.value = saved;
@@ -316,11 +338,14 @@ function applyTheme(which){
 })();
 themeSelect.addEventListener('change', ()=> applyTheme(themeSelect.value));
 
-/* send */
+/* send flow */
 async function send(){
   const text = input.value.trim();
   if(!text){
-    input.classList.add('shake'); input.focus(); setTimeout(()=> input.classList.remove('shake'), 360); return;
+    input.classList.add('shake');
+    input.focus();
+    setTimeout(()=> input.classList.remove('shake'), 360);
+    return;
   }
 
   history.push({ role:'user', content: text });
@@ -377,12 +402,13 @@ input.addEventListener('keydown', (e) => { if(e.key === 'Enter' && !e.shiftKey){
 
 /* clear chats */
 clearBtn.addEventListener('click', () => {
-  history = []; saveHistory();
+  history = [];
+  saveHistory();
   messagesEl.innerHTML = '';
   localStorage.removeItem('makala_title');
   document.title = 'makala.ai';
   titleText.textContent = 'makala.ai';
-  appendBotBubbleHtml("hey im makala lol ask me anything fr");
+  appendBotBubbleHtml("hi guys im makala ai ask me anything");
   input.focus();
 });
 
