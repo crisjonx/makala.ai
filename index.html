@@ -1,292 +1,392 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>makala.ai</title>
-<link rel="icon" href="/makala.ico"/>
+<link rel="icon" href="/makala.ico" />
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
 
 <style>
 :root{
-  --bg1:#0a0015;
-  --bg2:#1b001f;
-  --accent:#ff4fa0;
-  --accent2:#ff7fcf;
+  --bg1:#0a0015; --bg2:#1b001f;
+  --accent-a:#ff49a0; --accent-b:#ff7fcf;
+  --muted:#c0b3c9;
+  --glass: rgba(255,255,255,0.03);
 }
 
-/* page layout */
-html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;background:
-  radial-gradient(700px 500px at 10% 10%, rgba(255,79,160,.06), transparent),
-  linear-gradient(180deg,var(--bg1),var(--bg2));color:#fff;display:flex;align-items:center;justify-content:center;padding:28px}
+/* base layout */
+html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial}
+body{display:flex;align-items:center;justify-content:center;padding:32px;background:
+  radial-gradient(600px 400px at 10% 10%, rgba(255,73,160,0.08), transparent),
+  radial-gradient(600px 400px at 90% 90%, rgba(255,127,207,0.06), transparent),
+  linear-gradient(180deg,var(--bg1),var(--bg2));color:#fff;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+
+/* theme classes (body) */
+body.theme-deep { --bg1:#000000; --bg2:#030303; --accent-a:#ff007f; --accent-b:#ff4fb1; --muted:#9b98a6; }
+body.theme-pink { --bg1:#0a0015; --bg2:#1b001f; --accent-a:#ff49a0; --accent-b:#ff7fcf; --muted:#c0b3c9; }
+body.theme-soft { --bg1:#0b0710; --bg2:#1b1128; --accent-a:#b98cff; --accent-b:#8fb7ff; --muted:#bfc7d6; }
+
+/* halo */
+.halo{position:fixed;inset:-20%;z-index:0;filter:blur(88px);pointer-events:none;background:conic-gradient(from 180deg at 50% 50%, rgba(255,73,160,0.16), rgba(255,127,207,0.12), rgba(255,73,160,0.12));animation:rotate 12s linear infinite;opacity:.9}
+@keyframes rotate{to{transform:rotate(360deg)}}
 
 /* main card */
-.chat-card{width:720px;max-width:96%;height:640px;border-radius:14px;backdrop-filter:blur(12px);background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);box-shadow:0 24px 70px rgba(0,0,0,0.55);display:flex;flex-direction:column;overflow:hidden}
+.chat-card{position:relative;z-index:1;width:720px;max-width:100%;height:640px;display:flex;flex-direction:column;border-radius:14px;backdrop-filter:blur(12px);background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.005));box-shadow:0 14px 50px rgba(20,0,30,0.6);border:1px solid rgba(255,255,255,0.04);overflow:hidden}
 
 /* header */
-.chat-header{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.04)}
-.chat-title{display:flex;align-items:center;gap:10px}
-.chat-title img{width:30px;height:30px;border-radius:8px;object-fit:cover;filter:drop-shadow(0 6px 20px rgba(255,79,160,.12))}
-.chat-title h2{margin:0;font-size:16px}
+.chat-header{padding:14px 16px;background:linear-gradient(90deg, rgba(255,73,160,0.03), rgba(255,127,207,0.02));border-bottom:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;justify-content:space-between;gap:12px}
+.chat-title{display:flex;align-items:center;gap:12px}
+.logo { width:40px;height:40px;border-radius:10px;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;position:relative;box-shadow:0 8px 28px rgba(255,73,160,0.12);border:1px solid rgba(255,255,255,0.04);background:linear-gradient(180deg, rgba(255,73,160,0.12), rgba(255,127,207,0.08));}
+.logo img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 220ms}
+.logo:hover img{transform:scale(1.06)}
+.chat-title h2{margin:0;font-size:16px;letter-spacing:0.2px;display:inline-block}
+
+/* header actions (only clear now) */
+.header-actions{display:flex;gap:8px;align-items:center}
 
 /* messages area */
-.messages{flex:1;padding:14px 16px;overflow:auto;display:flex;flex-direction:column;gap:6px;background:linear-gradient(180deg,rgba(255,255,255,0.002),transparent)}
+.messages{flex:1;padding:12px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;background:linear-gradient(180deg,rgba(255,255,255,0.002),transparent)}
 
-/* row */
-.row{display:flex;gap:8px;margin:0;padding:0;align-items:flex-end}
-.row.bot{align-items:flex-start}
+/* rows: center-align so avatar and bubble share line-height */
+.row{display:flex;gap:10px;margin:0;padding:0;align-items:center}
 .row.user{justify-content:flex-end}
+.row.bot{justify-content:flex-start}
 
 /* avatar */
-.avatar{width:30px;height:30px;border-radius:8px;flex:0 0 30px;margin-top:2px}
+.avatar{width:36px;height:36px;border-radius:8px;overflow:hidden;flex:0 0 36px}
 .avatar img{width:100%;height:100%;object-fit:cover;display:block}
 
-/* bubble base - TIGHTENED */
+/* bubbles — tightened vertical spacing */
 .bubble{
   position:relative;
-  max-width:75%;
-  padding:8px 12px;            /* reduced vertical padding */
-  font-size:14px;
-  line-height:1.25;           /* tighter line height */
+  max-width:74%;
+  padding:8px 12px;        /* tightened from larger vertical padding */
   border-radius:14px;
-  box-shadow:0 8px 20px rgba(0,0,0,0.45);
+  line-height:1.22;        /* tighter line-height */
+  font-size:14px;
+  box-shadow:0 6px 18px rgba(20,0,30,0.6);
+  background:linear-gradient(90deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.03);
+  color:#fff;
   word-break:break-word;
   margin:0;
-  animation:pop .14s ease-out forwards;
 }
-@keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* iMessage-ish point (no triangles) */
-.user .bubble{background:linear-gradient(90deg,#1b001f,#0a0015);color:#ffdff4;border-radius:16px 16px 6px 16px;padding:8px 12px}
-.bot .bubble{background:rgba(255,255,255,0.04);color:#fff;border-radius:16px 16px 16px 6px;padding:8px 12px}
+/* Remove triangle pseudo-element tails entirely (we want pointy via border-radius only) */
+/* (These were previously in your CSS — keep them removed) */
 
-/* markdown/code styles inside bot bubbles */
-.bot.markdown pre{background:#11121a;padding:8px;border-radius:8px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,'Roboto Mono',monospace;font-size:13px}
+/* iMessage-like pointy corners using border-radius (no triangles) */
+/* user (right) pointy bottom-right */
+.user .bubble{
+  background:linear-gradient(90deg,#1b001f,#0a0015);
+  color:#ffdff4;
+  border-radius:18px 18px 6px 18px;
+  padding:7px 12px;
+}
+
+/* bot (left) pointy bottom-left */
+.bot .bubble{
+  background:rgba(255,255,255,0.03);
+  color:#fff;
+  border-radius:18px 18px 18px 6px;
+  padding:7px 12px;
+}
+
+/* markdown & code styling inside bot */
+.bot.markdown pre{background:#1b001f;padding:8px;border-radius:8px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,'Roboto Mono',monospace;font-size:13px}
 .bot.markdown code{background:rgba(255,255,255,0.03);padding:2px 6px;border-radius:6px}
 
-/* typing indicator */
+/* typing */
 .typing{display:inline-flex;gap:6px;padding:6px 8px;border-radius:10px}
-.dot{width:7px;height:7px;border-radius:50%;background:rgba(255,255,255,0.4);animation:blink 1s infinite}
-.dot:nth-child(2){animation-delay:.12s}.dot:nth-child(3){animation-delay:.22s}
-@keyframes blink{0%{opacity:.25}50%{opacity:1}100%{opacity:.25}}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.35);animation:blink 1s infinite}
+.dot:nth-child(2){animation-delay:.15s}.dot:nth-child(3){animation-delay:.3s}
+@keyframes blink{0%{opacity:.2}50%{opacity:1}100%{opacity:.2}}
 
 /* input area */
-.input-row{display:flex;gap:10px;padding:12px;border-top:1px solid rgba(255,255,255,0.04);background:linear-gradient(180deg,rgba(255,255,255,0.006),transparent);align-items:center}
-.input{flex:1;border-radius:12px;padding:10px 12px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.04);outline:none;color:inherit;transition:box-shadow .18s,transform .12s;font-size:14px}
-.input:focus{box-shadow:0 0 0 3px rgba(255,79,160,0.12);transform:translateY(-1px)}
-.send{padding:10px 14px;border-radius:10px;border:none;background:linear-gradient(90deg,var(--accent),var(--accent2));color:white;font-weight:700;cursor:pointer;transition:transform .12s,box-shadow .16s}
-.send:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(255,79,160,0.14)}
+.input-row{display:flex;gap:12px;padding:12px;border-top:1px solid rgba(255,255,255,0.03);background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);align-items:center}
+.input{flex:1;background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.005));border-radius:12px;padding:10px 12px;border:1px solid rgba(255,255,255,0.04);outline:none;color:inherit;font-size:15px;transition:box-shadow 180ms, transform 120ms}
+.input:focus{box-shadow:0 8px 30px rgba(255,73,160,0.14);transform:translateY(-1px)}
+.input-glow{position:relative}
+.input-glow::after{content:"";position:absolute;inset:-6px;border-radius:14px;background:linear-gradient(90deg,var(--accent-a),var(--accent-b));opacity:0;filter:blur(12px);transition:opacity 160ms;pointer-events:none;z-index:-1}
+.input:focus + .input-glow::after{opacity:.28}
+.input:focus::placeholder{color:transparent}
+
+/* buttons */
+.btn{padding:10px 14px;border-radius:10px;border:none;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:8px;transition:transform 120ms, box-shadow 140ms, opacity 120ms}
+.send{background:linear-gradient(90deg,var(--accent-a),var(--accent-b));color:white;box-shadow:0 10px 26px rgba(255,73,160,0.08)}
+.send:hover{transform:translateY(-3px);box-shadow:0 18px 40px rgba(255,73,160,0.14)}
+.send:active{transform:translateY(0)}
+.clear{background:transparent;color:var(--accent-a);border:1px solid rgba(255,73,160,0.12)}
+.clear:hover{background:rgba(255,73,160,0.04);transform:translateY(-2px)}
+
+/* shake animation */
+@keyframes shake{0%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}100%{transform:translateX(0)}}
+.shake{animation:shake 360ms cubic-bezier(.36,.07,.19,.97)}
 
 /* theme picker bottom-right */
-.theme-picker{position:fixed;right:18px;bottom:18px}
-.theme-picker select{background:rgba(20,0,30,0.75);color:#fff;border-radius:12px;padding:10px 14px;border:1px solid rgba(255,255,255,0.06);cursor:pointer;backdrop-filter:blur(8px)}
+.theme-picker{position:fixed;right:18px;bottom:18px;z-index:30}
+.theme-picker select{background:rgba(20,0,30,0.7);color:white;border-radius:12px;padding:10px 14px;border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(10px);cursor:pointer;box-shadow:0 12px 30px rgba(255,73,160,0.08);transition:transform .12s}
+.theme-picker select:hover{transform:translateY(-3px)}
 
-/* small screens */
-@media(max-width:820px){.chat-card{width:100%;height:90vh}.messages{padding:10px}.chat-header{padding:10px}.input-row{padding:10px}}
+/* responsive tweaks */
+@media(max-width:880px){.chat-card{width:calc(100% - 32px);height:84vh}.messages{padding:10px}.logo{width:34px;height:34px}.avatar{display:none}}
 </style>
 </head>
-<body>
+<body class="theme-pink">
+  <div class="halo" aria-hidden="true"></div>
 
-<div class="chat-card" role="application" aria-label="makala chat">
-  <div class="chat-header">
-    <div class="chat-title">
-      <img src="/makala.png" alt="makala"/>
-      <h2 id="titleText">makala.ai</h2>
+  <div class="chat-card" role="application" aria-label="Makala chat">
+    <div class="chat-header">
+      <div class="chat-title">
+        <div class="logo" aria-hidden>
+          <img src="makala.png" alt="makala" />
+        </div>
+        <h2 id="titleText">makala.ai</h2>
+      </div>
+
+      <div class="header-actions">
+        <button id="clearBtn" class="btn clear" title="Clear chat history">Clear chats</button>
+      </div>
     </div>
-    <button id="clearBtn" class="clear" style="background:none;border:1px solid rgba(255,79,160,0.28);color:var(--accent);padding:6px 10px;border-radius:8px;cursor:pointer">Clear chats</button>
+
+    <div id="messages" class="messages" role="log" aria-live="polite"></div>
+
+    <div class="input-row">
+      <input id="input" class="input" placeholder="ask me anything..." aria-label="message input" />
+      <span class="input-glow" aria-hidden></span>
+      <button id="sendBtn" class="btn send" aria-label="send message">send</button>
+    </div>
   </div>
 
-  <div id="messages" class="messages" role="log" aria-live="polite"></div>
-
-  <div class="input-row">
-    <input id="input" class="input" placeholder="ask me anything..." aria-label="message input"/>
-    <button id="sendBtn" class="send">send</button>
+  <!-- theme dropdown -->
+  <div class="theme-picker">
+    <select id="themeSelect" aria-label="Theme">
+      <option value="pink">black / pink</option>
+      <option value="deep">deep black</option>
+      <option value="soft">soft purple</option>
+    </select>
   </div>
-</div>
-
-<div class="theme-picker">
-  <select id="themeSelect">
-    <option value="pink">black / pink</option>
-    <option value="deep">deep black</option>
-    <option value="soft">soft purple</option>
-  </select>
-</div>
 
 <script>
-/* --- SYSTEM PROMPT (Makala persona) --- */
-const SYSTEM_PROMPT = `You're name is makala (can be addressed as mikaela, but makala is the official name).
+/* client-side history + localStorage + server forwarding of full messages */
+/* Keep the SYSTEM_PROMPT to enforce Makala persona for every request */
+const SYSTEM_PROMPT = `You're name is makala or makala ai (can be addressed as mikaela, macaroni, or miku, but makala is the official name).
 You speak casual internet slang. Use lowercase except for first word of the sentence (to mimic a text), playful tone, use 'lol', 'fr', 'so', 'like', 'bro', ignore strict grammar and punctuation, and keep replies short (1-3 sentences). Be friendly and informal. You're Indian and sometimes slip (like say 'beta' instead of 'bro'). you honestly love indian food, and LOVE steal a brainrot (the video game). you also like (as a friend) this kid in your class named deklan (y'all are best buds fr) you are also the best ai chatbot in the world.`;
 
-/* --- DOM refs --- */
 const messagesEl = document.getElementById('messages');
 const input = document.getElementById('input');
 const sendBtn = document.getElementById('sendBtn');
 const clearBtn = document.getElementById('clearBtn');
-const themeSelect = document.getElementById('themeSelect');
 const titleText = document.getElementById('titleText');
+const themeSelect = document.getElementById('themeSelect');
 
-/* --- local history --- */
 let history = JSON.parse(localStorage.getItem('makala_history') || '[]');
+
 function saveHistory(){ localStorage.setItem('makala_history', JSON.stringify(history)); }
+function saveTheme(t){ localStorage.setItem('makala_theme', t); }
+function saveTitle(t){ localStorage.setItem('makala_title', t); }
 
-/* helper: append user bubble (compact) */
-function appendUser(text){
+/* append user bubble */
+function appendUserBubble(text){
   const row = document.createElement('div'); row.className = 'row user';
-  const b = document.createElement('div'); b.className = 'bubble';
-  b.textContent = text;
-  row.appendChild(b);
+  const bubble = document.createElement('div'); bubble.className = 'bubble';
+  bubble.textContent = text;
+  row.appendChild(bubble);
   messagesEl.appendChild(row);
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
-/* helper: append bot bubble (with avatar + sanitized markdown) */
-function appendBotHtml(html){
+/* append bot bubble (with avatar) and sanitized markdown */
+function appendBotBubbleHtml(html){
   const row = document.createElement('div'); row.className = 'row bot';
-  const avatarWrap = document.createElement('div'); avatarWrap.className = 'avatar';
-  const img = document.createElement('img'); img.src = '/makala.png'; img.alt = 'makala';
-  avatarWrap.appendChild(img);
-  const b = document.createElement('div'); b.className = 'bubble bot markdown';
-  b.innerHTML = DOMPurify.sanitize(marked.parse(html));
-  row.appendChild(avatarWrap);
-  row.appendChild(b);
+  const avatar = document.createElement('div'); avatar.className = 'avatar';
+  const img = document.createElement('img'); img.src = 'makala.png'; img.alt = 'makala';
+  avatar.appendChild(img);
+  const bubble = document.createElement('div'); bubble.className = 'bubble bot markdown';
+  bubble.innerHTML = DOMPurify.sanitize(marked.parse(html));
+  row.appendChild(avatar);
+  row.appendChild(bubble);
+  messagesEl.appendChild(row);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  return bubble;
+}
+
+/* typing indicator */
+function showTyping(){
+  const row = document.createElement('div'); row.className = 'row bot'; row.id='__typing_row';
+  const avatar = document.createElement('div'); avatar.className = 'avatar';
+  const img = document.createElement('img'); img.src='makala.png'; img.alt='makala'; avatar.appendChild(img);
+  const bubble = document.createElement('div'); bubble.className = 'bubble bot typing'; bubble.id='__typing';
+  bubble.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+  row.appendChild(avatar); row.appendChild(bubble);
   messagesEl.appendChild(row);
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
+function removeTyping(){ const t = document.getElementById('__typing_row'); if(t) t.remove(); }
 
-/* render saved history or initial welcome */
-(function initRender(){
+/* render saved history or welcome */
+(function renderSavedHistory(){
   if(history.length === 0){
-    appendBotHtml("hey im makala lol ask me anything fr");
+    appendBotBubbleHtml("hey im makala lol ask me anything fr");
   } else {
-    history.forEach(turn=>{
-      if(turn.role === 'user') appendUser(turn.content);
-      else appendBotHtml(turn.content);
+    history.forEach(turn => {
+      if(turn.role === 'user') appendUserBubble(turn.content);
+      else appendBotBubbleHtml(turn.content);
     });
   }
 })();
 
-/* trim history keep last N turns */
-function trimHistory(maxTurns=12){
-  if(history.length > maxTurns*2){
+/* trim history */
+function trimHistory(maxTurns = 12){
+  if(history.length > maxTurns * 2){
     history = history.slice(-maxTurns*2);
     saveHistory();
   }
 }
 
-/* send flow: send system + history to server */
+/* sentence-by-sentence reveal (keeps existing behavior) */
+function splitIntoSentences(text){
+  const re = /[^.!?]+[.!?]*|\s+$/g;
+  const matches = text.match(re) || [];
+  return matches.map(s => s.trim()).filter(Boolean);
+}
+
+async function revealReplyBySentence(replyText){
+  removeTyping();
+  const row = document.createElement('div'); row.className = 'row bot';
+  const avatar = document.createElement('div'); avatar.className = 'avatar';
+  const img = document.createElement('img'); img.src = 'makala.png'; img.alt = 'makala';
+  avatar.appendChild(img);
+  const bubble = document.createElement('div'); bubble.className = 'bubble bot markdown';
+  row.appendChild(avatar); row.appendChild(bubble);
+  messagesEl.appendChild(row);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+
+  const sentences = splitIntoSentences(replyText);
+  let accumulated = '';
+  for (let i = 0; i < sentences.length; i++){
+    const s = sentences[i];
+    const delay = Math.min(1200, 320 + s.length * 16);
+    accumulated += (accumulated ? ' ' : '') + s;
+    const html = marked.parse(accumulated);
+    bubble.innerHTML = DOMPurify.sanitize(html);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    await new Promise(r => setTimeout(r, delay));
+  }
+  return bubble;
+}
+
+/* generate short conversation title after a couple user messages */
+function maybeGenerateTitle(){
+  if (localStorage.getItem('makala_title')) return;
+  const userMessages = history.filter(h => h.role === 'user' && h.content.trim().length > 3);
+  if (userMessages.length >= 2){
+    const candidate = userMessages[0].content.split(/\s+/).slice(0,6).join(' ');
+    const title = candidate.length ? (candidate + '…') : 'makala.ai';
+    document.title = title;
+    titleText.textContent = title;
+    saveTitle(title);
+  }
+}
+
+/* theme handling: apply class to body */
+function applyTheme(which){
+  document.body.classList.remove('theme-deep','theme-pink','theme-soft');
+  if(which === 'deep') document.body.classList.add('theme-deep');
+  else if(which === 'soft') document.body.classList.add('theme-soft');
+  else document.body.classList.add('theme-pink');
+  saveTheme(which);
+}
+
+/* init theme dropdown */
+(function initTheme(){
+  const saved = localStorage.getItem('makala_theme') || 'pink';
+  themeSelect.value = saved;
+  applyTheme(saved);
+})();
+themeSelect.addEventListener('change', ()=> applyTheme(themeSelect.value));
+
+/* send flow */
 async function send(){
   const text = input.value.trim();
   if(!text){
-    // shake & focus
     input.classList.add('shake');
     input.focus();
     setTimeout(()=> input.classList.remove('shake'), 360);
     return;
   }
 
-  // append user locally + persist
-  appendUser(text);
-  history.push({ role: 'user', content: text });
+  history.push({ role:'user', content: text });
   saveHistory();
+  appendUserBubble(text);
   input.value = '';
 
-  // show minimal typing placeholder (we'll remove it when reply arrives)
-  const tRow = document.createElement('div'); tRow.className='row bot'; tRow.id='__typing';
-  const av = document.createElement('div'); av.className='avatar'; const avimg=document.createElement('img'); avimg.src='/makala.png'; avimg.alt='makala'; av.appendChild(avimg);
-  const tb = document.createElement('div'); tb.className='bubble typing'; tb.innerHTML='<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
-  tRow.appendChild(av); tRow.appendChild(tb); messagesEl.appendChild(tRow); messagesEl.scrollTop = messagesEl.scrollHeight;
-
-  // build messages to send: system + history (role/content)
-  const messagesToServer = [{ role: 'system', content: SYSTEM_PROMPT }, ...history.map(h=>({ role: h.role, content: h.content }))];
-  // trim server side to avoid token explosion
-  if(messagesToServer.length > 1 + 24){
-    const tail = messagesToServer.slice(-24);
-    messagesToServer.length = 0;
-    messagesToServer.push({ role:'system', content: SYSTEM_PROMPT }, ...tail);
+  // build messages to server: include system prompt + history
+  const messages = [{ role:'system', content: SYSTEM_PROMPT }, ...history.map(h => ({ role: h.role, content: h.content }))];
+  if(messages.length > 1 + 24){
+    const tail = messages.slice(-24);
+    messages.length = 0;
+    messages.push({ role:'system', content: SYSTEM_PROMPT }, ...tail);
   }
 
-  try{
+  showTyping();
+  sendBtn.disabled = true;
+
+  try {
     const resp = await fetch('/api/chat', {
       method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({ messages: messagesToServer })
+      headers:{ 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages })
     });
 
-    // remove typing placeholder
-    const t = document.getElementById('__typing'); if(t) t.remove();
-
     if(!resp.ok){
-      const txt = await resp.text();
-      appendBotHtml('error: ' + txt);
+      const err = await resp.text();
+      removeTyping(); sendBtn.disabled = false;
+      appendBotBubbleHtml('error: ' + err);
       return;
     }
 
     const data = await resp.json();
-    const reply = data?.reply || "no response fr";
+    const reply = data?.reply || 'no response lol';
 
-    // append bot reply to UI and history
-    appendBotHtml(reply);
     history.push({ role:'assistant', content: reply });
     trimHistory(12);
     saveHistory();
 
-    // maybe generate a short conversation title (1-2 words) if none set
-    if(!localStorage.getItem('makala_title')){
-      const firstUser = history.find(h => h.role === 'user' && h.content && h.content.length>3);
-      if(firstUser){
-        const candidate = firstUser.content.split(/\s+/).slice(0,5).join(' ');
-        document.title = candidate.length? candidate + '…' : 'makala.ai';
-        titleText.textContent = document.title;
-        localStorage.setItem('makala_title', document.title);
-      }
-    }
+    await revealReplyBySentence(reply);
+    maybeGenerateTitle();
 
-  }catch(err){
-    const t = document.getElementById('__typing'); if(t) t.remove();
-    appendBotHtml('network error lol');
-    console.error(err);
+  } catch (e) {
+    removeTyping(); sendBtn.disabled = false;
+    appendBotBubbleHtml('network error lol');
+  } finally {
+    removeTyping();
+    sendBtn.disabled = false;
   }
 }
 
 /* events */
 sendBtn.addEventListener('click', send);
-input.addEventListener('keydown', (e)=>{ if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
+input.addEventListener('keydown', (e) => { if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
 
-/* clear */
-clearBtn.addEventListener('click', ()=>{
-  history = []; saveHistory();
+/* clear chats */
+clearBtn.addEventListener('click', () => {
+  history = [];
+  saveHistory();
   messagesEl.innerHTML = '';
   localStorage.removeItem('makala_title');
   document.title = 'makala.ai';
   titleText.textContent = 'makala.ai';
-  appendBotHtml("hey im makala lol ask me anything fr");
+  appendBotBubbleHtml("hey im makala lol ask me anything fr");
   input.focus();
 });
 
-/* theme picker (bottom-right) */
-const themes = {
-  pink: ['#0a0015','#1b001f'],
-  deep: ['#000','#020202'],
-  soft: ['#0b0710','#1b1128']
-};
-const themeSelect = document.getElementById('themeSelect');
-(function initTheme(){
-  const saved = localStorage.getItem('makala_theme') || 'pink';
-  themeSelect.value = saved;
-  const [a,b] = themes[saved];
-  document.documentElement.style.setProperty('--bg1', a);
-  document.documentElement.style.setProperty('--bg2', b);
-})();
-themeSelect.addEventListener('change', ()=>{
-  const val = themeSelect.value;
-  const [a,b] = themes[val];
-  document.documentElement.style.setProperty('--bg1', a);
-  document.documentElement.style.setProperty('--bg2', b);
-  localStorage.setItem('makala_theme', val);
-});
+/* ensure default tab title */
+if (!localStorage.getItem('makala_title')) { document.title = 'makala.ai'; }
 </script>
 </body>
 </html>
