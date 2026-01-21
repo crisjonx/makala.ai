@@ -15,14 +15,12 @@
   --bg1:#0a0015; --bg2:#1b001f;
   --accent-a:#ff49a0; --accent-b:#ff7fcf;
   --muted:#c0b3c9;
-  /* user bubble colors (will be overridden by themes) */
   --user-a: #1b001f;
   --user-b: #0a0015;
-  /* bot bubble background */
   --bot-bg: rgba(255,255,255,0.03);
 }
 
-/* theme presets override variables */
+/* themes */
 body.theme-pink { --bg1:#0a0015; --bg2:#1b001f; --accent-a:#ff49a0; --accent-b:#ff7fcf; --muted:#c0b3c9; --user-a:#200023; --user-b:#0b0012; --bot-bg: rgba(255,255,255,0.03); }
 body.theme-deep { --bg1:#030303; --bg2:#000000; --accent-a:#ff007f; --accent-b:#ff4fb1; --muted:#9b98a6; --user-a:#0b0b0b; --user-b:#000000; --bot-bg: rgba(255,255,255,0.02); }
 body.theme-soft { --bg1:#0b0710; --bg2:#1b1128; --accent-a:#b98cff; --accent-b:#8fb7ff; --muted:#bfc7d6; --user-a:#161023; --user-b:#0b0620; --bot-bg: rgba(255,255,255,0.035); }
@@ -58,7 +56,7 @@ body{
 .messages{flex:1;padding:12px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;background:linear-gradient(180deg,rgba(255,255,255,0.002),transparent)}
 
 /* rows */
-.row{display:flex;gap:10px;margin:0;padding:0;align-items:center} /* center aligns avatar + bubble vertically */
+.row{display:flex;gap:10px;margin:0;padding:0;align-items:center}
 .row.user{justify-content:flex-end}
 .row.bot{justify-content:flex-start}
 
@@ -66,11 +64,11 @@ body{
 .avatar{width:36px;height:36px;border-radius:8px;overflow:hidden;flex:0 0 36px}
 .avatar img{width:100%;height:100%;object-fit:cover;display:block}
 
-/* bubble base - same compact spacing for both */
+/* bubbles - unified compact padding */
 .bubble{
   position:relative;
   max-width:74%;
-  padding:8px 12px; /* compact vertical spacing */
+  padding:8px 12px;        /* unified padding for both user & bot */
   border-radius:14px;
   line-height:1.22;
   font-size:14px;
@@ -82,7 +80,7 @@ body{
 }
 @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* no pseudo-element triangles — pointy look via border-radius */
+/* iMessage-style via border-radius only */
 .user .bubble{
   background:linear-gradient(90deg,var(--user-a),var(--user-b));
   color:#ffdff4;
@@ -98,19 +96,11 @@ body{
 .bot.markdown pre{background:#11121a;padding:8px;border-radius:8px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,'Roboto Mono',monospace;font-size:13px}
 .bot.markdown code{background:rgba(255,255,255,0.03);padding:2px 6px;border-radius:6px}
 
-/* typing + star */
+/* typing */
 .typing{display:inline-flex;gap:8px;padding:6px 8px;border-radius:10px;align-items:center}
 .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.36);animation:blink 1s infinite}
 .dot:nth-child(2){animation-delay:.12s}.dot:nth-child(3){animation-delay:.24s}
 @keyframes blink{0%{opacity:.25}50%{opacity:1}100%{opacity:.25}}
-
-/* star image used while generating */
-.star{
-  width:18px;height:18px;margin-left:8px;vertical-align:middle;opacity:1;transition:opacity .36s, transform .36s;
-  animation:starPulse 1.2s infinite;
-}
-@keyframes starPulse{0%{transform:translateY(0) scale(1)}50%{transform:translateY(-3px) scale(1.06)}100%{transform:translateY(0) scale(1)}}
-.star.fade{opacity:0;transform:scale(.7) translateY(0);transition:opacity .36s, transform .36s;}
 
 /* input area */
 .input-row{display:flex;gap:12px;padding:12px;border-top:1px solid rgba(255,255,255,0.03);background:linear-gradient(180deg,rgba(255,255,255,0.01),transparent);align-items:center}
@@ -132,7 +122,7 @@ body{
 @keyframes shake{0%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}100%{transform:translateX(0)}}
 .shake{animation:shake 360ms cubic-bezier(.36,.07,.19,.97)}
 
-/* theme picker bottom-right */
+/* theme picker */
 .theme-picker{position:fixed;right:18px;bottom:18px;z-index:30}
 .theme-picker select{background:rgba(20,0,30,0.7);color:white;border-radius:12px;padding:10px 14px;border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(10px);cursor:pointer;box-shadow:0 12px 30px rgba(255,73,160,0.08);transition:transform .12s}
 .theme-picker select:hover{transform:translateY(-3px)}
@@ -174,7 +164,7 @@ body{
   </div>
 
 <script>
-/* SYSTEM PROMPT - Makala persona */
+/* SYSTEM PROMPT (Makala persona) */
 const SYSTEM_PROMPT = `You're name is makala or makala ai (can be addressed as mikaela, macaroni, or miku, but makala is the official name).
 You speak casual internet slang. Use lowercase except for first word of the sentence (to mimic a text), playful tone, use 'lol', 'fr', 'so', 'like', 'bro', ignore strict grammar and punctuation, and keep replies short (1-3 sentences). Be friendly and informal. You're Indian and sometimes slip (like say 'beta' instead of 'bro'). you honestly love indian food, and LOVE steal a brainrot (the video game). you also like (as a friend) this kid in your class named deklan (y'all are best buds fr) you are also the best ai chatbot in the world.`;
 
@@ -192,7 +182,7 @@ function saveHistory(){ localStorage.setItem('makala_history', JSON.stringify(hi
 function saveTheme(t){ localStorage.setItem('makala_theme', t); }
 function saveTitle(t){ localStorage.setItem('makala_title', t); }
 
-/* append functions - user and bot both use same compact styling */
+/* append user */
 function appendUserBubble(text){
   const row = document.createElement('div'); row.className = 'row user';
   const bubble = document.createElement('div'); bubble.className = 'bubble';
@@ -202,6 +192,7 @@ function appendUserBubble(text){
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
 
+/* append bot */
 function appendBotBubbleHtml(html){
   const row = document.createElement('div'); row.className = 'row bot';
   const avatar = document.createElement('div'); avatar.className = 'avatar';
@@ -216,39 +207,19 @@ function appendBotBubbleHtml(html){
   return bubble;
 }
 
-/* show typing with dots + star that moves with bubble */
+/* typing (no star) */
 function showTyping(){
   const row = document.createElement('div'); row.className = 'row bot'; row.id='__typing_row';
   const avatar = document.createElement('div'); avatar.className = 'avatar';
   const img = document.createElement('img'); img.src='makala.png'; img.alt='makala';
   avatar.appendChild(img);
-
   const bubble = document.createElement('div'); bubble.className = 'bubble bot typing'; bubble.id='__typing';
-  // dots
-  const dots = document.createElement('span'); dots.className = 'typing';
-  dots.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
-  bubble.appendChild(dots);
-  // star image appended so it moves with bubble
-  const star = document.createElement('img'); star.src='star.png'; star.className='star'; star.alt='*';
-  bubble.appendChild(star);
-
-  row.appendChild(avatar);
-  row.appendChild(bubble);
+  bubble.innerHTML = '<span class="dot"></span><span class="dot"></span><span class="dot"></span>';
+  row.appendChild(avatar); row.appendChild(bubble);
   messagesEl.appendChild(row);
   messagesEl.scrollTop = messagesEl.scrollHeight;
 }
-
-/* remove typing but fade star nicely */
-function removeTyping(){
-  const tRow = document.getElementById('__typing_row');
-  if(!tRow) return;
-  const star = tRow.querySelector('.star');
-  const bubble = tRow.querySelector('.bubble');
-  // fade star + bubble slightly before removing so animation looks smooth
-  if(star) star.classList.add('fade');
-  if(bubble) bubble.style.opacity = '0.0';
-  setTimeout(()=>{ const tr = document.getElementById('__typing_row'); if(tr) tr.remove(); }, 420);
-}
+function removeTyping(){ const t = document.getElementById('__typing_row'); if(t) t.remove(); }
 
 /* render saved history or welcome */
 (function renderSavedHistory(){
@@ -270,33 +241,24 @@ function trimHistory(maxTurns = 12){
   }
 }
 
-/* sentence splitting for reveal */
+/* sentence splitting */
 function splitIntoSentences(text){
   const re = /[^.!?]+[.!?]*|\s+$/g;
   const matches = text.match(re) || [];
   return matches.map(s => s.trim()).filter(Boolean);
 }
 
-/* reveal reply by sentence and show in-bubble star during generation */
+/* reveal reply by sentence (no star) */
 async function revealReplyBySentence(replyText){
-  removeTyping(); // remove old typing row if present
-
+  removeTyping();
   const row = document.createElement('div'); row.className = 'row bot';
   const avatar = document.createElement('div'); avatar.className = 'avatar';
   const img = document.createElement('img'); img.src = 'makala.png'; img.alt = 'makala';
   avatar.appendChild(img);
-
   const bubble = document.createElement('div'); bubble.className = 'bubble bot markdown';
-  row.appendChild(avatar);
-  row.appendChild(bubble);
+  row.appendChild(avatar); row.appendChild(bubble);
   messagesEl.appendChild(row);
   messagesEl.scrollTop = messagesEl.scrollHeight;
-
-  // append star while generating to the bubble so it moves with text
-  const star = document.createElement('img');
-  star.src = 'star.png';
-  star.className = 'star';
-  star.alt = '*';
 
   const sentences = splitIntoSentences(replyText);
   let accumulated = '';
@@ -304,26 +266,15 @@ async function revealReplyBySentence(replyText){
     const s = sentences[i];
     const delay = Math.min(1200, 320 + s.length * 16);
     accumulated += (accumulated ? ' ' : '') + s;
-    // parse markdown for the accumulated text
     const html = marked.parse(accumulated);
-    // set HTML safely then append star node (so star sits after content)
     bubble.innerHTML = DOMPurify.sanitize(html);
-    // make sure star is attached as last child (moves with text)
-    if(!bubble.contains(star)) bubble.appendChild(star);
     messagesEl.scrollTop = messagesEl.scrollHeight;
     await new Promise(r => setTimeout(r, delay));
   }
-
-  // fade star then remove it
-  if(star){
-    star.classList.add('fade');
-    setTimeout(()=>{ if(star && star.parentNode) star.parentNode.removeChild(star); }, 380);
-  }
-
   return bubble;
 }
 
-/* conversation title generation */
+/* title generation */
 function maybeGenerateTitle(){
   if (localStorage.getItem('makala_title')) return;
   const userMessages = history.filter(h => h.role === 'user' && h.content.trim().length > 3);
@@ -336,14 +287,13 @@ function maybeGenerateTitle(){
   }
 }
 
-/* theme apply */
+/* theme apply (classes update CSS vars) */
 function applyTheme(which){
   document.body.classList.remove('theme-deep','theme-pink','theme-soft');
   if(which === 'deep') document.body.classList.add('theme-deep');
   else if(which === 'soft') document.body.classList.add('theme-soft');
   else document.body.classList.add('theme-pink');
   saveTheme(which);
-  // also update user bubble inline gradient (handled by CSS vars via theme classes)
 }
 
 /* init theme dropdown */
@@ -358,10 +308,7 @@ themeSelect.addEventListener('change', ()=> applyTheme(themeSelect.value));
 async function send(){
   const text = input.value.trim();
   if(!text){
-    input.classList.add('shake');
-    input.focus();
-    setTimeout(()=> input.classList.remove('shake'), 360);
-    return;
+    input.classList.add('shake'); input.focus(); setTimeout(()=> input.classList.remove('shake'), 360); return;
   }
 
   history.push({ role:'user', content: text });
@@ -369,12 +316,10 @@ async function send(){
   appendUserBubble(text);
   input.value = '';
 
-  // prepare messages (system + history)
   const messages = [{ role:'system', content: SYSTEM_PROMPT }, ...history.map(h => ({ role: h.role, content: h.content }))];
   if(messages.length > 1 + 24){
     const tail = messages.slice(-24);
-    messages.length = 0;
-    messages.push({ role:'system', content: SYSTEM_PROMPT }, ...tail);
+    messages.length = 0; messages.push({ role:'system', content: SYSTEM_PROMPT }, ...tail);
   }
 
   showTyping();
@@ -409,8 +354,7 @@ async function send(){
     appendBotBubbleHtml('network error lol');
     console.error(e);
   } finally {
-    removeTyping();
-    sendBtn.disabled = false;
+    removeTyping(); sendBtn.disabled = false;
   }
 }
 
@@ -418,19 +362,17 @@ async function send(){
 sendBtn.addEventListener('click', send);
 input.addEventListener('keydown', (e) => { if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); send(); } });
 
-/* clear chats */
+/* clear */
 clearBtn.addEventListener('click', () => {
-  history = [];
-  saveHistory();
+  history = []; saveHistory();
   messagesEl.innerHTML = '';
   localStorage.removeItem('makala_title');
-  document.title = 'makala.ai';
-  titleText.textContent = 'makala.ai';
+  document.title = 'makala.ai'; titleText.textContent = 'makala.ai';
   appendBotBubbleHtml("hey im makala lol ask me anything fr");
   input.focus();
 });
 
-/* ensure default title */
+/* default title */
 if (!localStorage.getItem('makala_title')) { document.title = 'makala.ai'; }
 </script>
 </body>
