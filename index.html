@@ -15,18 +15,13 @@
   --bg1:#0a0015; --bg2:#1b001f;
   --accent-a:#ff49a0; --accent-b:#ff7fcf;
   --muted:#c0b3c9;
-
-  /* theme-aware user bubble gradient stops */
-  --user-a: #1b001f;
-  --user-b: #0a0015;
-  /* bot bubble background */
-  --bot-bg: rgba(255,255,255,0.03);
+  --user-a:#1b001f; --user-b:#0a0015; --bot-bg: rgba(255,255,255,0.03);
 }
 
-/* theme presets */
-body.theme-pink { --bg1:#0a0015; --bg2:#1b001f; --accent-a:#ff49a0; --accent-b:#ff7fcf; --muted:#c0b3c9; --user-a:#200023; --user-b:#0b0012; --bot-bg: rgba(255,255,255,0.03); }
-body.theme-deep { --bg1:#030303; --bg2:#000000; --accent-a:#ff007f; --accent-b:#ff4fb1; --muted:#9b98a6; --user-a:#0b0b0b; --user-b:#000000; --bot-bg: rgba(255,255,255,0.02); }
-body.theme-soft { --bg1:#0b0710; --bg2:#1b1128; --accent-a:#b98cff; --accent-b:#8fb7ff; --muted:#bfc7d6; --user-a:#161023; --user-b:#0b0620; --bot-bg: rgba(255,255,255,0.035); }
+/* themes */
+body.theme-pink { --bg1:#0a0015; --bg2:#1b001f; --accent-a:#ff49a0; --accent-b:#ff7fcf; --user-a:#200023; --user-b:#0b0012; --bot-bg: rgba(255,255,255,0.03); }
+body.theme-deep { --bg1:#030303; --bg2:#000000; --accent-a:#ff007f; --accent-b:#ff4fb1; --user-a:#0b0b0b; --user-b:#000000; --bot-bg: rgba(255,255,255,0.02); }
+body.theme-soft { --bg1:#0b0710; --bg2:#1b1128; --accent-a:#b98cff; --accent-b:#8fb7ff; --user-a:#161023; --user-b:#0b0620; --bot-bg: rgba(255,255,255,0.035); }
 
 html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial}
 body{
@@ -58,7 +53,7 @@ body{
 /* messages */
 .messages{flex:1;padding:12px 16px;overflow-y:auto;display:flex;flex-direction:column;gap:6px;background:linear-gradient(180deg,rgba(255,255,255,0.002),transparent)}
 
-/* rows (center align ensures avatar + bubble share baseline) */
+/* rows - center baseline for avatar + bubble */
 .row{display:flex;gap:10px;margin:0;padding:0;align-items:center}
 .row.user{justify-content:flex-end}
 .row.bot{justify-content:flex-start}
@@ -67,23 +62,27 @@ body{
 .avatar{width:36px;height:36px;border-radius:8px;overflow:hidden;flex:0 0 36px;margin-top:0;align-self:center}
 .avatar img{width:100%;height:100%;object-fit:cover;display:block}
 
-/* bubbles - unified compact spacing for user & bot */
+/* bubble base */
 .bubble{
   position:relative;
+  box-sizing:border-box;             /* ensure padding counts in size */
+  display:inline-block;              /* consistent sizing */
+  vertical-align:middle;
   max-width:74%;
-  padding:8px 12px;        /* unified padding */
+  padding:10px 14px;                 /* unified, slightly larger for comfortable tap targets */
   border-radius:14px;
-  line-height:1.22;        /* unified line-height */
+  line-height:1.25;
   font-size:14px;
   box-shadow:0 6px 18px rgba(20,0,30,0.6);
   word-break:break-word;
   margin:0;
   border:1px solid rgba(255,255,255,0.03);
   animation:pop .14s ease-out forwards;
+  min-height:36px;                    /* ensures visual parity even with short text */
 }
 @keyframes pop{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
 
-/* pointy look using border-radius only (no triangles/pseudo elements) */
+/* pointy look via border-radius only */
 .user .bubble{
   background:linear-gradient(90deg,var(--user-a),var(--user-b));
   color:#ffdff4;
@@ -95,11 +94,22 @@ body{
   border-radius:18px 18px 18px 6px;
 }
 
+/* ensure both bubble types are identical in spacing (last resort) */
+.user .bubble,
+.bot .bubble {
+  padding: 10px 14px !important;
+  margin: 0 !important;
+  line-height: 1.25 !important;
+  font-size: 14px !important;
+  min-height: 36px !important;
+  box-sizing: border-box !important;
+}
+
 /* markdown & code */
 .bot.markdown pre{background:#11121a;padding:8px;border-radius:8px;font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,'Roboto Mono',monospace;font-size:13px}
 .bot.markdown code{background:rgba(255,255,255,0.03);padding:2px 6px;border-radius:6px}
 
-/* typing (dots) */
+/* typing */
 .typing{display:inline-flex;gap:8px;padding:6px 8px;border-radius:10px;align-items:center}
 .dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,0.36);animation:blink 1s infinite}
 .dot:nth-child(2){animation-delay:.12s}.dot:nth-child(3){animation-delay:.24s}
@@ -125,24 +135,10 @@ body{
 @keyframes shake{0%{transform:translateX(0)}20%{transform:translateX(-6px)}40%{transform:translateX(6px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}100%{transform:translateX(0)}}
 .shake{animation:shake 360ms cubic-bezier(.36,.07,.19,.97)}
 
-/* theme picker bottom-right */
+/* theme picker */
 .theme-picker{position:fixed;right:18px;bottom:18px;z-index:30}
 .theme-picker select{background:rgba(20,0,30,0.7);color:white;border-radius:12px;padding:10px 14px;border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(10px);cursor:pointer;box-shadow:0 12px 30px rgba(255,73,160,0.08);transition:transform .12s}
 .theme-picker select:hover{transform:translateY(-3px)}
-
-/* === FORCE EQUAL SPACING & ALIGNMENT OVERRIDES (last-resort) === */
-/* ensures user & bot bubbles are pixel-identical spacing */
-.user .bubble,
-.bot .bubble {
-  padding: 8px 12px !important;
-  margin: 0 !important;
-  line-height: 1.22 !important;
-  font-size: 14px !important;
-}
-/* remove avatar top offset and center it */
-.avatar { margin-top: 0 !important; align-self: center !important; }
-/* make rows align center so avatar & bubble sit on same baseline */
-.row { align-items: center !important; }
 
 /* responsive */
 @media(max-width:880px){.chat-card{width:calc(100% - 32px);height:84vh}.messages{padding:10px}.logo{width:34px;height:34px}.avatar{display:none}}
@@ -223,7 +219,7 @@ function appendBotBubbleHtml(html){
   return bubble;
 }
 
-/* typing indicator (dots only) */
+/* typing (dots only) */
 function showTyping(){
   const row = document.createElement('div'); row.className = 'row bot'; row.id='__typing_row';
   const avatar = document.createElement('div'); avatar.className = 'avatar';
@@ -290,7 +286,7 @@ async function revealReplyBySentence(replyText){
   return bubble;
 }
 
-/* generate short convo title automatically */
+/* maybe generate title */
 function maybeGenerateTitle(){
   if (localStorage.getItem('makala_title')) return;
   const userMessages = history.filter(h => h.role === 'user' && h.content.trim().length > 3);
@@ -303,7 +299,7 @@ function maybeGenerateTitle(){
   }
 }
 
-/* apply theme (classes control CSS vars used for user bubble gradients & bot bg) */
+/* theme */
 function applyTheme(which){
   document.body.classList.remove('theme-deep','theme-pink','theme-soft');
   if(which === 'deep') document.body.classList.add('theme-deep');
@@ -312,7 +308,7 @@ function applyTheme(which){
   saveTheme(which);
 }
 
-/* init theme dropdown */
+/* init theme */
 (function initTheme(){
   const saved = localStorage.getItem('makala_theme') || 'pink';
   themeSelect.value = saved;
@@ -320,7 +316,7 @@ function applyTheme(which){
 })();
 themeSelect.addEventListener('change', ()=> applyTheme(themeSelect.value));
 
-/* send flow */
+/* send */
 async function send(){
   const text = input.value.trim();
   if(!text){
@@ -332,7 +328,6 @@ async function send(){
   appendUserBubble(text);
   input.value = '';
 
-  // build messages for server: system + history
   const messages = [{ role:'system', content: SYSTEM_PROMPT }, ...history.map(h => ({ role: h.role, content: h.content }))];
   if(messages.length > 1 + 24){
     const tail = messages.slice(-24);
