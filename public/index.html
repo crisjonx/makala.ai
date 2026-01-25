@@ -15,18 +15,19 @@
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
 
 <style>
-  /* layout & base */
+  /* Reset & base */
+  * { box-sizing: border-box; }
   :root{
     --font: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
     --bg1:#0a0015; --bg2:#1b001f;
     --accent-a:#ff49a0; --accent-b:#ff7fcf;
     --muted:#b9a9b7;
+    --panel-radius:12px;
   }
-  html,body{height:100%;margin:0; font-family:var(--font); color:#fff; overflow-x:hidden}
-  body{background:
-    radial-gradient(700px 500px at 10% 10%, rgba(255,79,160,0.06), transparent),
-    linear-gradient(180deg,var(--bg1),var(--bg2));
-    display:flex;align-items:center;justify-content:center;padding:28px;}
+  html,body{height:100%;margin:0;font-family:var(--font);color:#fff;overflow-x:hidden}
+  body{display:flex;align-items:center;justify-content:center;padding:28px;
+    background:radial-gradient(700px 500px at 10% 10%, rgba(255,79,160,0.06), transparent),
+               linear-gradient(180deg,var(--bg1),var(--bg2)); -webkit-font-smoothing:antialiased;}
 
   /* themes */
   body.theme-pink { --bg1:#0a0015; --bg2:#1b001f; --accent-a:#ff49a0; --accent-b:#ff7fcf; }
@@ -36,16 +37,19 @@
   body.theme-orange { --bg1:#130800; --bg2:#2a0f00; --accent-a:#ff9a3c; --accent-b:#ff5a1f; }
   body.theme-green { --bg1:#001513; --bg2:#04221b; --accent-a:#2df0a9; --accent-b:#00b38a; }
 
-  /* app grid */
+  /* app */
   .app{ width:980px; max-width:calc(100% - 40px); height:720px; display:grid; grid-template-columns:240px 1fr; gap:18px; align-items:start; }
 
   /* sidebar */
-  .sidebar{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:12px; height:100%;
-    box-shadow:0 12px 30px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03); display:flex;flex-direction:column; }
+  .sidebar{
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:var(--panel-radius); padding:12px; height:100%;
+    box-shadow:0 12px 30px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03);
+    display:flex;flex-direction:column;
+  }
   .sidebar header{display:flex;align-items:center; gap:8px; margin-bottom:8px}
   .sidebar .new-btn{ margin-left:auto; background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.04); padding:6px 8px; border-radius:8px; cursor:pointer; transition:all .14s }
   .sidebar .new-btn:hover{ transform:translateY(-2px); box-shadow:0 10px 24px rgba(0,0,0,0.4) }
-
   .conv-list { flex:1; overflow:auto; display:flex; flex-direction:column; gap:8px; padding-right:6px; }
   .conv { display:flex; align-items:center; gap:8px; padding:8px; border-radius:10px; cursor:pointer; transition:background .12s; color:var(--muted); }
   .conv.active { background: linear-gradient(90deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); color:#fff }
@@ -53,8 +57,8 @@
   .conv .meta { font-size:12px; color:var(--muted) }
   .conv .dots { margin-left:auto; padding:6px; border-radius:6px; color:var(--muted) }
 
-  /* main panel */
-  .panel{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:12px; padding:12px; height:100%; display:flex; flex-direction:column;
+  /* main */
+  .panel{ background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); border-radius:var(--panel-radius); padding:12px; height:100%; display:flex; flex-direction:column;
     box-shadow: 0 12px 30px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03); overflow:hidden; }
 
   .header{ display:flex; align-items:center; gap:12px; padding:6px 8px; border-bottom:1px solid rgba(255,255,255,0.03) }
@@ -67,20 +71,17 @@
   /* messages area */
   .messages-wrap{ flex:1; overflow:auto; padding:14px; display:flex; flex-direction:column; gap:12px; scroll-behavior:smooth; overflow-x:hidden; }
 
-  /* BOT: card with small logo + label (no big picture on the left) */
+  /* bot message area — no big bubble on left, small logo + label above message */
   .bot-card { display:flex; flex-direction:column; gap:6px; max-width:78%; }
   .bot-meta { display:flex; align-items:center; gap:8px; color:var(--muted); font-size:13px; }
   .bot-meta img{ width:20px; height:20px; border-radius:6px; }
-  .bot-body { background: var(--bot-bg, rgba(255,255,255,0.03)); padding:10px 12px; border-radius:10px; color:#fff; box-shadow:0 6px 18px rgba(0,0,0,0.5);
-    white-space:pre-wrap; line-height:1.35; font-size:14px; position:relative; overflow:hidden; word-break:break-word; }
+  .bot-body { padding:10px 12px; border-radius:10px; color:#fff; box-shadow:0 6px 18px rgba(0,0,0,0.5);
+    white-space:pre-wrap; line-height:1.35; font-size:14px; position:relative; overflow:hidden; word-break:break-word; background:var(--bot-bg, rgba(255,255,255,0.03)); border:1px solid rgba(255,255,255,0.03); }
 
-  /* Make markdown blocks inline so there are no extra margins/gaps */
-  .bot-body .markdown-block { display:inline-block; width:100%; margin:0; padding:0; vertical-align:top; white-space:pre-wrap; }
-
-  /* copy button for bot (always visible) */
+  /* always visible bot copy */
   .bot-body .copy-btn { position:absolute; right:8px; top:8px; width:22px; height:22px; opacity:0.95; cursor:pointer; }
 
-  /* user bubble (right) */
+  /* user bubble row & style */
   .row-user { display:flex; justify-content:flex-end; }
   .user-bubble {
     background: linear-gradient(90deg,#200023,#0b0012);
@@ -107,14 +108,14 @@
     100%{ opacity:1; transform:none }
   }
 
-  /* bot typing & progressive char reveal */
+  /* per-character reveal for bot */
   .bot-char { display:inline-block; opacity:0; transform:translateY(4px); animation: charIn .06s forwards; }
   @keyframes charIn { to{ opacity:1; transform:none } }
 
   /* input area */
   .input-area{ padding:12px; border-top:1px solid rgba(255,255,255,0.03); display:flex; align-items:center; gap:10px; }
   .input-wrap{ position:relative; flex:1; }
-  textarea.input{ width:100%; min-height:44px; max-height:200px; resizE:none; padding:12px 56px 12px 12px; border-radius:12px; border:1px solid rgba(255,255,255,0.04);
+  textarea.input{ width:100%; min-height:44px; max-height:200px; resize:none; padding:12px 60px 12px 12px; border-radius:12px; border:1px solid rgba(255,255,255,0.04);
     background:transparent; color:#fff; font-size:14px; line-height:1.25; box-shadow:none; transition:box-shadow .14s, transform .12s; overflow-wrap:break-word; white-space:pre-wrap; }
   textarea.input:focus{ box-shadow:0 12px 28px rgba(0,0,0,0.5); transform:translateY(-1px) }
 
@@ -129,17 +130,15 @@
 
   hr.md-rule { border:0; border-top:1px solid rgba(255,255,255,0.06); margin:8px 0; }
 
-  /* selects and dropdowns dark + white text */
+  /* selects dark */
   select, .theme-select { background: rgba(0,0,0,0.45); color:#fff; border-radius:10px; padding:8px 10px; border:1px solid rgba(255,255,255,0.06); }
   select option{ background:#0b0b10; color:#fff; }
 
-  /* small footer */
+  /* footer */
   .footer{ display:flex; justify-content:space-between; align-items:center; gap:8px; padding-top:8px; color:var(--muted); font-size:12px }
 
-  /* small modal */
-  .modal { position:fixed; right:18px; bottom:72px; width:320px; background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01)); padding:12px; border-radius:10px; box-shadow:0 10px 30px rgba(0,0,0,0.6); border:1px solid rgba(255,255,255,0.03); display:none; z-index:40; }
-  .modal.show{ display:block; }
-  .modal input, .modal select{ width:100%; padding:8px; margin-top:6px; border-radius:8px; background:transparent; border:1px solid rgba(255,255,255,0.04); color:#fff; }
+  /* make sure long lines wrap (no horizontal scroll) */
+  .messages-wrap, .bot-body, .user-bubble, textarea.input { word-break: break-word; overflow-wrap: break-word; }
 
   /* responsive */
   @media(max-width:900px){
@@ -201,44 +200,31 @@
   </div>
 
   <!-- Settings modal -->
-  <div class="modal" id="settingsModal">
+  <div class="modal" id="settingsModal" style="position:fixed;right:18px;bottom:72px;width:320px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:12px;border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03);display:none;z-index:40;">
     <strong>Settings</strong>
     <label style="margin-top:8px;color:var(--muted)">Personality</label>
-    <select id="personality"><option value="makala">makala (playful)</option><option value="makala_serious">makala serious</option></select>
+    <select id="personality" style="width:100%;margin-top:6px;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:#fff">
+      <option value="makala">makala — playful (casual internet slang)</option>
+      <option value="makala_serious">makala serious — concise, formal</option>
+    </select>
     <label style="margin-top:8px;color:var(--muted)">What should I call you?</label>
-    <input id="userName" placeholder="Your name or nickname" />
+    <input id="userName" placeholder="Your name or nickname" style="width:100%;margin-top:6px;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:#fff" />
     <label style="margin-top:8px;color:var(--muted)">Model (optional)</label>
-    <input id="modelInput" placeholder="openrouter model id (optional)" />
+    <input id="modelInput" placeholder="openrouter model id (optional)" style="width:100%;margin-top:6px;padding:8px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,0.04);color:#fff" />
     <div style="display:flex;gap:8px;margin-top:10px;">
-      <button id="saveSettings" class="new-btn">Save</button>
-      <button id="closeSettings" class="new-btn" style="background:transparent">Close</button>
+      <button id="saveSettings" class="new-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px">Save</button>
+      <button id="closeSettings" class="new-btn" style="background:transparent;border:1px solid rgba(255,255,255,0.04);padding:8px;border-radius:8px">Close</button>
     </div>
   </div>
 
 <script>
 /* -------------------------
-   Helper utilities
+   Utilities & DOM refs
    ------------------------- */
 const $ = s => document.querySelector(s);
-const $$ = s => Array.from(document.querySelectorAll(s));
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,8);
 
-function rtrimNewlines(s){ return String(s||'').replace(/\r/g,'').replace(/\n+$/,''); }
-function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-/* -------------------------
-   Local storage model
-   ------------------------- */
-let convs = JSON.parse(localStorage.getItem('makala_convs') || '[]');
-let activeConvId = convs[0]?.id || null;
-const settings = {
-  personality: localStorage.getItem('makala_personality') || 'makala',
-  userName: localStorage.getItem('makala_user') || '',
-  model: localStorage.getItem('makala_model') || ''
-};
-
-/* DOM refs */
-const convList = $('#convList');
+const convListEl = $('#convList');
 const messagesWrap = $('#messages');
 const newConvBtn = $('#newConv');
 const convTitle = $('#convTitle');
@@ -255,17 +241,31 @@ const userNameEl = $('#userName');
 const modelInput = $('#modelInput');
 const modelNameEl = $('#modelName');
 
-/* init UI values */
+function rtrimNewlines(s){ return String(s||'').replace(/\r/g,'').replace(/\n+$/,''); }
+function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* -------------------------
+   Local storage & settings
+   ------------------------- */
+let convs = JSON.parse(localStorage.getItem('makala_convs') || '[]');
+let activeConvId = convs[0]?.id || null;
+const settings = {
+  personality: localStorage.getItem('makala_personality') || 'makala',
+  userName: localStorage.getItem('makala_user') || '',
+  model: localStorage.getItem('makala_model') || ''
+};
 personalityEl.value = settings.personality;
 userNameEl.value = settings.userName;
 modelInput.value = settings.model;
-modelNameEl.textContent = settings.model || 'default';
+modelNameEl && (modelNameEl.textContent = settings.model || 'default');
 
-/* persist convs */
+/* save helpers */
 function saveConvs(){ localStorage.setItem('makala_convs', JSON.stringify(convs)); }
+function saveSettingsLocal(){ localStorage.setItem('makala_personality', settings.personality); localStorage.setItem('makala_user', settings.userName); localStorage.setItem('makala_model', settings.model); }
+function saveTheme(t){ localStorage.setItem('makala_theme', t); }
 
 /* -------------------------
-   Conversation management
+   Conversations UI
    ------------------------- */
 function createConv(title){
   const c = { id: uid(), title: title || 'New conversation', created: Date.now(), messages: [] };
@@ -282,7 +282,7 @@ function deleteConv(id){
   if(convs.length) setActiveConv(convs[0].id); else createConv('New conversation');
 }
 function renderConvs(){
-  convList.innerHTML = '';
+  convListEl.innerHTML = '';
   convs.forEach(c=>{
     const el = document.createElement('div');
     el.className = 'conv' + (c.id === activeConvId ? ' active' : '');
@@ -291,7 +291,7 @@ function renderConvs(){
       <img src="makala.png" style="width:28px;height:28px;border-radius:6px" alt="m">
       <div><div class="title">${escapeHtml(c.title)}</div><div class="meta">${new Date(c.created).toLocaleString()}</div></div>
     </div><div class="dots">⋯</div>`;
-    convList.appendChild(el);
+    convListEl.appendChild(el);
     el.addEventListener('click', (ev)=>{
       if(ev.target.closest('.dots')){
         if(confirm('Delete this conversation?')) deleteConv(c.id);
@@ -322,7 +322,6 @@ function renderActiveMessages(){
   messagesWrap.scrollTop = messagesWrap.scrollHeight;
 }
 
-/* user message */
 function renderUserMessage(m){
   const row = document.createElement('div'); row.className = 'row-user';
   const bubble = document.createElement('div'); bubble.className = 'user-bubble user-appear';
@@ -335,7 +334,6 @@ function renderUserMessage(m){
   messagesWrap.scrollTop = messagesWrap.scrollHeight;
 }
 
-/* bot message — small logo + label above each message, no big left logo */
 function renderBotMessage(m){
   const cont = document.createElement('div'); cont.className = 'bot-card';
   const meta = document.createElement('div'); meta.className = 'bot-meta';
@@ -349,16 +347,16 @@ function renderBotMessage(m){
   cont.appendChild(meta);
   cont.appendChild(body);
   messagesWrap.appendChild(cont);
-  // progressive character-by-character render with markdown + katex
+  // per-char progressive render of markdown
   typeMarkdownIntoElement(rtrimNewlines(m.content), body);
   messagesWrap.scrollTop = messagesWrap.scrollHeight;
 }
 
 /* -------------------------
-   Progressive markdown typing + math + code copy
+   Markdown / math / code copy
    ------------------------- */
 function attachCodeCopyButtons(container){
-  const pres = container.querySelectorAll('pre.code-block');
+  const pres = container.querySelectorAll('pre');
   pres.forEach(pre=>{
     if(pre.querySelector('.copy-code')) return;
     const btn = document.createElement('div'); btn.className='copy-code'; btn.title='Copy';
@@ -371,9 +369,8 @@ function attachCodeCopyButtons(container){
     pre.appendChild(btn);
   });
 }
-
 function renderMathInElement(el){
-  // Replace $$...$$ and $...$ with katex placeholders then render
+  // replace math delimiters with katex placeholders and render
   let html = el.innerHTML;
   html = html.replace(/\$\$([^$]+)\$\$/g, function(_, expr){ return `<span class="katex-display" data-katex="${encodeURIComponent(expr)}"></span>`; });
   html = html.replace(/\$([^$]+)\$/g, function(_, expr){ return `<span class="katex-inline" data-katex="${encodeURIComponent(expr)}"></span>`; });
@@ -390,31 +387,33 @@ function renderMathInElement(el){
 async function typeMarkdownIntoElement(text, container){
   container.dataset.raw = text;
   container.innerHTML = '';
-  // reveal in short bursts of characters (per-char)
+  // reveal per-character with a short delay (speed scales with length)
+  const total = text.length || 1;
+  const baseDelay = Math.max(4, Math.min(18, 140 / Math.sqrt(total) ));
   for(let i=0;i<=text.length;i++){
     const sub = text.slice(0,i);
     const md = marked.parse(sub);
     container.innerHTML = DOMPurify.sanitize(md);
     renderMathInElement(container);
     attachCodeCopyButtons(container);
-    await new Promise(r => setTimeout(r, Math.max(6, Math.min(22, 220/(text.length||10)))));
+    // small throttle to keep UI smooth
+    await new Promise(r => setTimeout(r, baseDelay));
     messagesWrap.scrollTop = messagesWrap.scrollHeight;
   }
-  // final render
+  // final pass
   container.innerHTML = DOMPurify.sanitize(marked.parse(text));
   renderMathInElement(container);
   attachCodeCopyButtons(container);
 }
 
 /* -------------------------
-   Server communication & reply normalization
+   Server comms & normalization
    ------------------------- */
 async function sendMessageToServer(payload){
   const resp = await fetch('/api/chat', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
   if(!resp.ok) throw new Error(await resp.text());
   return resp.json();
 }
-
 function normalizeServerReply(data){
   if(!data) return '';
   if(typeof data === 'string') return data;
@@ -427,36 +426,26 @@ function normalizeServerReply(data){
     if(c.message && c.message.content) return c.message.content;
     if(c.text) return c.text;
   }
-  // fallback: stringify small portion
   try { const s = JSON.stringify(data); return s.length > 1000 ? s.slice(0,1000) + '...' : s; } catch(e){ return String(data); }
 }
 
-/* -------------------------
-   Title generation helper
-   ------------------------- */
-async function requestTitle(candidateText){
+/* Title generation helper — calls /api/title which the server implements */
+async function requestTitle(text){
   try {
-    // try /api/title first
-    const resp = await fetch('/api/title', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ messages: [{ role:'user', content: candidateText }] }) });
-    if(resp.ok){
-      const d = await resp.json();
-      if(d && d.title) return d.title;
-    }
-  } catch(e){ /*ignore*/ }
-  // fallback: call /api/chat with a short title-prompt
-  try {
-    const payload = { messages: [{ role:'system', content: 'You are a title generator. Return a short descriptive title (max 6 words).'}, { role:'user', content: candidateText }, { role:'user', content: 'Return only a short title (no punctuation).' }]};
-    const r = await sendMessageToServer(payload);
-    const t = normalizeServerReply(r).split('\n')[0].trim();
-    return t.replace(/^["']|["']$/g,'').replace(/[.!?]+$/,'').trim();
+    const r = await fetch('/api/title', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ text }) });
+    if(!r.ok) return null;
+    const d = await r.json();
+    return (d && d.title) ? d.title : null;
   } catch(e){ return null; }
 }
 
-/* determine system prompt from settings */
+/* -------------------------
+   System prompt (personality)
+   ------------------------- */
 function systemPrompt(){
-  const base = settings.personality === 'makala_serious' ? 
-    'You are Makala (female). Speak concisely and professionally.' :
-    'You are Makala (female). Speak casual internet slang: lowercase except first word, playful, use words like lol, fr, beta. Keep replies short.';
+  const base = settings.personality === 'makala_serious'
+    ? 'You are Makala (female). Speak concisely and professionally.'
+    : `You are Makala (female). Speak casual internet slang. Use lowercase except first word, playful tone. Use words like "lol", "fr", "so", "like", "bro". Ignore strict grammar; keep replies short (1-3 sentences). Sometimes say "beta".`;
   const name = settings.userName ? ` If you address the user, call them ${settings.userName}.` : '';
   return base + name;
 }
@@ -470,40 +459,32 @@ async function handleSend(){
   if(!trimmed.trim()) return;
   const conv = convs.find(c=>c.id===activeConvId);
   if(!conv) return;
-  // store user message (trim trailing newlines)
   const userMsg = { role:'user', content: rtrimNewlines(raw), created: Date.now() };
   conv.messages.push(userMsg);
   saveConvs();
   renderActiveMessages();
   input.value = ''; autoResize(); inputWrap.classList.remove('ready');
 
-  // maybe generate title if still default
+  // try to set title if still default
   if(!conv.title || conv.title === 'New conversation' || conv.title === 'makala.ai'){
     const usable = conv.messages.filter(m=>m.role==='user' && m.content && m.content.trim().length>3);
     if(usable.length){
       let cand = usable[0].content.trim();
-      if(cand.split(/\s+/).length <= 2 && usable.length>1) cand = usable[1].content.trim();
+      if(cand.split(/\s+/).length <= 3 && usable.length>1) cand = usable[1].content.trim();
       const t = await requestTitle(cand);
-      if(t){
-        conv.title = t;
-        saveConvs();
-        renderConvs();
-        if(conv.id === activeConvId) { convTitle.textContent = conv.title; document.title = conv.title; }
-      }
+      if(t){ conv.title = t; saveConvs(); renderConvs(); if(conv.id === activeConvId) convTitle.textContent = conv.title; document.title = conv.title; }
     }
   }
 
-  // show temporary typing message
+  // add temp 'typing' placeholder
   conv.messages.push({ role:'assistant', content:'', temp:true });
   saveConvs(); renderActiveMessages();
 
-  // build messages to send (system + all conv messages)
   const payloadMsgs = [{ role:'system', content: systemPrompt() }, ...conv.messages.filter(m=>!m.temp).map(m=>({ role:m.role, content:m.content }))];
 
   try {
     const resp = await sendMessageToServer({ messages: payloadMsgs, model: settings.model });
     const assistantText = normalizeServerReply(resp);
-    // replace temp with real assistant
     conv.messages = conv.messages.filter(m=>!m.temp);
     conv.messages.push({ role:'assistant', content: assistantText, created: Date.now() });
     saveConvs();
@@ -518,7 +499,7 @@ async function handleSend(){
 }
 
 /* -------------------------
-   UI interactions
+   Textarea behavior + UI events
    ------------------------- */
 function autoResize(){ input.style.height='auto'; input.style.height = Math.min(input.scrollHeight, 200) + 'px'; }
 input.addEventListener('input', ()=>{ autoResize(); const has = input.value.trim().length>0; if(has) inputWrap.classList.add('ready'); else inputWrap.classList.remove('ready'); });
@@ -529,8 +510,8 @@ sendBtn.addEventListener('click', handleSend);
 newConvBtn.addEventListener('click', ()=> createConv('New conversation'));
 
 /* settings modal */
-openSettings.addEventListener('click', ()=> settingsModal.classList.toggle('show'));
-closeSettings.addEventListener('click', ()=> settingsModal.classList.remove('show'));
+openSettings.addEventListener('click', ()=> settingsModal.style.display = (settingsModal.style.display === 'block' ? 'none' : 'block'));
+closeSettings.addEventListener('click', ()=> settingsModal.style.display = 'none');
 saveSettings.addEventListener('click', ()=>{
   settings.personality = personalityEl.value;
   settings.userName = userNameEl.value.trim();
@@ -539,10 +520,10 @@ saveSettings.addEventListener('click', ()=>{
   localStorage.setItem('makala_user', settings.userName);
   localStorage.setItem('makala_model', settings.model);
   modelNameEl.textContent = settings.model || 'default';
-  settingsModal.classList.remove('show');
+  settingsModal.style.display = 'none';
 });
 
-/* copy-code delegation */
+/* copy code delegation */
 document.addEventListener('click', (ev)=>{
   const cbtn = ev.target.closest('.copy-code');
   if(cbtn){
@@ -553,7 +534,7 @@ document.addEventListener('click', (ev)=>{
 });
 
 /* -------------------------
-   Initialization
+   Init / restore
    ------------------------- */
 if(convs.length === 0) createConv('New conversation');
 renderConvs();
@@ -564,12 +545,11 @@ renderActiveMessages();
 (function initTheme(){ const t = localStorage.getItem('makala_theme') || 'pink'; document.body.className = 'theme-' + t; themeSelect.value = t; })();
 themeSelect.addEventListener('change', (e)=> { document.body.className = 'theme-'+e.target.value; localStorage.setItem('makala_theme', e.target.value); });
 
-/* Save convs on unload */
+/* save on unload */
 window.addEventListener('beforeunload', ()=> saveConvs());
 
-/* expose for debugging */
+/* expose for debug */
 window.__makala = { convs, settings };
-
 </script>
 </body>
 </html>
