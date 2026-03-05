@@ -24,6 +24,8 @@
   --user-a:#200023; --user-b:#0b0012;
   --bot-bg: rgba(255,255,255,0.03);
   --ui-radius:12px;
+  --control-bg: rgba(255,255,255,0.02);
+  --control-border: rgba(255,255,255,0.06);
 }
 html,body{height:100%;margin:0;font-family:var(--font);color:#fff;overflow-x:hidden;background:linear-gradient(180deg,var(--bg1),var(--bg2));-webkit-font-smoothing:antialiased}
 body{display:flex;align-items:center;justify-content:center;padding:24px;transition:background .28s ease}
@@ -39,18 +41,36 @@ body.theme-red{ --bg1:#1a0707;--bg2:#2b0909;--accent-a:#ff4b4b;--accent-b:#ff818
 body.theme-green{ --bg1:#02120a;--bg2:#072014;--accent-a:#3cff9a;--accent-b:#7cffb1;--user-a:#062014;--user-b:#03130b;--bot-bg:rgba(255,255,255,0.02)}
 .panel, .sidebar, .messages-wrap, textarea.input, .field { transition: all .18s ease; }
 
+/* ---------- controls (unified styling) ---------- */
+.field, select, input[type="text"], input[type="file"], button {
+  font-family: var(--font);
+  color: #fff;
+  background: var(--control-bg);
+  border: 1px solid var(--control-border);
+  border-radius: 10px;
+  padding: 8px 10px;
+  outline: none;
+  transition: box-shadow .12s, transform .08s, background .12s;
+}
+.field:focus, select:focus, input:focus, button:focus { box-shadow: 0 10px 28px rgba(0,0,0,0.45); transform: translateY(-1px); }
+
+/* buttons */
+button { cursor:pointer }
+.new-btn{ background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.04); padding:6px 8px; border-radius:8px; }
+.new-btn:hover{ transform:translateY(-3px); box-shadow: 0 12px 30px rgba(0,0,0,0.45) }
+.send-circle img, .copy-code img, .meta-copy img { filter: none; }
+
 /* ---------- sidebar ---------- */
 .sidebar{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:var(--ui-radius);padding:12px;height:100%;box-shadow:0 12px 30px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03);display:flex;flex-direction:column}
 header.sidebar-h{display:flex;align-items:center;gap:8px;margin-bottom:8px}
-.makalina-only-btn { margin:8px 0 12px 0; align-self:flex-start; background:transparent;border:0;padding:4px;cursor:pointer; }
-.makalina-only-btn img{width:36px;height:36px;border-radius:6px}
-.new-btn{ margin-left:auto; background:transparent; color:var(--muted); border:1px solid rgba(255,255,255,0.04); padding:6px 8px; border-radius:8px; cursor:pointer}
+.makalina-only-btn { margin:12px 0 8px 0; align-self:stretch; background:transparent;border:0;padding:6px;cursor:pointer;display:flex;justify-content:center }
+.makalina-only-btn img{width:100%;height:48px;object-fit:contain;border-radius:8px}
+.new-btn{ margin-left:auto }
 .conv-list{flex:1;overflow:auto;display:flex;flex-direction:column;gap:8px;padding-right:6px}
 .conv{display:flex;align-items:center;gap:8px;padding:8px;border-radius:10px;cursor:pointer;color:var(--muted);transition:background .12s}
 .conv.active{background:linear-gradient(90deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));color:#fff;box-shadow:0 6px 20px rgba(0,0,0,0.4)}
 .conv-meta{font-size:12px;color:var(--muted)}
-.conv .trash { margin-left:auto; width:18px;height:18px;opacity:.9;cursor:pointer;filter:invert(1) saturate(0) brightness(.95) }
-.sidebar-note{font-size:12px;color:var(--muted);margin-top:8px}
+.conv .trash { margin-left:auto; width:18px;height:18px;opacity:.9;cursor:pointer;filter:invert(1) saturate(0) }
 
 /* ---------- main panel ---------- */
 .panel{background:linear-gradient(180deg, rgba(255,255,255,0.01), rgba(255,255,255,0.006));border-radius:var(--ui-radius);padding:12px;height:100%;display:flex;flex-direction:column;box-shadow:0 12px 30px rgba(0,0,0,0.6);border:1px solid rgba(255,255,255,0.03);overflow:hidden}
@@ -104,8 +124,8 @@ pre.code-block{position:relative;background:#0b0b10;padding:12px;border-radius:8
 .bot-char{display:inline-block;opacity:0;transform:translateY(4px);animation:charIn .06s forwards}
 @keyframes charIn{to{opacity:1;transform:none}}
 
-/* typing star inline near text baseline */
-.typing-star{display:inline-block;width:12px;height:12px;vertical-align:baseline;margin-left:4px;opacity:0;transform:scale(.85);transition:opacity .18s, transform .18s}
+/* typing star inline near text baseline (bigger) */
+.typing-star{display:inline-block;width:16px;height:16px;vertical-align:baseline;margin-left:6px;opacity:0;transform:scale(.85);transition:opacity .18s, transform .18s}
 .typing-star img{width:100%;height:100%;display:block}
 .typing-star.visible{opacity:1;transform:scale(1);filter:drop-shadow(0 6px 12px rgba(0,0,0,0.25))}
 
@@ -119,10 +139,9 @@ textarea.input:focus{box-shadow:0 12px 28px rgba(255,73,160,0.08);transform:tran
 .send-circle img{width:18px;height:18px}
 
 /* modal & ttt styles */
-.modal-backdrop{position:fixed;inset:0;background:rgba(2,4,10,0.85);display:flex;align-items:center;justify-content:center;z-index:90}
+.modal-backdrop{position:fixed;inset:0;background:rgba(2,4,10,0.9);display:flex;align-items:center;justify-content:center;z-index:90}
 .modal{width:520px;max-width:calc(100% - 32px);background:linear-gradient(180deg, #0b0712, #0f0716);padding:14px;border-radius:12px;border:1px solid rgba(255,255,255,0.04);box-shadow:0 20px 60px rgba(0,0,0,0.6)}
 .modal img.full { width:100%; height:auto; border-radius:8px; margin:8px 0; object-fit:cover }
-/* tighten top/bottom space around full image */
 .modal .full-wrap { padding:6px 0; }
 
 /* ttt board */
@@ -146,16 +165,14 @@ textarea.input:focus{box-shadow:0 12px 28px rgba(255,73,160,0.08);transform:tran
         <button class="new-btn" id="newConv">New</button>
       </header>
 
-      <div class="conv-list" id="convList"></div>
-
-      <!-- Makalina image-only button above the tip (hidden unless owned flag true -> we control visibility via JS) -->
+      <!-- Makalina image-only button (wide) -->
       <button class="makalina-only-btn" id="makalinaBtn" title="Makalina (purchase/view)" style="display:none">
         <img src="makalina.png" alt="makalina">
       </button>
 
-      <div class="sidebar-note">Click a conversation to open. Use trash to delete.</div>
+      <div class="conv-list" id="convList"></div>
 
-      <!-- Play Tic Tac Toe (hidden unless owned) -->
+      <div class="sidebar-note">Click a conversation to open. Use trash to delete.</div>
       <div style="margin-top:auto;display:flex;gap:8px;align-items:center">
         <button class="new-btn" id="playTttBtn" style="display:none">Play Tic Tac Toe</button>
       </div>
@@ -171,7 +188,7 @@ textarea.input:focus{box-shadow:0 12px 28px rgba(255,73,160,0.08);transform:tran
           <div class="user-info" id="userInfo" style="display:none;margin-left:10px">
             <div class="pfp" id="userPfp"><img src="makala.png" alt="pfp"></div>
             <div class="name" id="userNameDisplay"></div>
-            <div class="coins" style="margin-left:8px"><img src="coins.png" style="width:18px;height:18px" class="spin" alt="coins"><span id="coinCount">0</span></div>
+            <div class="coins" style="margin-left:8px"><img src="coins.png" style="width:18px;height:18px;vertical-align:middle;margin-right:6px" class="spin" alt="coins"><span id="coinCount">0</span></div>
           </div>
         </div>
 
@@ -212,13 +229,13 @@ textarea.input:focus{box-shadow:0 12px 28px rgba(255,73,160,0.08);transform:tran
   <button id="resetBtn" class="reset-btn">Reset (temp)</button>
 
 <script>
-/* ---------- tiny helpers ---------- */
-const $ = (s, root=document)=> root.querySelector(s);
-const uid = ()=> Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+/* ---------- helpers ---------- */
+const $ = (s, root=document) => root.querySelector(s);
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,8);
 const rtrimNewlines = s => String(s||'').replace(/\r/g,'').replace(/\n+$/,'');
 const sanitize = html => DOMPurify.sanitize(html);
 
-/* ---------- app state ---------- */
+/* ---------- state ---------- */
 let convs = JSON.parse(localStorage.getItem('makala_convs')||'[]'); if(!Array.isArray(convs)) convs=[];
 let activeConvId = localStorage.getItem('makala_activeConv') || (convs[0]?.id || null);
 const settings = {
@@ -240,20 +257,19 @@ const convListEl = $('#convList'), messagesWrap = $('#messages'), newConvBtn = $
       resetBtn = $('#resetBtn'), userInfo = $('#userInfo'), userPfp = $('#userPfp'),
       userNameDisplay = $('#userNameDisplay'), coinCountEl = $('#coinCount');
 
-/* ---------- initialization ---------- */
+/* ---------- boot ---------- */
 (function ensureDefault(){
   if(convs.length===0){
     const c={id:uid(),title:'New conversation',created:Date.now(),messages:[],renderedCount:0,personality:'makala'};
-    convs.unshift(c);
-    activeConvId=c.id; saveConvs(); saveActive();
+    convs.unshift(c); activeConvId=c.id; saveConvs(); saveActive();
   }
   if(!activeConvId) activeConvId = convs[0].id;
 })();
 (function initTheme(){ const t = localStorage.getItem('makala_theme')||'pink'; document.body.className = 'theme-'+t; themeSelect.value=t; })();
 renderConvList(); setActiveConv(activeConvId, { clear:true, animate:false }); renderUserInfo(); refreshMakalinaUI();
 
-/* ---------- conv list & management ---------- */
-function relativeTime(ts){ const now=Date.now(); const s = Math.floor((now-ts)/1000); if(s<60) return 'just now'; if(s<3600) return Math.floor(s/60)+'m ago'; const dNow=new Date(), dTs=new Date(ts); if(dNow.toDateString()===dTs.toDateString()) return 'Today'; const yesterday=new Date(now-86400000); if(yesterday.toDateString()===dTs.toDateString()) return 'Yesterday'; const days=Math.floor(s/86400); if(days<7) return days+'d ago'; if(days<30) return Math.floor(days/7)+'w ago'; const yrs=Math.floor(days/365); if(yrs===1) return 'A year ago'; if(yrs>=2) return 'A long time ago'; return Math.floor(days/30)+'mo ago'; }
+/* ---------- conv list ---------- */
+function relativeTime(ts){ const now=Date.now(); const s=Math.floor((now-ts)/1000); if(s<60) return 'just now'; if(s<3600) return Math.floor(s/60)+'m ago'; const dNow=new Date(), dTs=new Date(ts); if(dNow.toDateString()===dTs.toDateString()) return 'Today'; const yesterday=new Date(now-86400000); if(yesterday.toDateString()===dTs.toDateString()) return 'Yesterday'; const days=Math.floor(s/86400); if(days<7) return days+'d ago'; if(days<30) return Math.floor(days/7)+'w ago'; const yrs=Math.floor(days/365); if(yrs===1) return 'A year ago'; if(yrs>=2) return 'A long time ago'; return Math.floor(days/30)+'mo ago'; }
 
 function renderConvList(){
   convListEl.innerHTML=''; convs.forEach(c=>{
@@ -265,12 +281,13 @@ function renderConvList(){
     el.addEventListener('click', (ev)=>{ if(ev.target === trash){ if(confirm('Delete this conversation?')) deleteConv(c.id); return; } setActiveConv(c.id, { clear:true, animate:false }); });
   });
 }
+
 function createConv(title='New conversation'){ const c={id:uid(),title:title||'New conversation',created:Date.now(),messages:[],renderedCount:0,personality:'makala'}; convs.unshift(c); saveConvs(); renderConvList(); setActiveConv(c.id,{clear:true,animate:false}); return c; }
 function deleteConv(id){ const i=convs.findIndex(x=>x.id===id); if(i>=0) convs.splice(i,1); if(activeConvId===id) activeConvId=convs[0]?.id||null; saveConvs(); saveActive(); renderConvList(); if(convs.length===0) createConv('New conversation'); setActiveConv(activeConvId,{clear:true,animate:false}); }
 
 function setActiveConv(id, opts={clear:false,animate:false}){ activeConvId=id; saveActive(); renderConvList(); const conv=convs.find(x=>x.id===id); if(!conv) return; convTitle.textContent = conv.title || 'New conversation'; convPersonality.value = conv.personality || 'makala'; if(opts.clear){ messagesWrap.innerHTML=''; conv.renderedCount=0; } const start = conv.renderedCount||0; for(let i=start;i<conv.messages.length;i++){ appendMessageToDOM(conv, conv.messages[i], { animate: (i===conv.messages.length-1) && !!opts.animate }); conv.renderedCount = i+1; } messagesWrap.scrollTop = messagesWrap.scrollHeight; brandImg.src = (conv.personality==='makalina') ? 'linastar.png' : 'makala.png'; }
 
-/* ---------- message rendering ---------- */
+/* ---------- messages ---------- */
 function appendUserToDOM(conv, m, { animate=false } = {}){
   const row=document.createElement('div'); row.className='row-user';
   const bubble=document.createElement('div'); bubble.className='user-bubble';
@@ -300,12 +317,10 @@ function appendBotToDOM(conv, m, { animate=false } = {}){
   }
 }
 
-/* sanitize & trim trailing blanks */
 function sanitizeAndTrim(html){
   const clean = DOMPurify.sanitize(html);
   const wrapper = document.createElement('div'); wrapper.innerHTML = clean;
   while(wrapper.lastChild && isEmptyNode(wrapper.lastChild)) wrapper.removeChild(wrapper.lastChild);
-  // Final pass: remove last empty paragraph tags
   return wrapper.innerHTML;
 }
 function isEmptyNode(node){
@@ -326,7 +341,6 @@ function attachOrGetStar(container, conv){
     s = document.createElement('span'); s.className='typing-star';
     const img = document.createElement('img'); img.src = (conv.personality==='makalina'?'linastar.png':'star.png'); img.alt='*'; img.style.width='100%'; img.style.height='100%';
     s.appendChild(img);
-    // place at end of last paragraph or end of container
     const lastP = container.querySelector('p:last-of-type') || container.lastElementChild;
     if(lastP) lastP.appendChild(s); else container.appendChild(s);
   } else {
@@ -376,7 +390,7 @@ function attachCodeCopyButtons(container){
   });
 }
 
-/* math rendering */
+/* math */
 function renderMathInElement(el){
   let html = el.innerHTML;
   html = html.replace(/\$\$([\s\S]+?)\$\$/g, (_, expr)=> `<span class="katex-display" data-katex="${encodeURIComponent(expr)}"></span>`);
@@ -436,7 +450,7 @@ async function handleSend(){
     appendBotToDOM(conv, serverMsg, { animate:true });
     conv.renderedCount = conv.messages.length;
 
-    // set conv title from first user message if still default
+    // set conv title from first user message if default
     if(!conv.title || conv.title === 'New conversation'){
       const firstUser = conv.messages.find(mm=>mm.role==='user' && (mm.content||'').trim().length>0);
       if(firstUser){ conv.title = firstUser.content.split(/\s+/).slice(0,6).join(' ').slice(0,60); saveConvs(); renderConvList(); convTitle.textContent = conv.title; document.title = conv.title; }
@@ -478,17 +492,15 @@ function autoResize(){ input.style.height='auto'; input.style.height = Math.min(
 /* code copy delegation */
 document.addEventListener('click', (ev)=> { if(ev.target.closest('.copy-code')){ const pre = ev.target.closest('pre'); const code = pre && pre.querySelector('code'); if(code) navigator.clipboard.writeText(code.textContent); } });
 
-/* ---------- Makalina modal / purchase (smaller full image spacing + discount) ---------- */
+/* ---------- Makalina modal / purchase ---------- */
 function openMakalinaModal(){
-  // price is 0.00 but show discount UI and total calculation (user requested)
-  let basePrice = 0.00;
-  let discount = 0;
+  let basePrice = 0.00, discount = 0;
   modalContainer.innerHTML = `
     <div class="modal-backdrop">
       <div class="modal">
         <div class="full-wrap"><img class="full" src="fullmakalina.png" alt="makalina"></div>
-        <h3 style="margin:6px 0 8px">Purchase Makalina</h3>
-        <p style="color:var(--muted);margin:0 0 10px">Makalina adds a refined persona and cosmetic perks.</p>
+        <h3 style="margin:6px 0 8px">Makalina — demo purchase</h3>
+        <p style="color:var(--muted);margin:0 0 10px">Makalina is a premium persona + cosmetic demo.</p>
 
         <div style="display:flex;gap:8px;margin-bottom:8px">
           <input id="buyerName" class="field" placeholder="Display name (optional)"/>
@@ -501,19 +513,19 @@ function openMakalinaModal(){
         </div>
 
         <div style="display:flex;gap:8px;align-items:center;margin-bottom:8px">
-          <input id="discountCode" class="field" placeholder="Discount code (if any)" style="flex:1"/>
+          <input id="discountCode" class="field" placeholder="Discount code (optional)" style="flex:1"/>
           <button id="applyDiscount" class="new-btn">Apply</button>
         </div>
 
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
           <div>Subtotal: <strong id="subtotalDisplay">$0.00</strong></div>
-          <div>Discount: <strong id="discountDisplay">0%</strong></div>
+          <div id="discountWrap" style="display:none">Discount: <strong id="discountDisplay">0%</strong></div>
         </div>
         <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
           <div>Total: <strong id="totalDisplay">$0.00</strong></div>
           <div style="display:flex;gap:8px">
             <button id="cancelBuy" class="new-btn">Cancel</button>
-            <button id="confirmBuy" class="makalina-rect" style="padding:6px 10px">Purchase</button>
+            <button id="confirmBuy" class="new-btn" style="background:linear-gradient(90deg,var(--accent-a),var(--accent-b));border:none;color:#fff">Purchase</button>
           </div>
         </div>
       </div>
@@ -521,8 +533,7 @@ function openMakalinaModal(){
   `;
   modalContainer.style.display='block';
 
-  const subtotalDisplay = $('#subtotalDisplay'), discountDisplay = $('#discountDisplay'), totalDisplay = $('#totalDisplay');
-  function updateTotals(){ const subtotal = basePrice; const discountPct = discount; const discounted = subtotal * (1 - discountPct/100); subtotalDisplay.textContent = `$${subtotal.toFixed(2)}`; discountDisplay.textContent = discountPct>0? `${discountPct}%` : '0%'; totalDisplay.textContent = `$${Math.max(0, discounted).toFixed(2)}`; }
+  function updateTotals(){ const subtotal = basePrice; const discounted = subtotal * (1 - discount/100); $('#subtotalDisplay').textContent = `$${subtotal.toFixed(2)}`; $('#totalDisplay').textContent = `$${Math.max(0, discounted).toFixed(2)}`; if(discount>0){ $('#discountWrap').style.display='block'; $('#discountDisplay').textContent = `${discount}%`; } else { $('#discountWrap').style.display='none'; } }
   updateTotals();
 
   $('#applyDiscount').addEventListener('click', ()=>{
@@ -543,7 +554,6 @@ function openMakalinaModal(){
       reader.onload = e=>{
         settings.pfpData = e.target.result;
         saveOwnership();
-        // immediate refresh on purchase
         location.reload();
       };
       reader.readAsDataURL(file);
@@ -554,25 +564,26 @@ function openMakalinaModal(){
   });
 }
 
-/* ---------- user info rendering / UI toggle for ownership ---------- */
+/* ---------- user info & makalina UI ---------- */
 function renderUserInfo(){ if(settings.makalinaOwned){ userInfo.style.display='flex'; userNameDisplay.textContent = settings.userName || 'you'; coinCountEl.textContent = settings.coins || 0; if(settings.pfpData) userPfp.querySelector('img').src = settings.pfpData; else userPfp.querySelector('img').src = 'makala.png'; } else userInfo.style.display='none'; }
 function refreshMakalinaUI(){
-  // If not owned, hide buttons (per your last instruction). If owned, show.
   if(settings.makalinaOwned){
-    makalinaBtn.style.display='inline-flex';
+    makalinaBtn.style.display='flex';
     playTttBtn.style.display='inline-flex';
-    makalinaBtn.title = 'Open makalina purchase (owned)';
-    document.getElementById('favicon').href = '/makalina.ico';
+    // make makalina button full width of conversation area
+    makalinaBtn.style.width='100%';
+    makalinaBtn.style.alignSelf='stretch';
+    document.getElementById('favicon').href='/makalina.ico';
   } else {
     makalinaBtn.style.display='none';
     playTttBtn.style.display='none';
-    document.getElementById('favicon').href = '/makala.ico';
+    document.getElementById('favicon').href='/makala.ico';
   }
   renderUserInfo();
 }
 refreshMakalinaUI();
 
-/* ---------- Tic Tac Toe (no strike-through line) ---------- */
+/* ---------- Tic Tac Toe ---------- */
 function openTicTacToe(){
   modalContainer.innerHTML = `
     <div class="modal-backdrop">
@@ -604,7 +615,6 @@ function openTicTacToe(){
     else if(userWon===false){ settings.coins=Math.max(0,(settings.coins||0)-amt); setTimeout(()=> alert(`you lost ${amt} coins...`), 120); }
     else setTimeout(()=> alert('draw — no coins'), 120);
     saveOwnership(); $('#coinCountModal').textContent=settings.coins; coinCountEl.textContent=settings.coins;
-    // auto reset after 2s
     setTimeout(()=>{ state = Array(9).fill(''); done=false; renderBoard(); }, 2000);
   }
   $('#tttReset').addEventListener('click', ()=> { state = Array(9).fill(''); done=false; renderBoard(); });
@@ -612,23 +622,59 @@ function openTicTacToe(){
   renderBoard();
 }
 
-/* ---------- small utilities ---------- */
+/* ---------- utilities ---------- */
 function appendMessageToDOM(conv, m, opts={}){ if(m.role==='user') appendUserToDOM(conv,m,opts); else appendBotToDOM(conv,m,opts); }
 
-/* ---------- events ---------- */
+/* ---------- reset (clears everything incl cookies) ---------- */
+resetBtn.addEventListener('click', ()=> {
+  if(!confirm('Reset everything (local data & cookies)? This will reload the page.')) return;
+  // clear localStorage
+  try { localStorage.clear(); } catch(e){ console.warn('localStorage clear failed', e); }
+  // attempt to delete cookies for current domain
+  try {
+    document.cookie.split(";").forEach(function(c) {
+      const eqPos = c.indexOf("=");
+      const name = eqPos > -1 ? c.substr(0, eqPos).trim() : c.trim();
+      // set expiration in the past for common paths
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;path=/";
+      document.cookie = name + "=;expires=Thu, 01 Jan 1970 00:00:00 GMT;";
+    });
+  } catch(e){}
+  // clear some common storage (IndexedDB) - best-effort
+  if(window.indexedDB && indexedDB.databases){
+    try { indexedDB.databases().then(dbs=> dbs.forEach(db=> indexedDB.deleteDatabase(db.name)).catch(()=>{})); } catch(e){}
+  }
+  // reload once cleared
+  location.reload();
+});
+
+/* ---------- delegation & copy code ---------- */
+document.addEventListener('click', (ev)=> {
+  if(ev.target.closest('.copy-code')){
+    const pre = ev.target.closest('pre'); const code = pre && pre.querySelector('code'); if(code) navigator.clipboard.writeText(code.textContent);
+  }
+});
+
+/* ---------- makalina / play button wiring ---------- */
 makalinaBtn.addEventListener('click', openMakalinaModal);
 playTttBtn.addEventListener('click', openTicTacToe);
-resetBtn.addEventListener('click', ()=> { if(confirm('Reset everything?')){ localStorage.clear(); location.reload(); } });
-themeSelect.addEventListener('change', (e)=> { document.body.className='theme-'+e.target.value; localStorage.setItem('makala_theme', e.target.value); });
 
-/* copy code delegation */
-document.addEventListener('click', (ev)=> { if(ev.target.closest('.copy-code')){ const pre = ev.target.closest('pre'); const code = pre && pre.querySelector('code'); if(code) navigator.clipboard.writeText(code.textContent); } });
-
-/* ---------- render user info on load ---------- */
+/* ---------- rendering user info & UI ---------- */
 function renderUserInfo(){ if(settings.makalinaOwned){ userInfo.style.display='flex'; userNameDisplay.textContent = settings.userName || 'you'; coinCountEl.textContent = settings.coins || 0; if(settings.pfpData) userPfp.querySelector('img').src = settings.pfpData; else userPfp.querySelector('img').src = 'makala.png'; } else userInfo.style.display='none'; }
 
-function refreshMakalinaUI(){ if(settings.makalinaOwned){ makalinaBtn.style.display='inline-flex'; playTttBtn.style.display='inline-flex'; document.getElementById('favicon').href='/makalina.ico'; } else { makalinaBtn.style.display='none'; playTttBtn.style.display='none'; document.getElementById('favicon').href='/makala.ico'; } renderUserInfo(); }
+function refreshMakalinaUI(){ if(settings.makalinaOwned){ makalinaBtn.style.display='flex'; playTttBtn.style.display='inline-flex'; makalinaBtn.style.width='100%'; makalinaBtn.style.alignSelf='stretch'; document.getElementById('favicon').href='/makalina.ico'; } else { makalinaBtn.style.display='none'; playTttBtn.style.display='none'; document.getElementById('favicon').href='/makala.ico'; } renderUserInfo(); }
 refreshMakalinaUI();
+
+/* ---------- init helpers ---------- */
+if(convs.length === 0) createConv('New conversation');
+renderConvList();
+if(!activeConvId) activeConvId = convs[0].id;
+setActiveConv(activeConvId, { clear:true, animate:false });
+
+themeSelect.addEventListener('change', (e)=> { document.body.className='theme-'+e.target.value; localStorage.setItem('makala_theme', e.target.value); });
+
+// expose a tiny API on window (debug)
+window.__makala_reset = () => { localStorage.clear(); location.reload(); };
 </script>
 </body>
 </html>
