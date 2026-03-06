@@ -29,7 +29,7 @@
   body{display:flex;align-items:center;justify-content:center;padding:24px;transition:background .28s ease}
   .app{width:980px;max-width:calc(100% - 40px);height:720px;display:grid;grid-template-columns:240px 1fr;gap:18px;align-items:start}
 
-  /* themes (same as before) */
+  /* themes */
   body.theme-pink{ --bg1:#0a0015;--bg2:#1b001f;--accent-a:#ff49a0;--accent-b:#ff7fcf;--user-a:#200023;--user-b:#0b0012;--bot-bg:rgba(255,255,255,0.03)}
   body.theme-deep{ --bg1:#020202;--bg2:#000;--accent-a:#ff007f;--accent-b:#ff4fb1;--user-a:#0b0b0b;--user-b:#000000;--bot-bg:rgba(255,255,255,0.02)}
   body.theme-soft{ --bg1:#0b0710;--bg2:#1b1128;--accent-a:#b98cff;--accent-b:#8fb7ff;--user-a:#161023;--user-b:#0b0620;--bot-bg:rgba(255,255,255,0.035)}
@@ -49,7 +49,7 @@
   .conv{display:flex;align-items:center;gap:8px;padding:8px;border-radius:10px;cursor:pointer;color:var(--muted);transition:background .12s}
   .conv.active{background:linear-gradient(90deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));color:#fff;box-shadow:0 6px 20px rgba(0,0,0,0.4)}
   .conv-meta{font-size:12px;color:var(--muted)}
-  .conv .trash { margin-left:auto; width:18px;height:18px;opacity:.9;cursor:pointer;filter:invert(1) saturate(0) brightness(.95) }
+  .conv .trash { margin-left:auto; width:18px;height:18px;opacity:.9;cursor:pointer; filter: invert(1) brightness(2); } /* make trash white */
   .sidebar-note{font-size:12px;color:var(--muted);margin-top:8px}
 
   /* main panel */
@@ -102,13 +102,12 @@
   .bot-char{display:inline-block;opacity:0;transform:translateY(4px);animation:charIn .06s forwards}
   @keyframes charIn{to{opacity:1;transform:none}}
 
-  /* typing star (bigger, baseline-aligned, hover visible) */
-  .typing-star{display:inline-block;width:16px;height:16px;vertical-align:baseline;margin-left:6px;opacity:0;transform:translateY(2px) scale(.92);transition:opacity .18s, transform .18s}
+  /* typing star: lower baseline so it appears like a period next to text */
+  .typing-star{display:inline-block;width:16px;height:16px;vertical-align:baseline;margin-left:6px;opacity:0;transform:translateY(6px) scale(.92);transition:opacity .18s, transform .18s}
   .typing-star img{width:100%;height:100%;display:block}
-  .typing-star.visible{opacity:1;transform:translateY(0) scale(1.08);filter:drop-shadow(0 6px 12px rgba(0,0,0,0.25))}
-  .typing-star.big{ transform:translateY(0) scale(1.28); }
-  /* ensure hover over the whole bot card restores the star */
-  .bot-card:hover .typing-star{ opacity:1 !important; transform:translateY(0) scale(1.08) !important; }
+  .typing-star.visible{opacity:1;transform:translateY(2px) scale(1.08);filter:drop-shadow(0 6px 12px rgba(0,0,0,0.25))}
+  .typing-star.big{ transform:translateY(0) scale(1.4); }
+  .bot-card:hover .typing-star{ opacity:1 !important; transform:translateY(2px) scale(1.08) !important; }
 
   /* input */
   .input-area{padding:12px;border-top:1px solid rgba(255,255,255,0.03);display:flex;align-items:center;gap:10px}
@@ -149,7 +148,7 @@
     <aside class="sidebar">
       <header class="sidebar-h">
         <div style="display:flex;align-items:center;gap:8px">
-          <!-- makalina button: IMAGE ONLY -->
+          <!-- makalina button: IMAGE ONLY (no border) -->
           <button id="makalinaBtn" class="makalina-img" title="Get Makalina">
             <img src="makalina.png" alt="makalina">
           </button>
@@ -160,10 +159,10 @@
 
       <div class="conv-list" id="convList"></div>
 
-      <div class="sidebar-note">Click a conversation to open. Use trash to delete. Play Tic Tac Toe below.</div>
+      <div class="sidebar-note">Click a conversation to open. Use trash to delete. Play tic-tac-toe below.</div>
 
       <div style="margin-top:auto;display:flex;gap:8px;align-items:center">
-        <button class="new-btn" id="playTttBtn">Play Tic Tac Toe</button>
+        <button class="new-btn" id="playTttBtn">Play tic-tac-toe</button>
       </div>
     </aside>
 
@@ -256,8 +255,12 @@ function setFavicon(){
 }
 
 /* ---------- init ---------- */
+/* ensure at least one convo exists; when none, create with title 'makala.ai' */
 (function ensureDefault(){
-  if(convs.length===0){ const c={id:uid(),title:'New conversation',created:Date.now(),messages:[],renderedCount:0,personality:'makala'}; convs.unshift(c); activeConvId=c.id; saveConvs(); saveActive(); }
+  if(convs.length===0){
+    const c={id:uid(),title:'makala.ai',created:Date.now(),messages:[],renderedCount:0,personality:'makala'};
+    convs.unshift(c); activeConvId=c.id; saveConvs(); saveActive();
+  }
   if(!activeConvId) activeConvId = convs[0].id;
 })();
 (function initTheme(){ const t = localStorage.getItem('makala_theme')||'pink'; document.body.className = 'theme-'+t; themeSelect.value=t; })();
@@ -269,9 +272,8 @@ function relativeTime(ts){ const now=Date.now(); const s = Math.floor((now-ts)/1
 function renderConvList(){
   convListEl.innerHTML=''; convs.forEach(c=>{
     const el=document.createElement('div'); el.className='conv'+(c.id===activeConvId?' active':''); el.dataset.id=c.id;
-    // USE linalogo.png as the convo icon for makalina personality (not the star)
     const icon=document.createElement('img'); icon.src=(c.personality==='makalina'?'linalogo.png':'makala.png'); icon.style.width='28px'; icon.style.height='28px'; icon.style.borderRadius='6px';
-    const inner=document.createElement('div'); inner.innerHTML = `<div style="font-size:14px">${sanitize(c.title||'New conversation')}</div><div class="conv-meta">${relativeTime(c.created||Date.now())}</div>`;
+    const inner=document.createElement('div'); inner.innerHTML = `<div style="font-size:14px">${sanitize(c.title||'makala.ai')}</div><div class="conv-meta">${relativeTime(c.created||Date.now())}</div>`;
     const trash=document.createElement('img'); trash.src='trash.png'; trash.className='trash'; trash.alt='del';
     el.appendChild(icon); el.appendChild(inner); el.appendChild(trash); convListEl.appendChild(el);
     el.addEventListener('click', (ev)=>{ if(ev.target === trash){ if(confirm('Delete this conversation?')) deleteConv(c.id); return; } setActiveConv(c.id, { clear:true, animate:false }); });
@@ -279,10 +281,10 @@ function renderConvList(){
 }
 
 /* ---------- conv mgmt ---------- */
-function createConv(title='New conversation'){ const c={id:uid(),title:title||'New conversation',created:Date.now(),messages:[],renderedCount:0,personality:'makala'}; convs.unshift(c); saveConvs(); renderConvList(); setActiveConv(c.id,{clear:true,animate:false}); return c; }
-function deleteConv(id){ const i=convs.findIndex(x=>x.id===id); if(i>=0) convs.splice(i,1); if(activeConvId===id) activeConvId=convs[0]?.id||null; saveConvs(); saveActive(); renderConvList(); if(convs.length===0) createConv('New conversation'); setActiveConv(activeConvId,{clear:true,animate:false}); }
+function createConv(title='makala.ai'){ const c={id:uid(),title:title||'makala.ai',created:Date.now(),messages:[],renderedCount:0,personality:'makala'}; convs.unshift(c); saveConvs(); renderConvList(); setActiveConv(c.id,{clear:true,animate:false}); return c; }
+function deleteConv(id){ const i=convs.findIndex(x=>x.id===id); if(i>=0) convs.splice(i,1); if(activeConvId===id) activeConvId=convs[0]?.id||null; saveConvs(); saveActive(); renderConvList(); if(convs.length===0){ createConv('makala.ai'); } setActiveConv(activeConvId,{clear:true,animate:false}); }
 
-function setActiveConv(id, opts={clear:false,animate:false}){ activeConvId=id; saveActive(); renderConvList(); const conv=convs.find(x=>x.id===id); if(!conv) return; convTitle.textContent = conv.title || 'New conversation'; convPersonality.value = conv.personality || 'makala'; if(opts.clear){ messagesWrap.innerHTML=''; conv.renderedCount=0; } const start = conv.renderedCount||0; for(let i=start;i<conv.messages.length;i++){ appendMessageToDOM(conv, conv.messages[i], { animate: (i===conv.messages.length-1) && !!opts.animate }); conv.renderedCount = i+1; } messagesWrap.scrollTop = messagesWrap.scrollHeight; brandImg.src = (conv.personality==='makalina') ? 'linastar.png' : 'makala.png'; enforceMakalinaAvailability(); }
+function setActiveConv(id, opts={clear:false,animate:false}){ activeConvId=id; saveActive(); renderConvList(); const conv=convs.find(x=>x.id===id); if(!conv) return; convTitle.textContent = conv.title || 'makala.ai'; convPersonality.value = conv.personality || 'makala'; if(opts.clear){ messagesWrap.innerHTML=''; conv.renderedCount=0; } const start = conv.renderedCount||0; for(let i=start;i<conv.messages.length;i++){ appendMessageToDOM(conv, conv.messages[i], { animate: (i===conv.messages.length-1) && !!opts.animate }); conv.renderedCount = i+1; } messagesWrap.scrollTop = messagesWrap.scrollHeight; brandImg.src = (conv.personality==='makalina') ? 'linastar.png' : 'makala.png'; document.title = conv.title || 'makala.ai'; enforceMakalinaAvailability(); }
 
 /* ---------- message rendering ---------- */
 function appendUserToDOM(conv, m, { animate=false } = {}){
@@ -298,7 +300,6 @@ function appendUserToDOM(conv, m, { animate=false } = {}){
 function appendBotToDOM(conv, m, { animate=false } = {}){
   const cont=document.createElement('div'); cont.className='bot-card';
   const meta=document.createElement('div'); meta.className='bot-meta';
-  // small icon displayed beside bot label: keep it as star for typing; but convo icon uses linalogo
   const small=document.createElement('img'); small.src=(conv.personality==='makalina'?'linastar.png':'makala.png'); small.alt='m'; small.style.width='18px'; small.style.height='18px';
   const label=document.createElement('div'); label.className='bot-label'; label.textContent=(conv.personality==='makalina'?'makalina ai':'makala ai');
   const metaCopy=document.createElement('div'); metaCopy.className='meta-copy'; metaCopy.title='copy'; metaCopy.innerHTML=`<img src="copy.png" alt="copy">`;
@@ -307,7 +308,6 @@ function appendBotToDOM(conv, m, { animate=false } = {}){
   const body=document.createElement('div'); body.className='bot-body';
   cont.appendChild(meta); cont.appendChild(body); messagesWrap.appendChild(cont); messagesWrap.scrollTop = messagesWrap.scrollHeight;
 
-  // hover behavior: show star when hovering over the bot card
   cont.addEventListener('mouseenter', ()=> {
     const s = cont.querySelector('.typing-star'); if(s) s.classList.add('visible');
   });
@@ -320,9 +320,8 @@ function appendBotToDOM(conv, m, { animate=false } = {}){
   } else {
     body.innerHTML = sanitizeAndTrim(marked.parse(rtrimNewlines(m.content||'')));
     renderMathInElement(body); attachCodeCopyButtons(body);
-    // attach a small star (hidden) so hovering reveals it consistently
     const s = attachOrGetStar(body, conv);
-    s.classList.remove('visible'); // keep hidden until hover
+    s.classList.remove('visible');
     s.dataset.persistent = '0';
   }
 }
@@ -352,11 +351,9 @@ function attachOrGetStar(container, conv){
     s = document.createElement('span'); s.className='typing-star';
     const img = document.createElement('img'); img.src = (conv.personality==='makalina'?'linastar.png':'star.png'); img.alt='*'; img.style.width='100%'; img.style.height='100%';
     s.appendChild(img);
-    // append to last paragraph if available, otherwise append to container
     const lastP = container.querySelector('p:last-of-type') || container.lastElementChild;
     if(lastP) lastP.appendChild(s); else container.appendChild(s);
     s.dataset.persistent = '0';
-    // hover restore handled on container hover via event listeners in appendBotToDOM
   } else {
     const img = s.querySelector('img'); if(img) img.src = (conv.personality==='makalina'?'linastar.png':'star.png');
   }
@@ -389,7 +386,6 @@ async function typeMarkdownIntoElement(text, container, conv){
   renderMathInElement(container); attachCodeCopyButtons(container);
   const finalStar = attachOrGetStar(container, conv); finalStar.classList.add('visible'); finalStar.classList.remove('big');
   finalStar.dataset.persistent = '0';
-  // keep visible for 1.5s then hide unless hovered
   await new Promise(r=>setTimeout(r, 1500));
   if(!finalStar.matches(':hover')) finalStar.classList.remove('visible');
   finalStar.addEventListener('mouseenter', ()=> finalStar.classList.add('visible'));
@@ -469,7 +465,7 @@ async function handleSend(){
     conv.renderedCount = conv.messages.length;
 
     // set conv title from first user message if still default
-    if(!conv.title || conv.title === 'New conversation'){
+    if(!conv.title || conv.title === 'makala.ai' || conv.title === '') {
       const firstUser = conv.messages.find(mm=>mm.role==='user' && (mm.content||'').trim().length>0);
       if(firstUser){ conv.title = firstUser.content.split(/\s+/).slice(0,6).join(' ').slice(0,60); saveConvs(); renderConvList(); convTitle.textContent = conv.title; document.title = conv.title; }
     }
@@ -495,7 +491,7 @@ function systemPromptForConv(conv){
 }
 
 /* ---------- UI events ---------- */
-newConvBtn.addEventListener('click', ()=> createConv('New conversation'));
+newConvBtn.addEventListener('click', ()=> createConv('makala.ai'));
 convPersonality.addEventListener('change', ()=> { const conv = convs.find(c=>c.id===activeConvId); if(!conv) return; conv.personality = convPersonality.value; saveConvs(); renderConvList(); setActiveConv(activeConvId,{clear:true,animate:false}); });
 sendBtn.addEventListener('click', handleSend);
 input.addEventListener('input', ()=> { autoResize(); if(input.value.trim().length>0) inputWrap.classList.add('ready'); else inputWrap.classList.remove('ready'); });
@@ -510,13 +506,13 @@ function autoResize(){ input.style.height='auto'; input.style.height = Math.min(
 /* code copy delegation */
 document.addEventListener('click', (ev)=> { const c = ev.target.closest('.copy-code'); if(c){ const pre = ev.target.closest('pre'); const code = pre && pre.querySelector('code'); if(code) navigator.clipboard.writeText(code.textContent); } });
 
-/* ---------- Makalina modal / purchase (uses fullmakalina.png) ---------- */
+/* ---------- Makalina modal / purchase ---------- */
 function openMakalinaModal(){
   modalContainer.innerHTML = `<div class="modal-backdrop"><div class="modal">
-    <!-- show fullmakalina.png at top -->
-    <img src="fullmakalina.png" alt="makalina" class="full" style="margin-top:6px;margin-bottom:6px;max-height:120px;object-fit:contain">
+    <!-- larger fullmakalina.png at top (reduced vertical padding) -->
+    <img src="fullmakalina.png" alt="makalina" class="full" style="margin-top:2px;margin-bottom:8px;max-height:180px;object-fit:contain">
     <h3 style="margin:6px 0">Purchase Makalina</h3>
-    <p style="color:var(--muted);margin:6px 0 12px">makalina lets you talk to a more matured persona, and lets you play tic-tac-toe. Base price: <strong>$0.00</strong></p>
+    <p style="color:var(--muted);margin:6px 0 12px">Makalina lets you talk to a more matured persona, and lets you play tic-tac-toe. Base price: <strong>$0.00</strong></p>
     <div style="display:flex;gap:8px;margin-bottom:8px">
       <input id="buyerName" class="field" placeholder="Display name (optional)"/>
       <input id="favNumber" class="field" placeholder="Fav number" style="max-width:120px"/>
@@ -525,7 +521,7 @@ function openMakalinaModal(){
       <label style="color:var(--muted);margin-right:6px">Profile image</label>
       <input id="pfpFile" type="file" accept="image/*" class="field" style="max-width:220px"/>
     </div>
-    <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px">
+    <div style="display:flex;gap:6px;align-items:center;margin-bottom:12px">
       <input id="discountCode" class="field" placeholder="Discount code (optional)" style="max-width:220px"/>
       <button id="applyDiscount" class="new-btn">Apply</button>
       <div id="discountRow" style="color:var(--muted);margin-left:auto;display:none">discount: <strong id="discountPct">-25%</strong></div>
@@ -600,10 +596,10 @@ function enforceMakalinaAvailability(){
   makalinaBtn.onclick = ()=> { if(!settings.makalinaOwned) openMakalinaModal(); };
 }
 
-/* ---------- Tic Tac Toe (unchanged behavior but hidden if not owned) ---------- */
+/* ---------- Tic Tac Toe ---------- */
 function openTicTacToe(){
   if(!settings.makalinaOwned){ openMakalinaModal(); return; }
-  modalContainer.innerHTML = `<div class="modal-backdrop"><div class="modal"><h3 style="margin:0 0 8px">tic tac toe — play makala</h3><div id="tttBoardWrapper" style="position:relative"><div id="tttBoard" class="ttt-board"></div></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><div>Your coins: <img src="coins.png" style="width:18px;height:18px;vertical-align:middle;margin-right:6px" class="spin"> <span id="coinCountModal">${settings.coins}</span></div><div style="display:flex;gap:8px"><button id="tttReset" class="new-btn">Reset board</button><button id="closeTtt" class="new-btn">Close</button></div></div></div></div>`;
+  modalContainer.innerHTML = `<div class="modal-backdrop"><div class="modal"><h3 style="margin:0 0 8px">tic-tac-toe — play makala</h3><div id="tttBoardWrapper" style="position:relative"><div id="tttBoard" class="ttt-board"></div></div><div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px"><div>Your coins: <img src="coins.png" style="width:18px;height:18px;vertical-align:middle;margin-right:6px" class="spin"> <span id="coinCountModal">${settings.coins}</span></div><div style="display:flex;gap:8px"><button id="tttReset" class="new-btn">Reset board</button><button id="closeTtt" class="new-btn">Close</button></div></div></div></div>`;
   modalContainer.style.display='block';
   const board = $('#tttBoard'); let state = Array(9).fill(''); let done=false;
   const conv = convs.find(c=>c.id===activeConvId) || { personality:'makala' };
