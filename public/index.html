@@ -4,93 +4,105 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>makala.ai</title>
-<link rel="icon" href="/makala.ico" type="image/x-icon" />
+<link rel="icon" href="/makala.ico" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
 <style>
   :root{
     --font: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-    --bg:#110f1d;
-    --panel:#171427;
-    --panel-2:#13111f;
+    --bg:#0f1220;
+    --panel:#14182a;
+    --panel-2:#111629;
     --line:rgba(255,255,255,.08);
-    --text:#f6f7fb;
-    --muted:#a9afc0;
-    --accent:#ff4da6;
-    --accent-2:#8b5cf6;
-    --user:#251335;
-    --user-2:#181124;
-    --bot:#17121f;
+    --text:#f8fafc;
+    --muted:#a9b3c5;
+    --accent:#8b5cf6;
+    --accent-2:#06b6d4;
+    --user:#1d2540;
+    --user-2:#161d33;
+    --bot:#12182a;
     --radius:16px;
   }
   *{box-sizing:border-box}
-  html,body{height:100%;margin:0;font-family:var(--font);color:var(--text);overflow:hidden;background:linear-gradient(180deg,var(--bg),#09080f)}
+  html,body{height:100%;margin:0;font-family:var(--font);color:var(--text);background:linear-gradient(180deg,var(--bg),#090b13);overflow:hidden}
   body{display:flex;justify-content:center;align-items:center;padding:8px}
+
+  body.theme-pink{--bg:#12111d;--panel:#171427;--panel-2:#10101c;--accent:#ff4fa8;--accent-2:#ff7fca;--user:#261235;--user-2:#171022;--bot:#181425}
+  body.theme-deep{--bg:#07080d;--panel:#0f1118;--panel-2:#090b11;--accent:#f472b6;--accent-2:#c084fc;--user:#141822;--user-2:#0d1017;--bot:#10131b}
+  body.theme-blue{--bg:#0b1322;--panel:#111b2f;--panel-2:#0c1527;--accent:#60a5fa;--accent-2:#93c5fd;--user:#13284a;--user-2:#0c1a31;--bot:#101c32}
+  body.theme-red{--bg:#170909;--panel:#211010;--panel-2:#160a0a;--accent:#fb7185;--accent-2:#fda4af;--user:#361111;--user-2:#230b0b;--bot:#1e1010}
+  body.theme-green{--bg:#08130f;--panel:#101b18;--panel-2:#0b1512;--accent:#34d399;--accent-2:#86efac;--user:#11241e;--user-2:#0b1612;--bot:#101a17}
+
   button,input,textarea,select{font:inherit}
   button{cursor:pointer}
-  body.theme-pink{--bg:#130f1d;--panel:#1a1426;--panel-2:#12101d;--accent:#ff4fa8;--accent-2:#ff7fca;--user:#29143b;--user-2:#171122;--bot:#171222}
-  body.theme-deep{--bg:#09090d;--panel:#11131a;--panel-2:#0c0d12;--accent:#f472b6;--accent-2:#c084fc;--user:#161924;--user-2:#0f1117;--bot:#10131b}
-  body.theme-blue{--bg:#0d1424;--panel:#121c31;--panel-2:#0d1628;--accent:#60a5fa;--accent-2:#93c5fd;--user:#14294a;--user-2:#101c31;--bot:#121f35}
-  body.theme-red{--bg:#1a0c0c;--panel:#211111;--panel-2:#170b0b;--accent:#fb7185;--accent-2:#fda4af;--user:#311212;--user-2:#240b0b;--bot:#1d1010}
-  body.theme-green{--bg:#0b1411;--panel:#111b17;--panel-2:#0b1512;--accent:#34d399;--accent-2:#86efac;--user:#11231c;--user-2:#0d1713;--bot:#101a16}
-
   .app{
-    width:min(1400px,100vw);
-    height:100vh;
+    width:min(1400px,calc(100vw - 16px));
+    height:calc(100vh - 18px);
     display:grid;
     grid-template-columns:270px 1fr;
     gap:8px;
-    padding:8px;
+    min-height:0;
   }
-  .sidebar,.panel{min-height:0;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));overflow:hidden}
+  .sidebar,.panel{
+    min-height:0;
+    border:1px solid var(--line);
+    background:linear-gradient(180deg,rgba(255,255,255,.02),rgba(255,255,255,.01));
+    border-radius:var(--radius);
+    overflow:hidden;
+  }
   .sidebar{display:flex;flex-direction:column;padding:12px}
   .sidebar-head{display:flex;align-items:center;justify-content:space-between;gap:8px;padding-bottom:10px}
   .sidebar-title{font-size:14px;font-weight:600;letter-spacing:.2px}
-  .btn{height:40px;padding:0 12px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:#fff;border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:background .15s ease,border-color .15s ease,transform .15s ease,opacity .15s ease}
+
+  .btn{
+    height:38px;padding:0 12px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:#fff;border-radius:12px;
+    display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:background .15s ease,border-color .15s ease,transform .15s ease;
+  }
   .btn:hover{background:rgba(255,255,255,.06);transform:translateY(-1px)}
   .btn:active{transform:translateY(0)}
-  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));border-color:transparent;color:#fff}
-  .btn.icon{width:40px;padding:0}
+  .btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent-2));border-color:transparent}
+  .btn.icon{width:38px;padding:0}
   .btn.icon span{font-size:24px;line-height:1}
   .btn.compact{height:34px;border-radius:10px;padding:0 10px;font-size:13px}
 
   .conv-list{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:8px;padding-right:2px}
-  .conv-item{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02);padding:10px;display:flex;align-items:center;gap:10px;cursor:pointer}
-  .conv-item.active{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16)}
+  .conv-item{
+    border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02);padding:10px;display:flex;align-items:center;gap:10px;cursor:pointer
+  }
+  .conv-item.active{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.18)}
   .conv-item img{width:26px;height:26px;border-radius:8px;object-fit:cover;flex:0 0 auto}
+  .home-item{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.02);padding:10px;display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:8px}
+  .home-item.active{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.16)}
+  .home-icon{width:26px;height:26px;border-radius:8px;display:grid;place-items:center;background:rgba(255,255,255,.04);font-size:15px;flex:0 0 auto}
   .conv-copy{min-width:0;flex:1}
   .conv-title{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .conv-meta{font-size:11px;color:var(--muted)}
-  .conv-delete{width:18px;height:18px;flex:0 0 auto;opacity:1;display:block}
+  .conv-delete{width:18px;height:18px;flex:0 0 auto;opacity:.95}
   .sidebar-footer{display:grid;gap:8px;padding-top:10px}
   .sidebar-footer .wide{width:100%}
-  .makalina-open{width:100%;height:52px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.03);padding:0;display:flex;align-items:center;justify-content:center;overflow:hidden}
-  .makalina-open img{width:100%;height:100%;object-fit:cover;display:block}
 
   .panel{display:flex;flex-direction:column}
-  .topbar{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);min-height:56px}
+  .topbar{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);min-height:58px}
   .brand{display:flex;align-items:center;gap:10px;min-width:0}
-  .brand img{width:28px;height:28px;border-radius:8px;display:block;object-fit:cover}
+  .brand img{width:28px;height:28px;border-radius:8px;display:block}
   .brand h1{margin:0;font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .right-tools{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-  select,input,textarea{background:rgba(4,7,16,.98);color:#fff;border:1px solid var(--line);border-radius:12px;outline:none}
+  select,input,textarea{background:rgba(2,6,23,.96);color:#fff;border:1px solid var(--line);border-radius:12px;outline:none}
   select, input[type=text]{height:38px;padding:0 12px}
   select option{background:#050814;color:#fff}
 
   .chat{flex:1;min-height:0;display:flex;flex-direction:column}
   .hidden{display:none !important}
+  .feature-hidden{display:none !important}
+
   .empty-state{flex:1;min-height:0;display:grid;place-items:center;padding:18px}
   .empty-card{width:min(760px,100%);display:grid;gap:14px;text-align:center;justify-items:stretch}
-  .empty-card h2{margin:0;font-size:38px;letter-spacing:-.04em}
+  .empty-card h2{margin:0;font-size:40px;letter-spacing:-.04em}
   .empty-card p{margin:0;color:var(--muted);font-size:14px}
-  .composer-box,.home-box{width:100%;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.03);position:relative;overflow:hidden}
-  .composer-box textarea,.home-box textarea{
-    width:100%;min-height:48px;max-height:110px;overflow:hidden;resize:none;
-    padding:12px 52px 12px 12px;line-height:1.35;font-size:15px;border:0;background:transparent;color:#fff
+  .home-input,.composer textarea{
+    width:100%;min-height:96px;padding:14px;border-radius:16px;line-height:1.45;font-size:16px;resize:none
   }
-  .composer-box textarea::placeholder,.home-box textarea::placeholder{color:#8d97ab}
-  .home-wrap{display:grid;gap:12px}
   .suggestions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
   .suggestion{border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:999px;color:#fff;padding:10px 14px;cursor:pointer;font-size:13px;transition:background .15s ease,transform .15s ease}
   .suggestion:hover{background:rgba(255,255,255,.06);transform:translateY(-1px)}
@@ -103,62 +115,58 @@
   @keyframes msgIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
 
   .user-bubble{
-    max-width:min(72%,700px);min-width:0;display:inline-block;padding:10px 12px;border-radius:18px 18px 6px 18px;background:linear-gradient(180deg,var(--user),var(--user-2));border:1px solid var(--line);line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font-weight:400
+    max-width:min(72%,680px);min-width:0;display:inline-block;padding:10px 12px;border-radius:18px 18px 6px 18px;background:linear-gradient(180deg,var(--user),var(--user-2));border:1px solid var(--line);line-height:1.4;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font-weight:400
   }
-
   .bot-card{max-width:min(76%,760px);min-width:0;display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
   .bot-avatar{width:28px;height:28px;border-radius:8px;display:block;object-fit:cover}
+  .bot-meta{display:grid;gap:4px;justify-items:start;min-width:0}
   .bot-body{min-width:0;font-size:14px;line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;font-weight:400}
-  .bot-body p,.bot-body ul,.bot-body ol,.bot-body blockquote,.bot-body pre,.bot-body hr,.bot-body h1,.bot-body h2,.bot-body h3,.bot-body h4{margin:0 0 8px 0}
+  .bot-body p,.bot-body ul,.bot-body ol,.bot-body blockquote,.bot-body pre,.bot-body hr,.bot-body h1,.bot-body h2,.bot-body h3,.bot-body h4{margin:0 0 4px 0}
   .bot-body p:last-child{margin-bottom:0}
-  .bot-body pre{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:12px 12px 14px 12px;overflow:auto;position:relative}
+  .bot-body pre{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;padding:12px;overflow:auto;position:relative}
   .bot-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:.95em}
   .copy-code{position:absolute;right:8px;top:8px;width:24px;height:24px;border:1px solid var(--line);border-radius:8px;background:rgba(0,0,0,.15);display:grid;place-items:center;cursor:pointer}
   .copy-code img{width:14px;height:14px;display:block}
-  .end-star{display:inline-block;width:13px;height:13px;margin-left:1px;position:relative;top:2px;opacity:.9;vertical-align:baseline}
-  .end-star img{width:100%;height:100%;display:block}
-  .star-reveal{animation:starFade .28s ease-out both}
-  @keyframes starFade{from{opacity:0;transform:translateY(2px) scale(.85)}to{opacity:.95;transform:translateY(0) scale(1)}}
 
-  .typing-shell{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}
-  .typing-avatar{width:28px;height:28px;border-radius:8px;display:block;object-fit:cover;animation:spin 1.8s linear infinite}
-  .typing-meta{display:grid;gap:4px;min-width:0}
-  .typing-name{font-size:13px;font-weight:600;line-height:1}
-  .typing-starbox{display:flex;align-items:center;justify-content:flex-start;height:18px}
-  .typing-starbox img{width:16px;height:16px;display:block;animation:spin 1.8s linear infinite}
-  .typing-line{height:24px;display:flex;align-items:center;color:var(--muted);font-size:13px}
-  .typing-dots{display:inline-flex;gap:5px;align-items:center;padding-top:0}
+  .typing-dots{display:inline-flex;gap:6px;align-items:center;padding-top:2px}
   .typing-dots span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:bounce 1s infinite ease-in-out}
   .typing-dots span:nth-child(2){animation-delay:.15s}
   .typing-dots span:nth-child(3){animation-delay:.3s}
   @keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.45}40%{transform:translateY(-4px);opacity:1}}
   @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+  .typing-shell{display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+  .typing-avatar{width:28px;height:28px;border-radius:8px;display:block;object-fit:cover}
+  .typing-line{height:24px;display:flex;align-items:center;color:var(--muted);font-size:13px}
+  .typing-line .typing-dots{padding-top:0}
 
   .composer{padding:12px;border-top:1px solid var(--line)}
   .composer-row{display:flex;gap:10px;align-items:flex-end}
-  .composer-box{flex:1}
-  .composer-box textarea{padding-right:52px}
-  .send-btn{position:absolute;right:8px;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;padding:0;border:0;background:linear-gradient(90deg,var(--accent),var(--accent-2));display:grid;place-items:center;overflow:hidden}
-  .send-btn img{width:18px;height:18px;display:block}
-  .send-btn:hover{transform:translateY(-50%) scale(1.03)}
-  .send-btn:active{transform:translateY(-50%) scale(.98)}
+  .composer textarea{flex:1;min-height:46px;max-height:180px;padding:12px 12px;line-height:1.4;font-size:15px}
 
-  .modal-backdrop{position:fixed;inset:0;background:rgba(3,6,13,.72);display:grid;place-items:center;z-index:60;padding:16px}
-  .modal{width:min(860px,100%);background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--line);border-radius:22px;overflow:hidden;transform-origin:center}
+  .modal-backdrop{position:fixed;inset:0;background:rgba(3,6,13,.68);display:grid;place-items:center;z-index:50;padding:16px}
+
+  .persona-makalina .bot-body,
+  .persona-makalina .user-bubble,
+  .persona-makalina textarea,
+  .persona-makalina input,
+  .persona-makalina select,
+  .persona-makalina .btn{font-weight:350}
+  .modal{width:min(760px,100%);background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--line);border-radius:22px;overflow:hidden;transform-origin:center}
   .modal.show{animation:modalIn .18s ease-out both}
   @keyframes modalIn{from{opacity:0;transform:scale(.98) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
   .modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
   .modal-head h3{margin:0;font-size:18px}
   .modal-body{padding:18px;display:grid;gap:14px}
-  .buy-grid{display:grid;grid-template-columns:1.08fr .92fr;gap:14px}
+  .buy-grid{display:grid;grid-template-columns:1.25fr .85fr;gap:14px}
   .buy-hero{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:12px}
-  .buy-hero img{width:100%;height:auto;border-radius:16px;display:block;object-fit:contain;max-height:290px}
+  .buy-hero img{width:100%;height:auto;border-radius:16px;display:block;object-fit:contain;max-height:280px}
   .buy-card{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:12px}
-  .field{width:100%;height:40px;padding:0 12px;border-radius:12px;background:rgba(4,7,16,.98);border:1px solid var(--line);color:#fff;outline:none}
+  .field{width:100%;height:40px;padding:0 12px;border-radius:12px;background:rgba(2,6,23,.96);border:1px solid var(--line);color:#fff}
   .field::placeholder{color:#8792a8}
+  .textarea-field{width:100%;min-height:88px;padding:12px;border-radius:16px;resize:none}
   .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
   .inline-grow{flex:1;min-width:160px}
-  .select-file{height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:0 14px;user-select:none}
+  .select-file{height:40px;display:flex;align-items:center;justify-content:center;cursor:pointer;background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:12px;padding:0 14px}
   .file-input{display:none}
   .totals{display:grid;gap:6px;padding-top:4px}
   .totals .muted{color:var(--muted);font-size:13px}
@@ -166,30 +174,13 @@
   .purchase-btn.loading{pointer-events:none}
   .spinner{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:spin .8s linear infinite}
   .news-btn{height:40px;padding:0 12px;border:1px solid var(--line);background:rgba(255,255,255,.03);color:#fff;border-radius:12px;width:100%}
-  .news-btn:hover{background:rgba(255,255,255,.06)}
-  .modal-note{font-size:13px;color:var(--muted);line-height:1.45}
-  .ttt-board{width:min(100%,360px);aspect-ratio:1/1;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px auto 0 auto}
-  .ttt-cell{background:rgba(255,255,255,.03);border:1px solid var(--line);border-radius:14px;display:grid;place-items:center;cursor:pointer;user-select:none;aspect-ratio:1/1;transition:transform .15s ease,background .15s ease,border-color .15s ease}
-  .ttt-cell:hover{transform:translateY(-1px);background:rgba(255,255,255,.06)}
-  .ttt-cell.marked{animation:cellPop .18s ease-out both}
-  @keyframes cellPop{from{transform:scale(.92);opacity:.5}to{transform:scale(1);opacity:1}}
-  .ttt-mark{width:42px;height:42px;display:block;object-fit:contain}
-  .ttt-win{position:absolute;inset:0;pointer-events:none}
-  .ttt-win line{stroke:var(--accent);stroke-width:8;stroke-linecap:round}
-
-  .persona-makalina .bot-body,
-  .persona-makalina .user-bubble,
-  .persona-makalina textarea,
-  .persona-makalina input,
-  .persona-makalina select,
-  .persona-makalina .btn{font-weight:400}
 
   @media (max-width: 1000px){
     body{padding:4px}
     .app{width:100vw;height:100vh;grid-template-columns:1fr;grid-template-rows:auto 1fr}
     .sidebar{order:2}
     .panel{order:1}
-    .empty-card h2{font-size:30px}
+    .empty-card h2{font-size:32px}
     .message-row.user .user-bubble{max-width:92%}
     .buy-grid{grid-template-columns:1fr}
   }
@@ -206,10 +197,6 @@
     <div id="convList" class="conv-list"></div>
 
     <div class="sidebar-footer">
-      <button id="makalinaBtn" class="makalina-open" title="Open Makalina buy modal">
-        <img src="makalina.png" alt="makalina">
-      </button>
-      <button id="tttBtn" class="news-btn">tic-tac-toe</button>
       <button id="newsBtn" class="news-btn">News</button>
     </div>
   </aside>
@@ -241,16 +228,13 @@
         <div class="empty-card">
           <h2>Ready when you are</h2>
           <p>Ask something, start a conversation, or pick a suggestion.</p>
-          <div class="home-box">
-            <textarea id="homeInput" placeholder="Type here to start..." aria-label="Start a conversation"></textarea>
-            <button id="homeSendBtn" class="send-btn" aria-label="Start chat"><img src="send-circle.png" alt="send"></button>
-          </div>
+          <textarea id="homeInput" class="home-input" placeholder="Type here to start..." aria-label="Start a conversation"></textarea>
           <div class="suggestions">
             <button class="suggestion" data-prompt="Help me plan a study schedule.">Help me plan a study schedule.</button>
             <button class="suggestion" data-prompt="Explain photosynthesis simply.">Explain photosynthesis simply.</button>
             <button class="suggestion" data-prompt="Give me three story ideas.">Give me three story ideas.</button>
           </div>
-          <button id="homeStartBtn" class="btn primary">Start chat</button>
+          <button id="homeSendBtn" class="btn primary">Start chat</button>
         </div>
       </div>
 
@@ -258,10 +242,8 @@
 
       <div id="composer" class="composer hidden">
         <div class="composer-row">
-          <div class="composer-box">
-            <textarea id="messageInput" placeholder="Ask me anything..." aria-label="Message"></textarea>
-            <button id="sendBtn" class="send-btn" aria-label="Send message"><img src="send-circle.png" alt="send"></button>
-          </div>
+          <textarea id="messageInput" placeholder="Ask me anything..." aria-label="Message"></textarea>
+          <button id="sendBtn" class="btn primary">send</button>
         </div>
       </div>
     </div>
@@ -271,26 +253,20 @@
 <div id="modalRoot"></div>
 
 <script>
-marked.setOptions({ gfm:true, breaks:true });
-
 const $ = (s, root=document) => root.querySelector(s);
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
 const trimLines = s => String(s ?? '').replace(/\r/g, '').replace(/\n+$/,'');
-const STORAGE_KEY = 'makala_conversations_simple_v3';
-const META_KEY = 'makala_meta_v3';
+const STORAGE_KEY = 'makala_conversations_simple_v2';
 
 const state = {
   conversations: [],
   activeId: null,
-  theme: localStorage.getItem('makala_theme') || 'pink',
-  makalinaOwned: localStorage.getItem('makala_owned') === '1'
+  theme: localStorage.getItem('makala_theme') || 'pink'
 };
 
 const els = {
   convList: $('#convList'),
   newConvBtn: $('#newConvBtn'),
-  makalinaBtn: $('#makalinaBtn'),
-  newsBtn: $('#newsBtn'),
   themeSelect: $('#themeSelect'),
   personaSelect: $('#personaSelect'),
   clearBtn: $('#clearBtn'),
@@ -301,15 +277,24 @@ const els = {
   messageInput: $('#messageInput'),
   homeInput: $('#homeInput'),
   homeSendBtn: $('#homeSendBtn'),
-  homeStartBtn: $('#homeStartBtn'),
   modalRoot: $('#modalRoot'),
-  panelRoot: $('#panelRoot')
+  panelRoot: $('#panelRoot'),
+  newsBtn: $('#newsBtn')
 };
 
+function setTheme(theme){
+  state.theme = theme;
+  document.body.className = `theme-${theme}`;
+  els.themeSelect.value = theme;
+  localStorage.setItem('makala_theme', theme);
+}
+
 function saveState(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify({ conversations: state.conversations, activeId: state.activeId }));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({
+    conversations: state.conversations,
+    activeId: state.activeId
+  }));
   localStorage.setItem('makala_theme', state.theme);
-  localStorage.setItem('makala_owned', state.makalinaOwned ? '1' : '0');
 }
 
 function loadState(){
@@ -321,26 +306,31 @@ function loadState(){
     state.conversations = [];
     state.activeId = null;
   }
+
+  if(!state.conversations.length){
+    const conv = createConversation('New conversation');
+    state.activeId = conv.id;
+  }
+  if(!state.activeId || !state.conversations.some(c => c.id === state.activeId)){
+    state.activeId = state.conversations[0].id;
+  }
 }
 
-function createConversation(title='New conversation', persona='makala'){
-  const safePersona = (persona === 'makalina' && !state.makalinaOwned) ? 'makala' : persona;
-  const conv = { id: uid(), title, persona: safePersona, createdAt: Date.now(), messages: [] };
+function createConversation(title='New conversation'){
+  const conv = {
+    id: uid(),
+    title,
+    persona: 'makala',
+    createdAt: Date.now(),
+    messages: []
+  };
   state.conversations.unshift(conv);
-  state.activeId = conv.id;
   saveState();
   return conv;
 }
 
 function activeConversation(){
   return state.conversations.find(c => c.id === state.activeId) || null;
-}
-
-function setTheme(theme){
-  state.theme = theme;
-  document.body.className = `theme-${theme}`;
-  els.themeSelect.value = theme;
-  localStorage.setItem('makala_theme', theme);
 }
 
 function escapeHTML(s){
@@ -362,33 +352,87 @@ function relativeTime(ts){
   return 'A while ago';
 }
 
-function personaAvatar(persona){
-  return persona === 'makalina' ? 'linalogo.png' : 'makala.png';
-}
-
-function typingAvatar(persona){
-  return persona === 'makalina' ? 'linastar.png' : 'makala.png';
-}
-
 function personaLabel(persona){
-  return persona === 'makalina' ? 'makalina ai' : 'makala ai';
+  return persona === 'makalina' ? 'makalina' : 'makala';
+}
+
+function personaAvatar(persona){
+  return persona === 'makalina' ? 'makalina.png' : 'makala.png';
 }
 
 function buildSystemPrompt(persona){
   if(persona === 'makalina'){
     return [
-      'You are makalina.',
-      'You are a more matured Makala, still slightly Indian, a bit more professional, but sometimes use slang.',
+      'You are Makalina, a more matured version of Makala.',
+      'You still have a slightly Indian personality, but you sound a bit more professional than Makala.',
+      'You may use slang sometimes, but less often than Makala.',
       'You are very good at math because your parents forced you to practice math instead of sleeping, and you are eternally grateful.',
-      'Keep replies short and natural.'
+      'Keep replies concise and natural.'
     ].join(' ');
   }
   return [
     'You are Makala.',
-    'Speak casual internet slang, playful tone, lowercase vibe, and short replies.',
+    'Speak casual internet slang, playful tone, lowercase vibe, short replies.',
     'Use words like lol, fr, bro, beta naturally.',
     'Be friendly, informal, and energetic.'
   ].join(' ');
+}
+
+function renderConvList(){
+  els.convList.innerHTML = '';
+
+  const home = document.createElement('div');
+  home.className = 'home-item' + (!state.activeId ? ' active' : '');
+  home.innerHTML = `
+    <div class="home-icon">⌂</div>
+    <div class="conv-copy">
+      <div class="conv-title">Home</div>
+      <div class="conv-meta">Start a new chat</div>
+    </div>
+  `;
+  home.addEventListener('click', () => {
+    state.activeId = null;
+    saveState();
+    syncView();
+  });
+  els.convList.appendChild(home);
+
+  state.conversations.forEach(conv => {
+    const item = document.createElement('div');
+    item.className = 'conv-item' + (conv.id === state.activeId ? ' active' : '');
+
+    const icon = document.createElement('img');
+    icon.src = personaAvatar(conv.persona);
+    icon.alt = '';
+
+    const copy = document.createElement('div');
+    copy.className = 'conv-copy';
+    copy.innerHTML = `
+      <div class="conv-title">${escapeHTML(conv.title || 'New conversation')}</div>
+      <div class="conv-meta">${escapeHTML(relativeTime(conv.createdAt || Date.now()))}</div>
+    `;
+
+    const del = document.createElement('button');
+    del.className = 'btn compact';
+    del.textContent = '×';
+    del.title = 'Delete conversation';
+
+    item.append(icon, copy, del);
+    item.addEventListener('click', (e) => {
+      if(e.target === del){
+        state.conversations = state.conversations.filter(c => c.id !== conv.id);
+        state.activeId = null;
+        saveState();
+        renderAll();
+        return;
+      }
+      state.activeId = conv.id;
+      saveState();
+      renderAll();
+    });
+
+    els.convList.appendChild(item);
+  });
 }
 
 function renderMarkdown(text){
@@ -407,13 +451,52 @@ function addCodeCopyButtons(root){
     btn.addEventListener('click', async () => {
       const code = pre.querySelector('code');
       if(!code) return;
-      try{ await navigator.clipboard.writeText(code.textContent || ''); }catch{}
+      try{
+        await navigator.clipboard.writeText(code.textContent || '');
+        btn.style.opacity = '0.7';
+        setTimeout(() => btn.style.opacity = '1', 180);
+      }catch{}
     });
     pre.appendChild(btn);
   });
 }
 
-function renderBotMessage(msg, conv, animate=false){
+function makeTypingRow(persona){
+  const row = document.createElement('div');
+  row.className = 'message-row bot';
+  row.dataset.typing = '1';
+
+  const card = document.createElement('div');
+  card.className = 'typing-shell';
+
+  const avatar = document.createElement('img');
+  avatar.className = 'typing-avatar';
+  avatar.src = personaAvatar(persona);
+  avatar.alt = '';
+
+  const meta = document.createElement('div');
+  meta.className = 'bot-meta';
+  meta.innerHTML = `
+    <div class="bot-name">${personaLabel(persona)}</div>
+    <div class="typing-line"><span class="typing-dots"><span></span><span></span><span></span></span></div>
+  `;
+
+  card.append(avatar, meta);
+  row.appendChild(card);
+  return row;
+}
+
+function renderMessageNode(msg, conv, animate=false){
+  if(msg.role === 'user'){
+    const row = document.createElement('div');
+    row.className = 'message-row user' + (animate ? ' fade-in' : '');
+    const bubble = document.createElement('div');
+    bubble.className = 'user-bubble';
+    bubble.innerHTML = renderMarkdown(msg.content);
+    row.appendChild(bubble);
+    return row;
+  }
+
   const row = document.createElement('div');
   row.className = 'message-row bot' + (animate ? ' fade-in' : '');
 
@@ -425,95 +508,42 @@ function renderBotMessage(msg, conv, animate=false){
   avatar.src = personaAvatar(conv.persona);
   avatar.alt = '';
 
+  const meta = document.createElement('div');
+  meta.className = 'bot-meta';
+  meta.innerHTML = `<div class="bot-name">${personaLabel(conv.persona)}</div>`;
+
   const body = document.createElement('div');
   body.className = 'bot-body';
   body.innerHTML = renderMarkdown(msg.content);
   addCodeCopyButtons(body);
 
-  const contentWrap = document.createElement('div');
-  contentWrap.className = 'bot-meta';
-  contentWrap.appendChild(body);
-
-  card.append(avatar, contentWrap);
-  row.appendChild(card);
-
-  const star = document.createElement('span');
-  star.className = 'end-star star-reveal';
-  star.innerHTML = `<img src="${conv.persona === 'makalina' ? 'linastar.png' : 'star.png'}" alt="">`;
-  body.appendChild(star);
-
-  return row;
-}
-
-function renderUserMessage(msg, animate=false){
-  const row = document.createElement('div');
-  row.className = 'message-row user' + (animate ? ' fade-in' : '');
-  const bubble = document.createElement('div');
-  bubble.className = 'user-bubble';
-  bubble.innerHTML = renderMarkdown(msg.content);
-  row.appendChild(bubble);
-  return row;
-}
-
-function renderTypingRow(persona){
-  const row = document.createElement('div');
-  row.className = 'message-row bot';
-  row.dataset.typing = '1';
-
-  const card = document.createElement('div');
-  card.className = 'typing-shell';
-
-  const avatar = document.createElement('img');
-  avatar.className = 'typing-avatar';
-  avatar.src = typingAvatar(persona);
-  avatar.alt = '';
-
-  const meta = document.createElement('div');
-  meta.className = 'typing-meta';
-  meta.innerHTML = `
-    <div class="typing-name">${personaLabel(persona)}</div>
-    <div class="typing-starbox"><img src="${persona === 'makalina' ? 'linastar.png' : 'star.png'}" alt=""></div>
-    <div class="typing-line"><span class="typing-dots"><span></span><span></span><span></span></span></div>
-  `;
-
   card.append(avatar, meta);
+  meta.appendChild(body);
   row.appendChild(card);
   return row;
 }
 
 function autoGrow(textarea){
   textarea.style.height = 'auto';
-  textarea.style.height = Math.min(textarea.scrollHeight, 110) + 'px';
-}
-
-function setEmptyMode(showEmpty){
-  els.emptyState.classList.toggle('hidden', !showEmpty);
-  els.messageWrap.classList.toggle('hidden', showEmpty);
-  els.composer.classList.toggle('hidden', showEmpty);
+  textarea.style.height = Math.min(textarea.scrollHeight, 180) + 'px';
 }
 
 function syncView(){
   const conv = activeConversation();
-  const showHome = !conv;
-  setEmptyMode(showHome);
   els.activeTitle.textContent = conv?.title || 'makala.ai';
-  if(conv){
-    els.personaSelect.value = conv.persona || 'makala';
-    els.panelRoot.classList.toggle('persona-makalina', conv.persona === 'makalina');
-  }else{
-    els.personaSelect.value = 'makala';
-    els.panelRoot.classList.remove('persona-makalina');
-  }
+  els.personaSelect.value = conv?.persona || 'makala';
 
-  els.messageWrap.innerHTML = '';
-  if(conv){
-    conv.messages.forEach((msg, idx) => {
-      els.messageWrap.appendChild(
-        msg.role === 'user'
-          ? renderUserMessage(msg, idx === conv.messages.length - 1)
-          : renderBotMessage(msg, conv, idx === conv.messages.length - 1)
-      );
-    });
+  const hasMessages = !!(conv && conv.messages.length);
+  els.emptyState.classList.toggle('hidden', hasMessages);
+  els.messageWrap.classList.toggle('hidden', !hasMessages);
+  els.composer.classList.toggle('hidden', !hasMessages);
+
+  els.panelRoot.classList.toggle('persona-makalina', (conv?.persona || 'makala') === 'makalina');
+  els.panelRoot.classList.toggle('persona-makala', (conv?.persona || 'makala') !== 'makalina');
+
+  if(hasMessages){
+    els.messageWrap.innerHTML = '';
+    conv.messages.forEach((msg, idx) => els.messageWrap.appendChild(renderMessageNode(msg, conv, false)));
     els.messageWrap.scrollTop = els.messageWrap.scrollHeight;
   }else{
     els.homeInput.value = '';
@@ -523,204 +553,78 @@ function syncView(){
   }
 
   renderConvList();
+  setTheme(state.theme);
 }
 
-function renderConvList(){
-  els.convList.innerHTML = '';
-  state.conversations.forEach(conv => {
-    const item = document.createElement('div');
-    item.className = 'conv-item' + (conv.id === state.activeId ? ' active' : '');
-
-    const icon = document.createElement('img');
-    icon.src = personaAvatar(conv.persona);
-    icon.alt = '';
-
-    const copy = document.createElement('div');
-    copy.className = 'conv-copy';
-    copy.innerHTML = `
-      <div class="conv-title">${escapeHTML(conv.title || 'New conversation')}</div>
-      <div class="conv-meta">${escapeHTML(relativeTime(conv.createdAt || Date.now()))}</div>
-    `;
-
-    const del = document.createElement('img');
-    del.className = 'conv-delete';
-    del.src = 'trash.png';
-    del.alt = 'delete';
-    del.title = 'Delete conversation';
-
-    item.append(icon, copy, del);
-    item.addEventListener('click', (e) => {
-      if(e.target === del){
-        state.conversations = state.conversations.filter(c => c.id !== conv.id);
-        if(!state.conversations.length){
-          state.activeId = null;
-        }else if(state.activeId === conv.id){
-          state.activeId = state.conversations[0].id;
-        }
-        saveState();
-        syncView();
-        return;
-      }
-      state.activeId = conv.id;
-      saveState();
-      syncView();
-    });
-
-    els.convList.appendChild(item);
-  });
+function updateFeatureButtons(){
+  els.makalinaBtn.classList.toggle('hidden', state.makalinaOwned);
+  els.tttBtn.classList.toggle('hidden', !state.makalinaOwned);
 }
 
-async function sendMessage(rawText){
-  const text = trimLines(rawText).trim();
+function renderAll(){
+  syncView();
+  updateFeatureButtons();
+}
+
+async function sendMessage(value){
+  const text = trimLines(value).trim();
   if(!text) return;
 
   let conv = activeConversation();
   if(!conv){
-    conv = createConversation('New conversation', els.personaSelect.value || 'makala');
+    conv = createConversation('New conversation');
+    state.activeId = conv.id;
   }
 
-  if(conv.messages.length === 0 && (conv.title === 'New conversation' || !conv.title)){
+  if(conv.messages.length === 0 && conv.title === 'New conversation'){
     conv.title = text.split(/\s+/).slice(0, 4).join(' ');
   }
 
-  conv.messages.push({ role:'user', content:text, createdAt:Date.now() });
+  conv.messages.push({ role:'user', content:text, createdAt: Date.now() });
   saveState();
-  syncView();
+  renderAll();
 
-  const typing = renderTypingRow(conv.persona);
+  const typing = makeTypingRow(conv.persona);
   els.messageWrap.appendChild(typing);
   els.messageWrap.scrollTop = els.messageWrap.scrollHeight;
 
   try{
+    const payload = {
+      messages: [
+        { role:'system', content: buildSystemPrompt(conv.persona) },
+        ...conv.messages.map(m => ({ role:m.role, content:m.content }))
+      ]
+    };
+
     const resp = await fetch('/api/chat', {
       method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify({
-        messages: [
-          { role:'system', content: buildSystemPrompt(conv.persona) },
-          ...conv.messages.map(m => ({ role:m.role, content:m.content }))
-        ]
-      })
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(payload)
     });
 
-    const data = await resp.json().catch(() => ({}));
-    if(!resp.ok) throw new Error(data?.error || data?.details || 'Chat request failed');
+    if(!resp.ok){
+      const err = await resp.text();
+      throw new Error(err || 'Chat request failed');
+    }
 
+    const data = await resp.json();
     const reply = data?.reply || 'No response.';
-    conv.messages.push({ role:'assistant', content: reply, createdAt: Date.now() });
+
+    const idx = conv.messages.findIndex(m => m.typing);
+    if(idx >= 0) conv.messages.splice(idx, 1);
+    conv.messages.push({ role:'assistant', content:reply, createdAt: Date.now() });
   }catch(err){
+    const idx = conv.messages.findIndex(m => m.typing);
+    if(idx >= 0) conv.messages.splice(idx, 1);
     conv.messages.push({ role:'assistant', content:`Error: ${String(err)}`, createdAt: Date.now() });
   }
 
   saveState();
-  syncView();
-  els.messageWrap.scrollTop = els.messageWrap.scrollHeight;
-}
+  renderAll();
 
-
-function openTicTacToe(){
-  if(!state.makalinaOwned){
-    openBuyMakalina();
-    return;
-  }
-  let stateBoard = Array(9).fill('');
-  let finished = false;
-  const modalClose = openModal(`
-    <div class="modal-head">
-      <h3>tic-tac-toe</h3>
-      <button class="btn compact" data-close>×</button>
-    </div>
-    <div class="modal-body">
-      <div class="modal-note">You are O. Makalina is X.</div>
-      <div style="position:relative;max-width:420px;margin:0 auto;width:100%">
-        <div id="tttBoard" class="ttt-board"></div>
-        <svg class="ttt-win" id="tttWin" viewBox="0 0 100 100" preserveAspectRatio="none"></svg>
-      </div>
-      <div class="row" style="justify-content:space-between">
-        <div class="modal-note">Win by getting three in a row.</div>
-        <button id="tttReset" class="btn compact">Reset</button>
-      </div>
-    </div>
-  `);
-
-  const boardEl = $('#tttBoard');
-  const winEl = $('#tttWin');
-  const resetBtn = $('#tttReset');
-  const conv = activeConversation() || { persona:'makalina' };
-
-  const wins = [
-    [0,1,2],[3,4,5],[6,7,8],
-    [0,3,6],[1,4,7],[2,5,8],
-    [0,4,8],[2,4,6]
-  ];
-
-  function drawWinLine(line){
-    const points = [
-      [12,12],[50,12],[88,12],
-      [12,50],[50,50],[88,50],
-      [12,88],[50,88],[88,88]
-    ];
-    const a = points[line[0]];
-    const b = points[line[2]];
-    winEl.innerHTML = `<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" />`;
-  }
-
-  function renderBoard(){
-    boardEl.innerHTML = '';
-    stateBoard.forEach((v, i) => {
-      const cell = document.createElement('button');
-      cell.type = 'button';
-      cell.className = 'ttt-cell' + (v ? ' marked' : '');
-      cell.disabled = finished || !!v;
-      if(v === 'O'){
-        cell.innerHTML = '<div style="font-size:42px;font-weight:600;line-height:1">O</div>';
-      } else if(v === 'X'){
-        cell.innerHTML = `<img class="ttt-mark" src="${conv.persona === 'makalina' ? 'linastar.png' : 'star.png'}" alt="x">`;
-      } else {
-        cell.innerHTML = '<div style="width:10px;height:10px;opacity:.0">.</div>';
-      }
-      cell.addEventListener('click', () => onCell(i));
-      boardEl.appendChild(cell);
-    });
-  }
-
-  function endGame(result){
-    finished = true;
-    const winLine = wins.find(w => w.every(idx => stateBoard[idx] === (result === 'user' ? 'O' : 'X')));
-    if(winLine) drawWinLine(winLine);
-    if(result === 'draw') return;
-  }
-
-  function finishReset(){
-    stateBoard = Array(9).fill('');
-    finished = false;
-    winEl.innerHTML = '';
-    renderBoard();
-  }
-
-  function aiMove(){
-    const free = stateBoard.map((v, i) => v ? null : i).filter(v => v !== null);
-    if(!free.length) return endGame('draw');
-    const pick = free[Math.floor(Math.random()*free.length)];
-    stateBoard[pick] = 'X';
-    renderBoard();
-    const win = wins.find(w => w.every(idx => stateBoard[idx] === 'X'));
-    if(win) return endGame('ai');
-    if(stateBoard.every(Boolean)) return endGame('draw');
-  }
-
-  function onCell(i){
-    if(finished || stateBoard[i]) return;
-    stateBoard[i] = 'O';
-    renderBoard();
-    const win = wins.find(w => w.every(idx => stateBoard[idx] === 'O'));
-    if(win) return endGame('user');
-    if(stateBoard.every(Boolean)) return endGame('draw');
-    setTimeout(aiMove, 350);
-  }
-
-  resetBtn.addEventListener('click', finishReset);
-  renderBoard();
+  // fade-in the newest assistant message only
+  const last = els.messageWrap.lastElementChild;
+  if(last) last.classList.add('fade-in');
 }
 
 function openModal(innerHTML){
@@ -729,12 +633,13 @@ function openModal(innerHTML){
       <div class="modal show">${innerHTML}</div>
     </div>
   `;
-  const close = () => { els.modalRoot.innerHTML = ''; };
+  const close = () => {
+    els.modalRoot.innerHTML = '';
+  };
   els.modalRoot.querySelector('[data-close]')?.addEventListener('click', close);
   els.modalRoot.querySelector('.modal-backdrop')?.addEventListener('click', (e) => {
     if(e.target.classList.contains('modal-backdrop')) close();
   });
-  return close;
 }
 
 function openNews(){
@@ -755,10 +660,10 @@ function openNews(){
       <div class="buy-grid" style="grid-template-columns:1fr;">
         <div class="buy-card">
           <strong>NEW FEATURE: macaroni</strong>
-          <div class="modal-note">Makala’s new cooking AI. Upload fridge photos and get recipe ideas. Coming very soon.</div>
+          <div style="color:var(--muted)">Makala’s new cooking AI. Upload fridge photos and get recipe ideas. Coming very soon.</div>
           <div style="width:100%;height:160px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.02);display:grid;place-items:center;color:var(--muted)">[photo of macaroni]</div>
           <div><strong>Coming very soon:</strong> <span>${tick()}</span></div>
-          <div class="modal-note"><strong>Patch notes</strong><br>• core chat restored<br>• personalities added back<br>• cleaner home screen<br>• markdown + code blocks<br>• conversation switching fixed</div>
+          <div style="font-size:13px;color:var(--muted)">Patch notes: core chat restored, personalities added back, simpler UI, better conversation switching, markdown support, start chat home screen.</div>
           <button class="btn primary wide" data-close>Okay</button>
         </div>
       </div>
@@ -767,7 +672,7 @@ function openNews(){
 }
 
 function openBuyMakalina(){
-  const close = openModal(`
+  openModal(`
     <div class="modal-head">
       <h3>makalina</h3>
       <button class="btn compact" data-close>×</button>
@@ -778,7 +683,7 @@ function openBuyMakalina(){
           <img src="fullmakalina.png" alt="makalina">
           <div>
             <strong>makalina</strong>
-            <div class="modal-note" style="margin-top:4px">A more matured Makala, still slightly Indian, a bit more professional, uses slang sometimes, and is very good at math because her parents forced her to practice instead of sleeping.</div>
+            <div style="color:var(--muted);margin-top:4px">A more matured Makala, still slightly Indian. She talks a bit professionally, uses slang sometimes, and is very good at math because her parents forced her to practice instead of sleeping.</div>
           </div>
         </div>
         <div class="buy-card">
@@ -813,13 +718,13 @@ function openBuyMakalina(){
     </div>
   `);
 
-  let discount = 0;
   const codeEl = $('#discountCode');
   const discountLine = $('#discountLine');
   const discountText = $('#discountText');
   const totalText = $('#totalText');
   const purchaseBtn = $('#purchaseBtn');
-  const base = 0;
+  let discount = 0;
+  const base = 0.00;
 
   const updateTotals = () => {
     const total = Math.max(0, base * (1 - discount));
@@ -842,21 +747,43 @@ function openBuyMakalina(){
     await new Promise(r => setTimeout(r, 1000));
     state.makalinaOwned = true;
     saveState();
-    close();
+    closeModal();
     renderAll();
   });
 
+  function closeModal(){
+    els.modalRoot.innerHTML = '';
+  }
   updateTotals();
+}
+
+function openModal(innerHTML){
+  els.modalRoot.innerHTML = `
+    <div class="modal-backdrop">
+      <div class="modal show">${innerHTML}</div>
+    </div>
+  `;
+  const modal = els.modalRoot.querySelector('.modal');
+  els.modalRoot.querySelector('[data-close]')?.addEventListener('click', () => els.modalRoot.innerHTML = '');
+  els.modalRoot.querySelector('.modal-backdrop')?.addEventListener('click', (e) => {
+    if(e.target.classList.contains('modal-backdrop')) els.modalRoot.innerHTML = '';
+  });
+  return modal;
+}
+
+function updateFeatureButtons(){
+  els.makalinaBtn.classList.toggle('hidden', state.makalinaOwned);
+  els.tttBtn.classList.toggle('hidden', !state.makalinaOwned);
 }
 
 function renderAll(){
   syncView();
-  setTheme(state.theme);
+  updateFeatureButtons();
 }
 
 function wireEvents(){
   els.newConvBtn.addEventListener('click', () => {
-    const conv = createConversation('New conversation', els.personaSelect.value || 'makala');
+    const conv = createConversation('New conversation');
     state.activeId = conv.id;
     saveState();
     renderAll();
@@ -873,38 +800,17 @@ function wireEvents(){
 
   els.personaSelect.addEventListener('change', () => {
     const conv = activeConversation();
-    if(conv){
-      conv.persona = els.personaSelect.value;
-      if(conv.persona === 'makalina' && !state.makalinaOwned){
-        conv.persona = 'makala';
-        els.personaSelect.value = 'makala';
-        openBuyMakalina();
-      }
-      saveState();
-      renderAll();
-    }
+    if(!conv) return;
+    conv.persona = els.personaSelect.value;
+    saveState();
+    renderAll();
   });
 
   els.homeSendBtn.addEventListener('click', () => {
     const value = els.homeInput.value.trim();
     if(!value) return;
-    if(!activeConversation()){
-      const conv = createConversation('New conversation', els.personaSelect.value || 'makala');
-      state.activeId = conv.id;
-    }
-    els.emptyState.classList.add('hidden');
     sendMessage(value);
-  });
-
-  els.homeStartBtn.addEventListener('click', () => {
-    const value = els.homeInput.value.trim();
-    if(!value) return;
-    if(!activeConversation()){
-      const conv = createConversation('New conversation', els.personaSelect.value || 'makala');
-      state.activeId = conv.id;
-    }
     els.emptyState.classList.add('hidden');
-    sendMessage(value);
   });
 
   els.sendBtn.addEventListener('click', () => {
@@ -934,23 +840,17 @@ function wireEvents(){
   });
 
   els.newsBtn.addEventListener('click', openNews);
-  els.makalinaBtn.addEventListener('click', openBuyMakalina);
-  els.tttBtn.addEventListener('click', openTicTacToe);
 }
 
 function init(){
   loadState();
-  if(!state.conversations.length){
-    state.activeId = null;
-  }
   setTheme(state.theme);
   wireEvents();
   renderAll();
+  updateFeatureButtons();
   autoGrow(els.homeInput);
   autoGrow(els.messageInput);
-  setEmptyMode(!activeConversation());
 }
-
 init();
 </script>
 </body>
