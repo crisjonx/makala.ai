@@ -1,148 +1,176 @@
-// server.cjs (fixed: correct OpenRouter URL, improved error handling)
 const express = require('express');
 const path = require('path');
-const fetch = globalThis.fetch || require('node-fetch');
-
+const fs = require('fs');
+const fsp = fs.promises;
 const app = express();
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// small helper to extract text from provider response
-function extractTextFromProviderData(data){
+const PORT = process.env.PORT || 3000;
+const PUBLIC_DIR = path.join(__dirname, 'public');
+const DATA_DIR = path.join(__dirname, 'data');
+const REPORTS_FILE = path.join(DATA_DIR, 'reports.json');
+
+const fetchFn = globalThis.fetch || ((...args) => import('node-fetch').then(({default: fetch}) => fetch(...args)));
+
+app.use(express.json({ limit: '1mb' }));
+app.use(express.static(PUBLIC_DIR));
+
+async function ensureDataFiles(){
+  await fsp.mkdir(DATA_DIR, { recursive: true });
+  try{
+    await fsp.access(REPORTS_FILE);
+  }catch{
+    await fsp.writeFile(REPORTS_FILE, JSON.stringify({ reports: [] }, null, 2));
+  }
+}
+ensureDataFiles().catch(console.error);
+
+function getClientIp(req){
+  const xf = req.headers['x-forwarded-for'];
+  if(typeof xf === 'string' && xf.trim()){
+    return xf.split(',')[0].trim();
+  }
+  return req.socket?.remoteAddress || req.ip || '';
+}
+
+async function getCountryFromIp(ip){
+  if(!ip) return '';
+  const clean = ip.replace(/^::ffff:/, '');
+  if(clean === '127.0.0.1' || clean === '::1' || clean === 'localhost') return 'your country';
+  try{
+    const res = await fetchFn(`https://ipapi.co/${encodeURIComponent(clean)}/json/`, {
+      headers: { 'User-Agent': 'makala.ai/1.0' }
+    });
+    if(!res.ok) return '';
+    const data = await res.json();
+    return data?.country_name || data?.country || '';
+  }catch{
+    return '';
+  }
+}
+
+function normalizeReply(data){
   if(!data) return '';
   if(typeof data === 'string') return data;
   if(data.reply && typeof data.reply === 'string') return data.reply;
-  if(data.raw && data.raw.choices && data.raw.choices[0]){
-    const c = data.raw.choices[0];
-    if(c.message && c.message.content) return c.message.content;
-    if(c.text) return c.text;
-  }
-  if(data.choices && data.choices[0]){
-    const c = data.choices[0];
-    if(c.message && c.message.content) return c.message.content;
-    if(c.text) return c.text;
-  }
-  try { const s = JSON.stringify(data); return s.length > 1500 ? s.slice(0,1500) + '...' : s; } catch(e){ return String(data); }
+  const choice = data?.choices?.[0];
+  return choice?.message?.content || choice?.text || '';
 }
 
-app.get('/health', (req, res) => res.send('ok'));
+function addSystemContext(messages = [], extra = ''){
+  const m = Array.isArray(messages) ? [...messages] : [];
+  if(extra){
+    m.splice(1, 0, { role: 'system', content: extra });
+  }
+  return m;
+}
 
-// POST /api/chat
+app.get('/health', (req, res) => res.json({ ok: true }));
+
+app.get('/api/country', async (req, res) => {
+  const ip = getClientIp(req);
+  const country = await getCountryFromIp(ip);
+  res.json({ country: country || '' });
+});
+
+app.get('/api/reports', async (req, res) => {
+  try{
+    const raw = await fsp.readFile(REPORTS_FILE, 'utf8');
+    const parsed = JSON.parse(raw);
+    res.json({ reports: Array.isArray(parsed.reports) ? parsed.reports : [] });
+  }catch (err){
+    res.status(500).json({ error: String(err) });
+  }
+});
+
+app.post('/api/report', async (req, res) => {
+  try{
+    const { username, conversationId, conversationTitle, message, reason } = req.body || {};
+    if(!reason || !message) return res.status(400).json({ error: 'Missing report data' });
+    const raw = await fsp.readFile(REPORTS_FILE, 'utf8').catch(()=> '{"reports":[]}' );
+    const parsed = JSON.parse(raw || '{"reports":[]}');
+    const reports = Array.isArray(parsed.reports) ? parsed.reports : [];
+    reports.unshift({
+      id: Date.now().toString(36),
+      username: username || 'anon',
+      conversationId: conversationId || '',
+      conversationTitle: conversationTitle || '',
+      message: String(message).slice(0, 4000),
+      reason: String(reason).slice(0, 1000),
+      createdAt: new Date().toISOString()
+    });
+    await fsp.writeFile(REPORTS_FILE, JSON.stringify({ reports }, null, 2));
+    res.json({ ok: true });
+  }catch(err){
+    res.status(500).json({ error: String(err) });
+  }
+});
+
 app.post('/api/chat', async (req, res) => {
-  try {
-    const { messages, model } = req.body;
-    if (!messages) return res.status(400).send('Missing messages');
+  try{
+    const { messages, model, country, personality, userName } = req.body || {};
+    if(!Array.isArray(messages)) return res.status(400).send('Missing messages');
 
     const OR_KEY = process.env.OPENROUTER_API_KEY;
     const OA_KEY = process.env.OPENAI_API_KEY;
-    // prefer an explicit model from client, otherwise env override or default
-    const chosenModel = model || process.env.OPENROUTER_MODEL || process.env.OPENAI_MODEL || 'gpt-4o-mini';
+    const chosenModel = model || process.env.OPENROUTER_MODEL || process.env.OPENAI_MODEL || 'openai/gpt-4o-mini';
 
-    // Try OpenRouter if key provided
-    if (OR_KEY) {
-      // NOTE: correct base/url per OpenRouter docs: openrouter.ai/api/v1
-      const url = 'https://openrouter.ai/api/v1/chat/completions';
-      const payload = { model: chosenModel, messages, temperature: 0.3, max_tokens: 800 };
+    const systemExtras = [];
+    if(country) systemExtras.push(`The user is from ${country}.`);
+    if(userName) systemExtras.push(`If you address the user, call them ${userName}.`);
+    if(personality === 'makalina') systemExtras.push(`Use a more mature but still playful tone.`);
+    const enhanced = addSystemContext(messages, systemExtras.join(' '));
 
-      const r = await fetch(url, {
-        method: 'POST',
-        headers: {
+    if(OR_KEY){
+      const r = await fetchFn('https://openrouter.ai/api/v1/chat/completions', {
+        method:'POST',
+        headers:{
           'Authorization': `Bearer ${OR_KEY}`,
-          'Content-Type': 'application/json'
+          'Content-Type':'application/json',
+          'HTTP-Referer': process.env.SITE_URL || 'https://example.com',
+          'X-Title': 'makala.ai'
         },
-        body: JSON.stringify(payload),
-        // optional: timeout handling may be added later
+        body: JSON.stringify({
+          model: chosenModel,
+          messages: enhanced,
+          temperature: 0.7,
+          max_tokens: 900
+        })
       });
-
-      if (!r.ok) {
-        const txt = await r.text().catch(()=>`status ${r.status}`);
-        return res.status(502).json({ error: `OpenRouter returned ${r.status}`, details: txt });
-      }
-
-      const data = await r.json();
-      const reply = extractTextFromProviderData({ raw: data, reply: data.reply });
-      return res.json({ reply, raw: data });
+      const data = await r.json().catch(()=>({}));
+      if(!r.ok) return res.status(502).json({ error: 'OpenRouter error', details: data });
+      return res.json({ reply: normalizeReply(data), raw: data });
     }
 
-    // Fallback to OpenAI if available
-    if (OA_KEY) {
-      const url = 'https://api.openai.com/v1/chat/completions';
-      const payload = { model: chosenModel, messages, temperature: 0.3, max_tokens: 800 };
-
-      const r = await fetch(url, {
-        method: 'POST',
-        headers: {
+    if(OA_KEY){
+      const r = await fetchFn('https://api.openai.com/v1/chat/completions', {
+        method:'POST',
+        headers:{
           'Authorization': `Bearer ${OA_KEY}`,
-          'Content-Type': 'application/json'
+          'Content-Type':'application/json'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          model: chosenModel,
+          messages: enhanced,
+          temperature: 0.7,
+          max_tokens: 900
+        })
       });
-
-      if (!r.ok) {
-        const txt = await r.text().catch(()=>`status ${r.status}`);
-        return res.status(502).json({ error: `OpenAI returned ${r.status}`, details: txt });
-      }
-
-      const data = await r.json();
-      const reply = extractTextFromProviderData({ raw: data, reply: data.reply });
-      return res.json({ reply, raw: data });
+      const data = await r.json().catch(()=>({}));
+      if(!r.ok) return res.status(502).json({ error: 'OpenAI error', details: data });
+      return res.json({ reply: normalizeReply(data), raw: data });
     }
 
-    // no key configured
-    return res.status(500).send('No API key configured. Set OPENROUTER_API_KEY or OPENAI_API_KEY.');
-  } catch (err) {
+    return res.status(500).send('No API key configured');
+  }catch(err){
     console.error('chat error', err);
-    // network/DNS errors will appear here; return a helpful message to client
-    return res.status(500).json({ error: 'chat error', message: String(err) });
+    res.status(500).json({ error: String(err) });
   }
 });
 
-// Title generation endpoint (optional)
-app.post('/api/title', async (req, res) => {
-  try {
-    const { text } = req.body;
-    if(!text) return res.status(400).send('Missing text');
-
-    const OR_KEY = process.env.OPENROUTER_API_KEY;
-    const OA_KEY = process.env.OPENAI_API_KEY;
-    const chosenModel = process.env.OPENROUTER_MODEL || process.env.OPENAI_MODEL || 'gpt-4o-mini';
-
-    const prompt = [
-      { role:'system', content: 'You are a concise title generator. Given a user prompt, return a 3-6 word Title Case title, no trailing punctuation.' },
-      { role:'user', content: `Create a short conversation title for: "${text}"` }
-    ];
-
-    if (OR_KEY) {
-      const url = 'https://openrouter.ai/api/v1/chat/completions';
-      const payload = { model: chosenModel, messages: prompt, temperature: 0.2, max_tokens: 30 };
-      const r = await fetch(url, { method:'POST', headers:{ 'Authorization': `Bearer ${OR_KEY}`, 'Content-Type':'application/json' }, body: JSON.stringify(payload) });
-      if(!r.ok) return res.status(502).send(await r.text());
-      const data = await r.json();
-      const possible = data?.choices?.[0]?.message?.content || data?.choices?.[0]?.text || '';
-      return res.json({ title: String(possible).split('\n')[0].trim() });
-    }
-
-    if (OA_KEY) {
-      const url = 'https://api.openai.com/v1/chat/completions';
-      const payload = { model: chosenModel, messages: prompt, temperature: 0.2, max_tokens: 30 };
-      const r = await fetch(url, { method:'POST', headers:{ 'Authorization': `Bearer ${OA_KEY}`, 'Content-Type':'application/json' }, body: JSON.stringify(payload) });
-      if(!r.ok) return res.status(502).send(await r.text());
-      const data = await r.json();
-      const possible = data?.choices?.[0]?.message?.content || data?.choices?.[0]?.text || '';
-      return res.json({ title: String(possible).split('\n')[0].trim() });
-    }
-
-    return res.status(500).send('No API key configured for title generation.');
-  } catch(err){
-    console.error('title error', err);
-    res.status(500).send(String(err));
-  }
-});
-
-// SPA fallback
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+  res.sendFile(path.join(PUBLIC_DIR, 'index.html'));
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server listening on ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server listening on ${PORT}`);
+});
