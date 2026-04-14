@@ -37,6 +37,18 @@ body.theme-orange{--bg:#201208;--bg2:#1a130d;--accent:#ff9f43;--accent2:#ffc27a;
 body.theme-red{--bg:#220b0b;--bg2:#160909;--accent:#ff5b6e;--accent2:#ff9aa4;--user:#341010;--user2:#1c0909;--bot:#220d0d}
 body.theme-green{--bg:#071811;--bg2:#08130d;--accent:#34d399;--accent2:#8ee8c3;--user:#10231a;--user2:#07130e;--bot:#0d1712}
 
+#modalRoot{position:fixed;inset:0;z-index:90;pointer-events:auto}
+.home-send-btn{width:46px;min-width:46px;padding:0;display:grid;place-items:center}
+.home-send-btn img{filter:none}
+.sidebar-footer .stack{grid-template-columns:1fr}
+.makalina-launch{display:none}
+body.theme-teal{--bg:#071920;--bg2:#0b2730;--accent:#3dd6c6;--accent2:#84f0e6;--user:#0f2a32;--user2:#07171c;--bot:#0b1d22}
+body.theme-indigo{--bg:#0f1028;--bg2:#1a1e44;--accent:#7c8cff;--accent2:#b4bbff;--user:#141736;--user2:#0c1028;--bot:#10142d}
+body.theme-gold{--bg:#1b1407;--bg2:#2c2109;--accent:#f4c24b;--accent2:#ffe08a;--user:#2d210b;--user2:#171004;--bot:#20180b}
+body.theme-slate{--bg:#101418;--bg2:#171d24;--accent:#9bb0c9;--accent2:#d0d7e2;--user:#1b2129;--user2:#10151b;--bot:#141a21}
+body.theme-violet{--bg:#120f22;--bg2:#25143b;--accent:#b16cff;--accent2:#d0a8ff;--user:#21143a;--user2:#120d21;--bot:#171129}
+
+
 .app{
   width:min(1360px,calc(100vw - 14px));
   height:calc(100vh - 14px);
@@ -185,6 +197,12 @@ select option{background:#050814;color:#fff}
 .composer textarea{flex:1;min-height:46px;max-height:150px;padding:12px 12px;line-height:1.45;font-size:15px}
 .send-btn{min-width:96px;height:46px}
 
+.file-button{display:inline-flex;align-items:center;justify-content:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.04);cursor:pointer;font-size:13px;font-weight:600}
+.file-button:hover{background:rgba(255,255,255,.07)}
+.loading-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:46px}
+.loading-btn .spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;animation:spin 0.75s linear infinite}
+
+
 .modal-backdrop{
   position:fixed;inset:0;background:rgba(3,6,13,.68);display:grid;place-items:center;z-index:50;padding:16px
 }
@@ -264,10 +282,6 @@ select option{background:#050814;color:#fff}
     <div id="convList" class="conv-list"></div>
 
     <div class="sidebar-footer">
-      <button id="makalinaBtn" class="makalina-launch" title="Buy makalina">
-        <img src="makalina.png" alt="makalina">
-      </button>
-
       <div class="stack">
         <button id="tttBtn" class="btn hidden">tic-tac-toe</button>
         <button id="newsBtn" class="btn">News</button>
@@ -291,6 +305,12 @@ select option{background:#050814;color:#fff}
           <option value="blue">navy blue</option>
           <option value="red">dark red</option>
           <option value="green">dark green</option>
+          <option value="teal">teal night</option>
+          <option value="orange">dark orange</option>
+          <option value="indigo">indigo dusk</option>
+          <option value="gold">gold dusk</option>
+          <option value="slate">slate</option>
+          <option value="violet">violet haze</option>
         </select>
 
         <select id="personaSelect">
@@ -315,8 +335,10 @@ select option{background:#050814;color:#fff}
             <button class="suggestion" data-prompt="give me a fun project idea">give me a fun project idea</button>
             <button class="suggestion" data-prompt="help me write a short story">help me write a short story</button>
           </div>
-          <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
-            <button id="homeStartBtn" class="btn primary send-btn">Start chat</button>
+          <div style="display:flex;justify-content:center;flex-wrap:wrap">
+            <button id="homeStartBtn" class="btn primary send-btn home-send-btn" aria-label="Start chat">
+              <img src="send-circle.png" alt="" style="width:18px;height:18px;display:block">
+            </button>
           </div>
         </div>
       </div>
@@ -369,7 +391,6 @@ const els = {
   modalRoot: $('#modalRoot'),
   panelRoot: $('#panelRoot'),
   newsBtn: $('#newsBtn'),
-  makalinaBtn: $('#makalinaBtn'),
   tttBtn: $('#tttBtn'),
   clockText: $('#clockText'),
 };
@@ -999,7 +1020,6 @@ function renderAll(){
   }
 
   els.panelRoot.classList.toggle('persona-makalina', (conv?.persona || 'makala') === 'makalina');
-  els.makalinaBtn.classList.toggle('hidden', state.makalinaOwned);
   els.tttBtn.classList.toggle('hidden', !state.makalinaOwned);
   renderConvList();
   updateClock();
@@ -1031,6 +1051,7 @@ function wireEvents(){
   });
 
   els.clearBtn.addEventListener('click', () => {
+    if(!confirm('Clear all chats?')) return;
     state.conversations = [];
     state.activeId = null;
     saveState();
@@ -1109,7 +1130,6 @@ function wireEvents(){
   });
 
   els.newsBtn.addEventListener('click', openNews);
-  els.makalinaBtn.addEventListener('click', openBuyMakalina);
   els.tttBtn.addEventListener('click', openTicTacToe);
 
   setInterval(updateClock, 1000);
