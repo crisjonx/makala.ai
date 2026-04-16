@@ -5,137 +5,1449 @@
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>makala.ai</title>
 <link rel="icon" href="/makala.ico" type="image/x-icon" />
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
 <style>
-:root{--bg:#0d1222;--bg2:#161c33;--panel:#11162a;--line:rgba(255,255,255,.08);--text:#f3f6ff;--muted:#aab2cf;--accent:#7d7cff;--accent2:#67d1ff;--radius:18px}
-*{box-sizing:border-box} html,body{height:100%;margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:linear-gradient(180deg,var(--bg),var(--bg2));color:var(--text);overflow:hidden} img{display:block;max-width:100%} button,input,textarea,select{font:inherit}
-body.theme-purple{--bg:#0d1222;--bg2:#161c33;--accent:#7d7cff;--accent2:#67d1ff}
-body.theme-blue{--bg:#081423;--bg2:#10253a;--accent:#5bb4ff;--accent2:#75ffd8}
-body.theme-minty{--bg:#09191b;--bg2:#11272a;--accent:#63d7c7;--accent2:#b5ffb5}
-body.theme-red{--bg:#220b10;--bg2:#30131a;--accent:#ff6a7c;--accent2:#ffa15f}
-.shell{height:calc(100vh - 24px);margin:12px;display:grid;grid-template-columns:280px 1fr;gap:14px}
-.sidebar,.main,.modal-card{background:linear-gradient(180deg,var(--panel),#171c33);border:1px solid var(--line);border-radius:var(--radius)}
-.sidebar{padding:14px;display:flex;flex-direction:column;overflow:hidden}
-.main{display:flex;flex-direction:column;overflow:hidden;position:relative}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
-.brand{display:flex;align-items:center;gap:10px;min-width:0}.brand img{width:28px;height:28px;border-radius:8px}.brand h1{margin:0;font-size:16px;line-height:1}
-.mode{color:var(--muted);font-size:12px;font-style:italic}
-.hero{flex:1;display:flex;align-items:center;justify-content:center;padding:24px;overflow:hidden}
-.hero-inner{width:min(760px,100%);text-align:center;opacity:0;transform:translateY(8px)}.hero-inner.ready{animation:fadeUp .45s ease forwards}@keyframes fadeUp{to{opacity:1;transform:none}}
-.hero-title{font-size:clamp(34px,5vw,64px);margin:0 0 10px;display:inline-flex;align-items:center;gap:3px;justify-content:center;flex-wrap:wrap;letter-spacing:-.04em}
-.caret{display:inline-block;width:8px;height:1.05em;background:var(--accent);animation:blink 1s steps(1) infinite;margin-left:2px}.star{display:inline-block;transform:translateY(1px)}
-@keyframes blink{50%{opacity:0}}
-.hero-sub{color:var(--muted);font-size:14px;margin:0 0 22px}
-.suggestions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
-.suggestion{border:1px solid var(--line);background:rgba(255,255,255,.03);color:var(--text);padding:11px 14px;border-radius:999px;cursor:pointer;transition:.15s}.suggestion:hover{transform:translateY(-1px);background:rgba(255,255,255,.06)}
-.sidebar-head{display:flex;align-items:center;justify-content:space-between;padding-bottom:10px;border-bottom:1px solid var(--line)}
-.sidebar-title{display:flex;align-items:center;gap:8px}.sidebar-title strong{font-size:14px}.plus{color:var(--muted)}
-.small-btn,.pill-btn,.buy-btn,.icon-btn,.close-btn,.apply-btn,.copy-btn,.reply-btn,.ttt-btn{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text);border-radius:12px;cursor:pointer;transition:.15s}.small-btn:hover,.pill-btn:hover,.buy-btn:hover,.icon-btn:hover,.close-btn:hover,.apply-btn:hover,.copy-btn:hover,.reply-btn:hover,.ttt-btn:hover{transform:translateY(-1px);background:rgba(255,255,255,.07)}
-.small-btn{padding:8px 10px}.pill-btn{padding:10px 14px}.icon-btn{width:38px;height:38px;display:inline-flex;align-items:center;justify-content:center;font-size:18px}.buy-btn{padding:10px 12px;display:flex;align-items:center;gap:8px}.buy-btn img{width:18px;height:18px}
-.conv-list{flex:1;overflow:auto;padding:12px 0;display:flex;flex-direction:column;gap:8px}.conv-item{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid transparent;border-radius:14px;background:transparent;color:var(--text);text-align:left}.conv-item.active{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.12)}
-.conv-meta{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}.conv-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.conv-time{font-size:12px;color:var(--muted)}.trash{margin-left:auto;font-size:16px}
-.bottom-stack{border-top:1px solid var(--line);padding-top:10px;display:flex;flex-direction:column;gap:10px}
-.user-card{display:none;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03)}.user-card.show{display:flex}.user-card img{width:34px;height:34px;border-radius:50%;object-fit:cover}.user-name{font-weight:600}
-.messages{flex:1;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:0}
-.row{display:flex;gap:10px;align-items:flex-start;max-width:100%}.row.user{justify-content:flex-end}.row.bot{justify-content:flex-start}
-.avatar{width:34px;height:34px;border-radius:50%;overflow:hidden;flex:0 0 auto;background:rgba(255,255,255,.04)}.avatar img{width:100%;height:100%;object-fit:cover}
-.bot-group{display:flex;flex-direction:column;gap:4px;max-width:min(720px,100%)}
-.bot-head{display:flex;align-items:center;gap:8px}.bot-head .name{font-size:13px;font-weight:600}.bot-body{line-height:1.35;white-space:pre-wrap;word-break:break-word}.bot-body p,.bot-body ul,.bot-body ol,.bot-body blockquote,.bot-body pre{margin:0 0 8px}.bot-body p:last-child,.bot-body ul:last-child,.bot-body ol:last-child,.bot-body blockquote:last-child,.bot-body pre:last-child{margin-bottom:0}
-.user-bubble,.bot-bubble{max-width:min(74%,680px);border:1px solid var(--line);border-radius:16px;padding:10px 12px;line-height:1.35;white-space:pre-wrap;word-break:break-word;position:relative}.user-bubble{margin-left:auto;background:rgba(255,255,255,.06)}.bot-bubble{background:rgba(255,255,255,.03)}
-.tools{display:flex;gap:6px;opacity:0;transition:.15s}.row.user:hover .tools,.row.bot:hover .tools{opacity:1}.copy-btn,.reply-btn{width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;font-size:15px}
-.star-inline{display:inline-block;margin-left:2px;transform:translateY(1px);opacity:0;transition:opacity .15s}.row.bot:hover .star-inline{opacity:1}
-.appear{animation:appear .18s ease both}@keyframes appear{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.input-area{border-top:1px solid var(--line);padding:12px 14px;display:flex;flex-direction:column;gap:10px;background:rgba(255,255,255,.02)}
-.input-shell{display:flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.03);padding:8px 8px 8px 12px;min-height:48px}
-.model{width:118px;flex:0 0 118px;background:rgba(0,0,0,.35);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:9px 10px}
-.prompt{flex:1;min-width:0;border:0;outline:0;background:transparent;color:var(--text);resize:none;height:24px;max-height:110px;line-height:1.35}
-.send{width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;border:0;background:transparent;padding:0;flex:0 0 auto}.send img{width:34px;height:34px;object-fit:contain}
-.fixed-about{position:fixed;right:12px;bottom:12px;z-index:30}
-.modal-backdrop{position:fixed;inset:0;background:rgba(4,7,14,.72);display:none;align-items:center;justify-content:center;z-index:40;padding:16px}.modal-backdrop.show{display:flex}
-.modal-card{width:min(560px,100%);padding:18px}
-.buy-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:14px}.buy-media{min-height:230px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.03);display:flex;align-items:center;justify-content:center;padding:10px}.buy-media img{max-height:320px;object-fit:contain}
-.field{width:100%;background:rgba(0,0,0,.35);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:10px 12px;outline:0}.label{font-size:12px;color:var(--muted);margin-bottom:6px;display:block}.row2{display:grid;grid-template-columns:1fr 110px;gap:8px}.buy-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:12px}.spinner{width:14px;height:14px;border-radius:50%;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;animation:spin .75s linear infinite}.news-list{padding-left:18px;margin:0 0 12px 0}.ttt-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.ttt-cell{aspect-ratio:1/1;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.04);display:flex;align-items:center;justify-content:center;font-size:34px;cursor:pointer;transition:.15s}.ttt-cell:hover{transform:translateY(-1px);background:rgba(255,255,255,.07)}.ttt-cell.win{border-color:#45d18f;background:rgba(69,209,143,.14)}
+:root{
+  --bg1:#0d1222;
+  --bg2:#161c33;
+  --panel:#11162a;
+  --line:rgba(255,255,255,.08);
+  --text:#f3f6ff;
+  --muted:#aab2cf;
+  --accent:#7d7cff;
+  --accent2:#67d1ff;
+  --radius:18px;
+}
+*{box-sizing:border-box}
+html,body{
+  height:100%;
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  background:linear-gradient(180deg,var(--bg1),var(--bg2));
+  color:var(--text);
+  overflow:hidden;
+}
+body.theme-purple{--bg1:#0d1222;--bg2:#161c33;--accent:#7d7cff;--accent2:#67d1ff}
+body.theme-blue{--bg1:#081423;--bg2:#10253a;--accent:#5bb4ff;--accent2:#75ffd8}
+body.theme-minty{--bg1:#09191b;--bg2:#11272a;--accent:#63d7c7;--accent2:#b5ffb5}
+body.theme-red{--bg1:#220b10;--bg2:#30131a;--accent:#ff6a7c;--accent2:#ffa15f}
+img{display:block;max-width:100%}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+
+.shell{
+  height:calc(100vh - 24px);
+  margin:12px;
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:14px;
+}
+
+.sidebar,.main,.modal-card{
+  background:linear-gradient(180deg,var(--panel),#171c33);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+}
+
+.sidebar{
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+}
+
+.main{
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  position:relative;
+}
+
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px;
+  border-bottom:1px solid var(--line);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:0;
+}
+.brand img{
+  width:28px;
+  height:28px;
+  border-radius:8px;
+}
+.brand h1{
+  margin:0;
+  font-size:16px;
+  line-height:1;
+}
+.mode{
+  color:var(--muted);
+  font-size:12px;
+  font-style:italic;
+}
+
+.hero{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:24px;
+  overflow:hidden;
+}
+.hero-inner{
+  width:min(760px,100%);
+  text-align:center;
+  opacity:0;
+  transform:translateY(8px);
+}
+.hero-inner.ready{
+  animation:fadeUp .45s ease forwards;
+}
+@keyframes fadeUp{
+  to{opacity:1;transform:none}
+}
+.hero-title{
+  font-size:clamp(34px,5vw,64px);
+  margin:0 0 10px;
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  justify-content:center;
+  flex-wrap:wrap;
+  letter-spacing:-.04em;
+}
+.caret{
+  display:inline-block;
+  width:8px;
+  height:1.05em;
+  background:var(--accent);
+  animation:blink 1s steps(1) infinite;
+  margin-left:2px;
+}
+.star{
+  display:inline-block;
+  transform:translateY(1px);
+}
+@keyframes blink{
+  50%{opacity:0}
+}
+.hero-sub{
+  color:var(--muted);
+  font-size:14px;
+  margin:0 0 22px;
+}
+
+.suggestions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  justify-content:center;
+}
+.suggestion{
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.03);
+  color:var(--text);
+  padding:11px 14px;
+  border-radius:999px;
+  cursor:pointer;
+  transition:.15s;
+}
+.suggestion:hover{
+  transform:translateY(-1px);
+  background:rgba(255,255,255,.06);
+}
+
+.sidebar-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding-bottom:10px;
+  border-bottom:1px solid var(--line);
+}
+.sidebar-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.sidebar-title strong{font-size:14px}
+.plus{color:var(--muted);font-size:18px}
+
+.small-btn,.pill-btn,.buy-btn,.icon-btn,.close-btn,.apply-btn,.copy-btn,.reply-btn,.ttt-btn{
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.04);
+  color:var(--text);
+  border-radius:12px;
+  cursor:pointer;
+  transition:.15s;
+}
+.small-btn:hover,.pill-btn:hover,.buy-btn:hover,.icon-btn:hover,.close-btn:hover,.apply-btn:hover,.copy-btn:hover,.reply-btn:hover,.ttt-btn:hover{
+  transform:translateY(-1px);
+  background:rgba(255,255,255,.07);
+}
+.small-btn{padding:8px 10px}
+.pill-btn{padding:10px 14px}
+.icon-btn{
+  width:38px;
+  height:38px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+}
+.buy-btn{
+  padding:10px 12px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.buy-btn img{width:18px;height:18px}
+
+.conv-list{
+  flex:1;
+  overflow:auto;
+  padding:12px 0;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+.conv-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  border:1px solid transparent;
+  border-radius:14px;
+  background:transparent;
+  color:var(--text);
+  text-align:left;
+}
+.conv-item.active{
+  background:rgba(255,255,255,.06);
+  border-color:rgba(255,255,255,.12);
+}
+.conv-meta{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.conv-name{
+  font-size:14px;
+  font-weight:600;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.conv-time{
+  font-size:12px;
+  color:var(--muted);
+}
+.trash{
+  margin-left:auto;
+  font-size:16px;
+}
+
+.bottom-stack{
+  border-top:1px solid var(--line);
+  padding-top:10px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.user-card{
+  display:none;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:rgba(255,255,255,.03);
+}
+.user-card.show{display:flex}
+.user-card img{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  object-fit:cover;
+}
+.user-name{font-weight:600}
+
+.messages{
+  flex:1;
+  overflow:auto;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  min-height:0;
+}
+.row{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  max-width:100%;
+}
+.row.user{justify-content:flex-end}
+.row.bot{justify-content:flex-start}
+
+.avatar{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  overflow:hidden;
+  flex:0 0 auto;
+  background:rgba(255,255,255,.04);
+}
+.avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.bot-group{
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+  max-width:min(720px,100%);
+}
+.bot-head{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+.bot-head .name{
+  font-size:13px;
+  font-weight:600;
+}
+.bot-body{
+  line-height:1.35;
+  white-space:pre-wrap;
+  word-break:break-word;
+}
+.bot-body p,.bot-body ul,.bot-body ol,.bot-body blockquote,.bot-body pre{
+  margin:0 0 8px;
+}
+.bot-body p:last-child,.bot-body ul:last-child,.bot-body ol:last-child,.bot-body blockquote:last-child,.bot-body pre:last-child{
+  margin-bottom:0;
+}
+
+.user-bubble,.bot-bubble{
+  max-width:min(74%,680px);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:10px 12px;
+  line-height:1.35;
+  white-space:pre-wrap;
+  word-break:break-word;
+  position:relative;
+}
+.user-bubble{
+  margin-left:auto;
+  background:rgba(255,255,255,.06);
+}
+.bot-bubble{
+  background:rgba(255,255,255,.03);
+}
+
+.tools{
+  display:flex;
+  gap:6px;
+  opacity:0;
+  transition:.15s;
+}
+.row.user:hover .tools,.row.bot:hover .tools{
+  opacity:1;
+}
+.copy-btn,.reply-btn{
+  width:28px;
+  height:28px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  flex:0 0 auto;
+  font-size:15px;
+}
+
+.star-inline{
+  display:inline-block;
+  margin-left:2px;
+  transform:translateY(1px);
+  opacity:0;
+  transition:opacity .15s;
+}
+.row.bot:hover .star-inline{
+  opacity:1;
+}
+
+.appear{
+  animation:appear .18s ease both;
+}
+@keyframes appear{
+  from{opacity:0;transform:translateY(6px)}
+  to{opacity:1;transform:none}
+}
+
+.input-area{
+  border-top:1px solid var(--line);
+  padding:12px 14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  background:rgba(255,255,255,.02);
+}
+.input-shell{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(255,255,255,.03);
+  padding:8px 8px 8px 12px;
+  min-height:48px;
+}
+.model{
+  width:118px;
+  flex:0 0 118px;
+  background:rgba(0,0,0,.35);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:9px 10px;
+}
+.prompt{
+  flex:1;
+  min-width:0;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:var(--text);
+  resize:none;
+  height:24px;
+  max-height:110px;
+  line-height:1.35;
+}
+.send{
+  width:34px;
+  height:34px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  border:0;
+  background:transparent;
+  padding:0;
+  flex:0 0 auto;
+}
+.send img{
+  width:34px;
+  height:34px;
+  object-fit:contain;
+}
+
+.fixed-about{
+  position:fixed;
+  right:12px;
+  bottom:12px;
+  z-index:30;
+}
+
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(4,7,14,.72);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:40;
+  padding:16px;
+}
+.modal-backdrop.show{
+  display:flex;
+}
+.modal-card{
+  width:min(560px,100%);
+  padding:18px;
+}
+.modal-card h2,.modal-card h3{
+  margin:0 0 10px;
+}
+.modal-card p{
+  margin:0 0 12px;
+  color:var(--muted);
+  line-height:1.45;
+}
+
+.buy-grid{
+  display:grid;
+  grid-template-columns:1.05fr .95fr;
+  gap:14px;
+}
+.buy-media{
+  min-height:230px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:rgba(255,255,255,.03);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:10px;
+}
+.buy-media img{
+  max-height:320px;
+  object-fit:contain;
+}
+.field{
+  width:100%;
+  background:rgba(0,0,0,.35);
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:10px 12px;
+  outline:0;
+}
+.label{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:6px;
+  display:block;
+}
+.row2{
+  display:grid;
+  grid-template-columns:1fr 110px;
+  gap:8px;
+}
+.buy-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+.spinner{
+  width:14px;
+  height:14px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.25);
+  border-top-color:#fff;
+  animation:spin .75s linear infinite;
+}
+.news-list{
+  padding-left:18px;
+  margin:0 0 12px 0;
+}
+.ttt-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:12px;
+}
+.ttt-cell{
+  aspect-ratio:1/1;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:rgba(255,255,255,.04);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+  cursor:pointer;
+  transition:.15s;
+}
+.ttt-cell:hover{
+  transform:translateY(-1px);
+  background:rgba(255,255,255,.07);
+}
+.ttt-cell.win{
+  border-color:#45d18f;
+  background:rgba(69,209,143,.14);
+}
 @keyframes spin{to{transform:rotate(360deg)}}
-@media(max-width:980px){body{overflow:auto}.shell{height:auto;min-height:calc(100vh - 24px);grid-template-columns:1fr}.sidebar{order:2}.main{order:1;min-height:72vh}.buy-grid{grid-template-columns:1fr}}
+
+@media(max-width:980px){
+  body{overflow:auto}
+  .shell{
+    height:auto;
+    min-height:calc(100vh - 24px);
+    grid-template-columns:1fr;
+  }
+  .sidebar{order:2}
+  .main{order:1;min-height:72vh}
+  .buy-grid{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body class="theme-purple">
 <div class="shell">
   <aside class="sidebar">
     <div class="sidebar-head">
-      <div class="sidebar-title"><strong>Conversations</strong><span class="plus">+</span></div>
+      <div class="sidebar-title">
+        <strong>Conversations</strong>
+        <span class="plus">+</span>
+      </div>
       <button id="homeBtn" class="small-btn" type="button">Home</button>
     </div>
+
     <div id="convList" class="conv-list"></div>
+
     <div class="bottom-stack">
-      <div id="userCard" class="user-card"><img id="userPfp" src="/makala.png" alt="pfp"><div><div id="userName" class="user-name">you</div><div id="userSub" class="conv-time"></div></div></div>
-      <button id="makalinaBtn" class="buy-btn" type="button"><img src="/makalina.png" alt="makalina"><span>Makalina</span></button>
+      <div id="userCard" class="user-card">
+        <img id="userPfp" src="/makala.png" alt="pfp">
+        <div>
+          <div id="userName" class="user-name">you</div>
+          <div id="userSub" class="conv-time"></div>
+        </div>
+      </div>
+
+      <button id="makalinaBtn" class="buy-btn" type="button">
+        <img src="/makalina.png" alt="makalina">
+        <span>Makalina</span>
+      </button>
+
       <button id="newsBtn" class="pill-btn" type="button">News</button>
-      <div style="display:flex;gap:8px;align-items:center"><button id="tttBtn" class="small-btn" type="button">tic-tac-toe</button><button id="clearBtn" class="small-btn" type="button">Clear chats</button></div>
+
+      <div style="display:flex;gap:8px;align-items:center">
+        <button id="tttBtn" class="small-btn" type="button">tic-tac-toe</button>
+        <button id="clearBtn" class="small-btn" type="button">Clear chats</button>
+      </div>
     </div>
   </aside>
 
   <main class="main">
-    <div class="topbar"><div class="brand"><img src="/makala.png" alt="logo"><h1 id="pageTitle">makala.ai</h1><span id="pageMode" class="mode">home</span></div><div><select id="themeSelect" class="small-btn"></select></div></div>
+    <div class="topbar">
+      <div class="brand">
+        <img src="/makala.png" alt="logo">
+        <h1 id="pageTitle">makala.ai</h1>
+        <span id="pageMode" class="mode">home</span>
+      </div>
+      <div>
+        <select id="themeSelect" class="small-btn"></select>
+      </div>
+    </div>
 
-    <div id="hero" class="hero"><div id="heroInner" class="hero-inner"><h2 id="heroTitle" class="hero-title"></h2><p id="heroSub" class="hero-sub">Ask anything, start a chat, or open a saved conversation.</p><div class="input-shell" style="max-width:780px;margin:0 auto 4px;"><select id="modelSelect" class="model"></select><textarea id="homeInput" class="prompt" placeholder="Type your question here..."></textarea><button id="homeSend" class="send" title="Start chat" aria-label="Start chat"><img src="/send-circle.png" alt="send"></button></div><div id="suggestions" class="suggestions"></div></div></div>
+    <div id="hero" class="hero">
+      <div id="heroInner" class="hero-inner">
+        <h2 id="heroTitle" class="hero-title"></h2>
+        <p id="heroSub" class="hero-sub">Ask anything, start a chat, or open a saved conversation.</p>
+
+        <div class="input-shell" style="max-width:780px;margin:0 auto 4px;">
+          <select id="modelSelect" class="model"></select>
+          <textarea id="homeInput" class="prompt" placeholder="Type your question here..."></textarea>
+          <button id="homeSend" class="send" title="Start chat" aria-label="Start chat">
+            <img src="/send-circle.png" alt="send">
+          </button>
+        </div>
+
+        <div id="suggestions" class="suggestions"></div>
+      </div>
+    </div>
 
     <div id="chatView" style="display:none;flex:1;min-height:0;flex-direction:column;">
       <div id="messages" class="messages"></div>
       <div class="input-area">
-        <div class="input-shell"><select id="chatModelSelect" class="model"></select><textarea id="chatInput" class="prompt" placeholder="Message Makala..."></textarea><button id="chatSend" class="send" title="Send" aria-label="Send"><img src="/send-circle.png" alt="send"></button></div>
+        <div class="input-shell">
+          <select id="chatModelSelect" class="model"></select>
+          <textarea id="chatInput" class="prompt" placeholder="Message Makala..."></textarea>
+          <button id="chatSend" class="send" title="Send" aria-label="Send">
+            <img src="/send-circle.png" alt="send">
+          </button>
+        </div>
         <div style="color:var(--muted);font-size:12px">Shift+Enter for newline</div>
       </div>
     </div>
   </main>
 </div>
 
-<div class="fixed-about"><button id="aboutBtn" class="icon-btn" type="button" title="About">i</button></div>
-<div id="modalBackdrop" class="modal-backdrop"><div id="modal" class="modal-card"></div></div>
+<div class="fixed-about">
+  <button id="aboutBtn" class="icon-btn" type="button" title="About">i</button>
+</div>
+
+<div id="modalBackdrop" class="modal-backdrop">
+  <div id="modal" class="modal-card"></div>
+</div>
 
 <script>
 const $ = (s,r=document)=>r.querySelector(s);
-const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
-const store = {get:k=>localStorage.getItem(k), set:(k,v)=>localStorage.setItem(k,v)};
-const randId = ()=> Array.from(crypto.getRandomValues(new Uint8Array(16))).map(n=>('0'+n.toString(16)).slice(-2)).join('').slice(0,16).replace(/[^a-z0-9]/gi,'').slice(0,16);
-const themes = {purple:'Purple haze', blue:'Blue lagoon', minty:'Minty teal', red:'Crimson dusk'};
+const store = {
+  get:k=>localStorage.getItem(k),
+  set:(k,v)=>localStorage.setItem(k,v)
+};
+const randId = () =>
+  Array.from(crypto.getRandomValues(new Uint8Array(16)))
+    .map(n=>('0'+n.toString(16)).slice(-2))
+    .join('')
+    .slice(0,16)
+    .replace(/[^a-z0-9]/gi,'')
+    .slice(0,16);
+
+const themes = {
+  purple:'Purple haze',
+  blue:'Blue lagoon',
+  minty:'Minty teal',
+  red:'Crimson dusk'
+};
+
 const models = ['makala','just chatgpt bro','makalina'];
-const suggestions = ['teach me how to make the best Indian curry','best Roblox games frr','write me a funny story','best food oat??'];
-const state = {chats:[],activeId:null,owned:store.get('makala_owned')==='1',homeTyped:store.get('makala_home_typed')==='1',replyTo:null,mode:'home'};
-const el = {themeSelect:$('#themeSelect'),modelSelect:$('#modelSelect'),chatModelSelect:$('#chatModelSelect'),homeBtn:$('#homeBtn'),pageTitle:$('#pageTitle'),pageMode:$('#pageMode'),hero:$('#hero'),heroInner:$('#heroInner'),heroTitle:$('#heroTitle'),heroSub:$('#heroSub'),homeInput:$('#homeInput'),homeSend:$('#homeSend'),chatView:$('#chatView'),messages:$('#messages'),chatInput:$('#chatInput'),chatSend:$('#chatSend'),convList:$('#convList'),suggestions:$('#suggestions'),makalinaBtn:$('#makalinaBtn'),newsBtn:$('#newsBtn'),tttBtn:$('#tttBtn'),clearBtn:$('#clearBtn'),aboutBtn:$('#aboutBtn'),modalBackdrop:$('#modalBackdrop'),modal:$('#modal'),userCard:$('#userCard'),userPfp:$('#userPfp'),userName:$('#userName'),userSub:$('#userSub')};
-const persona = p => p==='just chatgpt bro' ? 'You are Makala. Be helpful, clear, friendly.' : p==='makalina' ? 'You are Makalina, a more matured Makala. Slightly Indian, a bit professional, some slang, very good at math, grateful.' : 'You are Makala, female, casual internet slang, lowercase, playful, short replies, uses lol/fr/so/like/bro/beta.';
-function save(){store.set('makala_chats',JSON.stringify(state.chats));store.set('makala_active',state.activeId||'');store.set('makala_owned',state.owned?'1':'0');store.set('makala_home_typed',state.homeTyped?'1':'0');}
-function load(){try{state.chats=JSON.parse(store.get('makala_chats')||'[]')}catch{state.chats=[]} if(!Array.isArray(state.chats)) state.chats=[]; state.activeId=store.get('makala_active')||null; state.chats.forEach(c=>{c.id=c.id||randId();c.title=c.title||'New conversation';c.messages=c.messages||[];c.created=c.created||new Date().toISOString();c.updated=c.updated||c.created;c.personality=c.personality||'makala';c.model=c.model||'makala';});}
-function ensureChat(){if(!state.chats.length){const c={id:randId(),title:'New conversation',created:new Date().toISOString(),updated:new Date().toISOString(),messages:[],personality:'makala',model:'makala'};state.chats.unshift(c);state.activeId=c.id;save();}}
-function activeChat(){return state.chats.find(c=>c.id===state.activeId)||null}
-function chatTime(ts){const diff=Math.max(0,Date.now()-new Date(ts).getTime());const s=Math.floor(diff/1000);if(s<60)return'just now';if(s<3600)return `${Math.floor(s/60)}m ago`;if(s<86400){const h=Math.floor(s/3600);return h===1?'1h ago':`${h}h ago`;} const d=Math.floor(s/86400);if(d<7)return `${d}d ago`;if(d<30)return `${Math.floor(d/7)}w ago`;if(d<365)return `${Math.floor(d/30)}mo ago`;return d<730?'A year ago':'A long time ago';}
-function setTheme(name){document.body.className='theme-'+name;store.set('makala_theme',name)}
-function showModal(html){el.modal.innerHTML=html;el.modalBackdrop.classList.add('show')}
-function hideModal(){el.modalBackdrop.classList.remove('show');el.modal.innerHTML=''}
-function md(t){return DOMPurify.sanitize(marked.parse(String(t||''),{breaks:true,gfm:true}))}
-function renderTheme(){el.themeSelect.innerHTML=Object.entries(themes).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');el.themeSelect.value=store.get('makala_theme')||'purple'}
-function renderModels(){el.modelSelect.innerHTML=models.map(m=>`<option value="${m}">${m}</option>`).join('');el.chatModelSelect.innerHTML=el.modelSelect.innerHTML}
-function renderSuggestions(){el.suggestions.innerHTML=suggestions.map(s=>`<button class="suggestion" data-s="${encodeURIComponent(s)}">${escapeHtml(s)}</button>`).join('')}
-function renderSidebar(){const chats=[...state.chats].sort((a,b)=>new Date(b.updated)-new Date(a.updated)); el.convList.innerHTML=chats.map(c=>`<button class="conv-item ${c.id===state.activeId?'active':''}" data-id="${c.id}"><div class="conv-meta"><div class="conv-name">${escapeHtml(c.title||'New conversation')}</div><div class="conv-time">${chatTime(c.updated)}</div></div><span class="trash" title="Delete">🗑️</span></button>`).join(''); el.userCard.classList.toggle('show',state.owned); if(state.owned){el.userPfp.src='/linalogo.png';el.userName.textContent=store.get('makala_user')||'you';el.userSub.textContent='Makalina owned'} el.makalinaBtn.style.display=state.owned?'none':'flex'; el.tttBtn.style.display=state.owned?'inline-flex':'none'; }
-function openHome(){state.activeId=null;state.mode='home';el.pageMode.textContent='home';el.pageTitle.textContent='makala.ai';el.hero.style.display='flex';el.chatView.style.display='none';renderSidebar()}
-function openChat(){const chat=activeChat(); if(!chat)return; state.mode='chat'; el.pageMode.textContent='chat'; el.pageTitle.textContent=chat.title||'makala.ai'; el.hero.style.display='none'; el.chatView.style.display='flex'; el.chatModelSelect.value=chat.model||'makala'; renderMessages()}
-function messageEl(m,chat,idx){const row=document.createElement('div'); row.className=`row ${m.role}`; row.dataset.idx=idx; if(m.role==='user'){const wrap=document.createElement('div'); wrap.className='user-wrap'; const bubble=document.createElement('div'); bubble.className='user-bubble appear'; bubble.innerHTML=md(m.content); const tools=document.createElement('div'); tools.className='tools'; const copy=document.createElement('button'); copy.className='copy-btn'; copy.textContent='⧉'; copy.title='Copy'; copy.onclick=()=>navigator.clipboard.writeText(m.content||''); const reply=document.createElement('button'); reply.className='reply-btn'; reply.textContent='↩'; reply.title='Reply'; reply.onclick=()=>{state.replyTo=m.content||''; if(state.mode==='home')openChat(); el.chatInput.focus()}; tools.append(copy,reply); wrap.append(bubble,tools); row.appendChild(wrap);} else {const av=document.createElement('div'); av.className='avatar'; av.innerHTML=`<img src="${chat.personality==='makalina'?'/linastar.png':'/makala.png'}" alt="makala">`; const g=document.createElement('div'); g.className='bot-group'; const head=document.createElement('div'); head.className='bot-head'; head.innerHTML=`<div class="name">${chat.personality==='makalina'?'makalina ai':'makala ai'}</div>`; const tools=document.createElement('div'); tools.className='tools'; const copy=document.createElement('button'); copy.className='copy-btn'; copy.textContent='⧉'; copy.title='Copy'; copy.onclick=()=>navigator.clipboard.writeText(m.content||''); const reply=document.createElement('button'); reply.className='reply-btn'; reply.textContent='↩'; reply.title='Reply'; reply.onclick=()=>{state.replyTo=m.content||''; el.chatInput.focus()}; tools.append(copy,reply); head.appendChild(tools); const body=document.createElement('div'); body.className='bot-body'; body.innerHTML=md(m.content||''); const star=document.createElement('span'); star.className='star-inline'; star.textContent='⭐'; body.appendChild(star); g.append(head,body); row.append(av,g);} return row; }
-function renderMessages(){const chat=activeChat(); if(!chat){el.messages.innerHTML='';return} el.messages.innerHTML=''; chat.messages.forEach((m,i)=>el.messages.appendChild(messageEl(m,chat,i))); el.messages.scrollTop=el.messages.scrollHeight}
-async function askServer(chat){const messages=[{role:'system',content:persona(chat.personality||'makala')},...chat.messages.map(m=>({role:m.role,content:m.content}))]; const loading=document.createElement('div'); loading.className='row bot appear'; loading.innerHTML=`<div class="avatar"><img src="${chat.personality==='makalina'?'/linastar.png':'/makala.png'}" alt="loading"></div><div class="bot-group"><div class="bot-head"><div class="name">${chat.personality==='makalina'?'makalina ai':'makala ai'}</div></div><div class="bot-body"><span class="spinner"></span></div></div>`; el.messages.appendChild(loading); el.messages.scrollTop=el.messages.scrollHeight; try{const res=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages,model:chat.model||'makala'})}); if(!res.ok) throw new Error(await res.text()); const data=await res.json(); loading.remove(); chat.messages.push({role:'assistant',content:data.reply||'No response.'}); chat.updated=new Date().toISOString(); save(); renderSidebar(); renderMessages();}catch(err){loading.remove(); chat.messages.push({role:'assistant',content:`Error: ${String(err)}`}); chat.updated=new Date().toISOString(); save(); renderSidebar(); renderMessages();}}
-function sendFromHome(){const txt=el.homeInput.value.trim(); if(!txt)return; const c={id:randId(),title:txt.split(/\s+/).slice(0,6).join(' '),created:new Date().toISOString(),updated:new Date().toISOString(),messages:[{role:'user',content:txt}],personality:'makala',model:el.modelSelect.value||'makala'}; state.chats.unshift(c); state.activeId=c.id; el.homeInput.value=''; save(); renderSidebar(); openChat(); askServer(c)}
-function sendFromChat(){const chat=activeChat(); if(!chat)return; let txt=el.chatInput.value.trim(); if(!txt)return; if(txt==='67'){document.title='67'; alert('67'); chat.messages.push({role:'assistant',content:'67!!!!!'}); chat.updated=new Date().toISOString(); el.chatInput.value=''; save(); renderSidebar(); renderMessages(); return} if(txt.startsWith('_arab ')){chat.arab=true; txt=txt.replace(/^_arab\s+/,'')} if(txt.startsWith('_comply ')){chat.comply=true; txt=txt.replace(/^_comply\s+/,'')} chat.messages.push({role:'user',content:txt,replyTo:state.replyTo||''}); if(!chat.title||chat.title==='New conversation')chat.title=txt.split(/\s+/).slice(0,6).join(' '); chat.updated=new Date().toISOString(); state.replyTo=null; el.chatInput.value=''; save(); renderSidebar(); renderMessages(); askServer(chat)}
-function openMakalina(){showModal(`<div class="modal-card"><div class="buy-grid"><div class="buy-media"><img src="/fullmakalina.png" alt="makalina"></div><div><h2>Purchase Makalina</h2><p>Makalina lets you talk to a more matured persona, and lets you play tic-tac-toe. Base price: <strong>$0.00</strong></p><div><label class="label">Your name</label><input id="buyName" class="field" placeholder="Your name"></div><div style="height:10px"></div><div><label class="label">Favourite number</label><input id="buyNum" class="field" placeholder="Fav number"></div><div style="height:10px"></div><div><label class="label">Profile image</label><input id="buyPfp" class="field" type="file" accept="image/*" style="padding:8px"></div><div style="height:10px"></div><div class="row2"><div><label class="label">Discount code</label><input id="buyCode" class="field" placeholder="Enter code"></div><div style="display:flex;align-items:end"><button id="applyCode" class="apply-btn" style="width:100%;padding:10px 12px">Apply</button></div></div><div id="discountInfo" class="conv-time" style="margin-top:10px;display:none"></div><div style="margin-top:10px"><div>Subtotal: $0.00</div><div>Discount: <span id="discountText">$0.00</span></div><div style="font-weight:700;margin-top:4px">Total: <span id="totalText">$0.00</span></div></div><div class="buy-actions"><button id="closeBuy" class="close-btn small-btn">Close</button><button id="doBuy" class="buy-btn"><span>Purchase</span></button></div></div></div></div>`); let discount=0; const refresh=()=>{const off=`$${(0*discount).toFixed(2)}`; $('#discountText').textContent=discount?off:'$0.00'; $('#totalText').textContent='$0.00'; $('#discountInfo').style.display=discount?'block':'none'; $('#discountInfo').textContent=discount?`Discount applied: ${Math.round(discount*100)}% off`:''}; refresh(); $('#applyCode').onclick=()=>{const code=($('#buyCode').value||'').trim().toUpperCase(); discount=code==='NOKATSEYE'?0.49:code==='MAKALINA'?1:0; refresh()}; $('#closeBuy').onclick=hideModal; $('#doBuy').onclick=async()=>{const b=$('#doBuy'); b.disabled=true; const old=b.innerHTML; b.innerHTML='<span class="spinner"></span><span>loading</span>'; await new Promise(r=>setTimeout(r,1000)); state.owned=true; store.set('makala_owned','1'); const name=($('#buyName').value||'').trim(); if(name) store.set('makala_user',name); hideModal(); renderSidebar(); b.disabled=false; b.innerHTML=old; save();};}
-function openNews(){showModal(`<div class="modal-card"><h2>News</h2><p><strong>NEW FEATURE:</strong> macaroni — makala’s new cooking ai. Upload fridge photos and she’ll help you cook or find recipes.</p><p><strong>Coming very soon:</strong> live countdown to June 18, 2114.</p><h3 style="margin-top:12px">Patch notes</h3><ul class="news-list"><li>Chats now save and switch properly.</li><li>Markdown rendering is back.</li><li>Makala and Makalina personalities are available.</li><li>Buy modal and tic-tac-toe are restored.</li></ul><div style="display:flex;justify-content:flex-end"><button id="newsOk" class="close-btn small-btn">Okay</button></div></div>`); $('#newsOk').onclick=hideModal;}
-function openAbout(){showModal(`<div class="modal-card"><h2>About this project</h2><p>Placeholder about section.</p><p>This can be expanded later.</p><div style="display:flex;justify-content:flex-end"><button id="aboutOk" class="close-btn small-btn">Close</button></div></div>`); $('#aboutOk').onclick=hideModal;}
-function openTtt(){if(!state.owned){openMakalina(); return} let board=Array(9).fill(''); let done=false; const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; showModal(`<div class="modal-card"><h2>tic-tac-toe</h2><div id="tttBoard" class="ttt-grid"></div><div id="tttStatus" class="ttt-status">You are O. Makalina is ⭐.</div><div style="display:flex;justify-content:flex-end;margin-top:12px"><button id="tttClose" class="close-btn small-btn">Close</button></div></div>`); const boardEl=$('#tttBoard'); const statusEl=$('#tttStatus'); const render=()=>{boardEl.innerHTML=''; board.forEach((v,i)=>{const c=document.createElement('button'); c.className='ttt-cell'; c.textContent=v||''; c.onclick=()=>{if(done||board[i])return; board[i]='O'; render(); if(check('O')) return end('O'); if(board.every(Boolean)) return end(null); setTimeout(()=>{const free=board.map((x,idx)=>x?null:idx).filter(x=>x!==null); const pick=free[Math.floor(Math.random()*free.length)]; board[pick]='⭐'; render(); if(check('⭐')) return end('⭐'); if(board.every(Boolean)) return end(null);},350)}; boardEl.appendChild(c)});}; const check=sym=>wins.find(line=>line.every(i=>board[i]===sym)); const end=winner=>{done=true; const line=check(winner); if(line) line.forEach(i=>boardEl.children[i].classList.add('win')); statusEl.textContent=winner===null?'Draw.':winner==='O'?'You won.':'Makalina won.'; setTimeout(hideModal,1100);}; $('#tttClose').onclick=hideModal; render();}
-function escapeHtml(s){return String(s||'').replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[m]))}
-function init(){load(); ensureChat(); renderTheme(); renderModels(); setTheme(store.get('makala_theme')||'purple'); renderSidebar(); renderSuggestions(); el.heroSub.textContent=suggestions[Math.floor(Math.random()*suggestions.length)]; el.heroTitle.innerHTML=''; el.heroInner.classList.add('ready'); if(!state.homeTyped){ const txt='makala.ai'; let i=0; const tick=()=>{el.heroTitle.innerHTML=`${txt.slice(0,i)}<span class="caret"></span>`; if(i<txt.length){i++; setTimeout(tick,85);} else {el.heroTitle.innerHTML=`makala.ai<span class="star">⭐</span><span class="caret"></span>`; state.homeTyped=true; save(); setTimeout(()=>{const c=el.heroTitle.querySelector('.caret'); if(c)c.style.opacity='0'},3000);} }; tick(); } else { el.heroTitle.innerHTML='makala.ai<span class="star">⭐</span>'; } openHome(); }
-// events
-el.themeSelect.onchange=()=>setTheme(el.themeSelect.value); el.modelSelect.onchange=()=>el.chatModelSelect.value=el.modelSelect.value; el.chatModelSelect.onchange=()=>el.modelSelect.value=el.chatModelSelect.value; el.homeBtn.onclick=()=>openHome(); el.clearBtn.onclick=()=>{if(confirm('Clear all chats?')){state.chats=[]; state.activeId=null; save(); renderSidebar(); openHome()}}; el.newsBtn.onclick=openNews; el.aboutBtn.onclick=openAbout; el.tttBtn.onclick=openTtt; el.makalinaBtn.onclick=openMakalina; el.homeSend.onclick=()=>sendFromHome(); el.chatSend.onclick=()=>sendFromChat(); el.homeInput.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault(); sendFromHome()}}; el.chatInput.onkeydown=e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault(); sendFromChat()}}; el.suggestions.onclick=e=>{const b=e.target.closest('[data-s]'); if(!b) return; el.homeInput.value=decodeURIComponent(b.dataset.s); el.homeInput.focus()}; el.convList.onclick=e=>{const b=e.target.closest('.conv-item'); if(!b) return; const del=e.target.closest('.trash'); const id=b.dataset.id; if(del){state.chats=state.chats.filter(c=>c.id!==id); if(state.activeId===id) state.activeId=null; save(); renderSidebar(); openHome(); return} state.activeId=id; save(); const chat=activeChat(); if(chat){setMode('chat'); el.pageTitle.textContent=chat.title||'makala.ai'; el.chatModelSelect.value=chat.model||'makala'; renderSidebar(); renderMessages();}}; el.modalBackdrop.onclick=e=>{if(e.target===el.modalBackdrop) hideModal()}; el.homeSend.type='button'; el.chatSend.type='button'; el.homeBtn.type='button'; el.clearBtn.type='button'; el.newsBtn.type='button'; el.aboutBtn.type='button'; el.tttBtn.type='button'; el.makalinaBtn.type='button'; setInterval(()=>{renderSidebar()},60000);}
+
+const suggestions = [
+  'teach me how to make the best Indian curry',
+  'best Roblox games frr',
+  'write me a funny story',
+  'best food oat??'
+];
+
+const state = {
+  chats: [],
+  activeId: null,
+  owned: store.get('makala_owned') === '1',
+  homeTyped: store.get('makala_home_typed') === '1',
+  replyTo: null,
+  mode: 'home'
+};
+
+const el = {
+  themeSelect: $('#themeSelect'),
+  modelSelect: $('#modelSelect'),
+  chatModelSelect: $('#chatModelSelect'),
+  homeBtn: $('#homeBtn'),
+  pageTitle: $('#pageTitle'),
+  pageMode: $('#pageMode'),
+  hero: $('#hero'),
+  heroInner: $('#heroInner'),
+  heroTitle: $('#heroTitle'),
+  heroSub: $('#heroSub'),
+  homeInput: $('#homeInput'),
+  homeSend: $('#homeSend'),
+  chatView: $('#chatView'),
+  messages: $('#messages'),
+  chatInput: $('#chatInput'),
+  chatSend: $('#chatSend'),
+  convList: $('#convList'),
+  suggestions: $('#suggestions'),
+  makalinaBtn: $('#makalinaBtn'),
+  newsBtn: $('#newsBtn'),
+  tttBtn: $('#tttBtn'),
+  clearBtn: $('#clearBtn'),
+  aboutBtn: $('#aboutBtn'),
+  modalBackdrop: $('#modalBackdrop'),
+  modal: $('#modal'),
+  userCard: $('#userCard'),
+  userPfp: $('#userPfp'),
+  userName: $('#userName'),
+  userSub: $('#userSub')
+};
+
+const persona = p =>
+  p === 'just chatgpt bro'
+    ? 'You are Makala. Be helpful, clear, friendly.'
+    : p === 'makalina'
+      ? 'You are Makalina, a more matured Makala. Slightly Indian, a bit professional, some slang, very good at math, grateful.'
+      : 'You are Makala, female, casual internet slang, lowercase, playful, short replies, uses lol/fr/so/like/bro/beta.';
+
+function save(){
+  store.set('makala_chats', JSON.stringify(state.chats));
+  store.set('makala_active', state.activeId || '');
+  store.set('makala_owned', state.owned ? '1' : '0');
+  store.set('makala_home_typed', state.homeTyped ? '1' : '0');
+}
+
+function load(){
+  try{
+    state.chats = JSON.parse(store.get('makala_chats') || '[]');
+  }catch{
+    state.chats = [];
+  }
+  if(!Array.isArray(state.chats)) state.chats = [];
+  state.activeId = store.get('makala_active') || null;
+
+  state.chats.forEach(c=>{
+    c.id = c.id || randId();
+    c.title = c.title || 'New conversation';
+    c.messages = c.messages || [];
+    c.created = c.created || new Date().toISOString();
+    c.updated = c.updated || c.created;
+    c.personality = c.personality || 'makala';
+    c.model = c.model || 'makala';
+  });
+}
+
+function ensureChat(){
+  if(!state.chats.length){
+    const c = {
+      id: randId(),
+      title: 'New conversation',
+      created: new Date().toISOString(),
+      updated: new Date().toISOString(),
+      messages: [],
+      personality: 'makala',
+      model: 'makala'
+    };
+    state.chats.unshift(c);
+    state.activeId = c.id;
+    save();
+  }
+}
+
+function activeChat(){
+  return state.chats.find(c=>c.id === state.activeId) || null;
+}
+
+function chatTime(ts){
+  const diff = Math.max(0, Date.now() - new Date(ts).getTime());
+  const s = Math.floor(diff/1000);
+  if(s < 60) return 'just now';
+  if(s < 3600) return `${Math.floor(s/60)}m ago`;
+  if(s < 86400){
+    const h = Math.floor(s/3600);
+    return h === 1 ? '1h ago' : `${h}h ago`;
+  }
+  const d = Math.floor(s/86400);
+  if(d < 7) return `${d}d ago`;
+  if(d < 30) return `${Math.floor(d/7)}w ago`;
+  if(d < 365) return `${Math.floor(d/30)}mo ago`;
+  return d < 730 ? 'A year ago' : 'A long time ago';
+}
+
+function setTheme(name){
+  document.body.className = 'theme-'+name;
+  store.set('makala_theme', name);
+}
+
+function showModal(html){
+  el.modal.innerHTML = html;
+  el.modalBackdrop.classList.add('show');
+}
+
+function hideModal(){
+  el.modalBackdrop.classList.remove('show');
+  el.modal.innerHTML = '';
+}
+
+function md(t){
+  return DOMPurify.sanitize(marked.parse(String(t || ''), { breaks:true, gfm:true }));
+}
+
+function renderTheme(){
+  el.themeSelect.innerHTML = Object.entries(themes).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
+  el.themeSelect.value = store.get('makala_theme') || 'purple';
+}
+
+function renderModels(){
+  el.modelSelect.innerHTML = models.map(m=>`<option value="${m}">${m}</option>`).join('');
+  el.chatModelSelect.innerHTML = el.modelSelect.innerHTML;
+}
+
+function renderSuggestions(){
+  el.suggestions.innerHTML = suggestions
+    .map(s=>`<button class="suggestion" data-s="${encodeURIComponent(s)}">${escapeHtml(s)}</button>`)
+    .join('');
+}
+
+function renderSidebar(){
+  const chats = [...state.chats].sort((a,b)=> new Date(b.updated) - new Date(a.updated));
+  el.convList.innerHTML = chats.map(c=>`
+    <button class="conv-item ${c.id===state.activeId ? 'active' : ''}" data-id="${c.id}">
+      <div class="conv-meta">
+        <div class="conv-name">${escapeHtml(c.title || 'New conversation')}</div>
+        <div class="conv-time">${chatTime(c.updated)}</div>
+      </div>
+      <span class="trash" title="Delete">🗑️</span>
+    </button>
+  `).join('');
+
+  el.userCard.classList.toggle('show', state.owned);
+  if(state.owned){
+    el.userPfp.src = '/linalogo.png';
+    el.userName.textContent = store.get('makala_user') || 'you';
+    el.userSub.textContent = 'Makalina owned';
+  }
+
+  el.makalinaBtn.style.display = state.owned ? 'none' : 'flex';
+  el.tttBtn.style.display = state.owned ? 'inline-flex' : 'none';
+}
+
+function openHome(){
+  state.activeId = null;
+  state.mode = 'home';
+  el.pageMode.textContent = 'home';
+  el.pageTitle.textContent = 'makala.ai';
+  el.hero.style.display = 'flex';
+  el.chatView.style.display = 'none';
+  renderSidebar();
+}
+
+function openChat(){
+  const chat = activeChat();
+  if(!chat) return;
+  state.mode = 'chat';
+  el.pageMode.textContent = 'chat';
+  el.pageTitle.textContent = chat.title || 'makala.ai';
+  el.hero.style.display = 'none';
+  el.chatView.style.display = 'flex';
+  el.chatModelSelect.value = chat.model || 'makala';
+  renderMessages();
+}
+
+function messageEl(m, chat, idx){
+  const row = document.createElement('div');
+  row.className = `row ${m.role}`;
+  row.dataset.idx = idx;
+
+  if(m.role === 'user'){
+    const wrap = document.createElement('div');
+    wrap.className = 'user-wrap';
+
+    const bubble = document.createElement('div');
+    bubble.className = 'user-bubble appear';
+    bubble.innerHTML = md(m.content);
+
+    const tools = document.createElement('div');
+    tools.className = 'tools';
+
+    const copy = document.createElement('button');
+    copy.className = 'copy-btn';
+    copy.textContent = '⧉';
+    copy.title = 'Copy';
+    copy.onclick = ()=> navigator.clipboard.writeText(m.content || '');
+
+    const reply = document.createElement('button');
+    reply.className = 'reply-btn';
+    reply.textContent = '↩';
+    reply.title = 'Reply';
+    reply.onclick = ()=>{
+      state.replyTo = m.content || '';
+      if(state.mode === 'home') openChat();
+      el.chatInput.focus();
+    };
+
+    tools.append(copy, reply);
+    wrap.append(bubble, tools);
+    row.appendChild(wrap);
+  } else {
+    const av = document.createElement('div');
+    av.className = 'avatar';
+    av.innerHTML = `<img src="${chat.personality==='makalina' ? '/linastar.png' : '/makala.png'}" alt="makala">`;
+
+    const g = document.createElement('div');
+    g.className = 'bot-group';
+
+    const head = document.createElement('div');
+    head.className = 'bot-head';
+    head.innerHTML = `<div class="name">${chat.personality==='makalina' ? 'makalina ai' : 'makala ai'}</div>`;
+
+    const tools = document.createElement('div');
+    tools.className = 'tools';
+
+    const copy = document.createElement('button');
+    copy.className = 'copy-btn';
+    copy.textContent = '⧉';
+    copy.title = 'Copy';
+    copy.onclick = ()=> navigator.clipboard.writeText(m.content || '');
+
+    const reply = document.createElement('button');
+    reply.className = 'reply-btn';
+    reply.textContent = '↩';
+    reply.title = 'Reply';
+    reply.onclick = ()=>{
+      state.replyTo = m.content || '';
+      el.chatInput.focus();
+    };
+
+    tools.append(copy, reply);
+    head.appendChild(tools);
+
+    const body = document.createElement('div');
+    body.className = 'bot-body';
+    body.innerHTML = md(m.content || '');
+
+    const star = document.createElement('span');
+    star.className = 'star-inline';
+    star.textContent = '⭐';
+    body.appendChild(star);
+
+    g.append(head, body);
+    row.append(av, g);
+  }
+
+  return row;
+}
+
+function renderMessages(){
+  const chat = activeChat();
+  if(!chat){
+    el.messages.innerHTML = '';
+    return;
+  }
+  el.messages.innerHTML = '';
+  chat.messages.forEach((m, i)=> el.messages.appendChild(messageEl(m, chat, i)));
+  el.messages.scrollTop = el.messages.scrollHeight;
+}
+
+async function askServer(chat){
+  const messages = [
+    { role:'system', content: persona(chat.personality || 'makala') },
+    ...chat.messages.map(m=>({ role:m.role, content:m.content }))
+  ];
+
+  const loading = document.createElement('div');
+  loading.className = 'row bot appear';
+  loading.innerHTML = `
+    <div class="avatar">
+      <img src="${chat.personality==='makalina' ? '/linastar.png' : '/makala.png'}" alt="loading">
+    </div>
+    <div class="bot-group">
+      <div class="bot-head">
+        <div class="name">${chat.personality==='makalina' ? 'makalina ai' : 'makala ai'}</div>
+      </div>
+      <div class="bot-body"><span class="spinner"></span></div>
+    </div>
+  `;
+  el.messages.appendChild(loading);
+  el.messages.scrollTop = el.messages.scrollHeight;
+
+  try{
+    const res = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ messages, model: chat.model || 'makala' })
+    });
+    if(!res.ok) throw new Error(await res.text());
+    const data = await res.json();
+    loading.remove();
+    chat.messages.push({ role:'assistant', content: data.reply || 'No response.' });
+    chat.updated = new Date().toISOString();
+    save();
+    renderSidebar();
+    renderMessages();
+  }catch(err){
+    loading.remove();
+    chat.messages.push({ role:'assistant', content: `Error: ${String(err)}` });
+    chat.updated = new Date().toISOString();
+    save();
+    renderSidebar();
+    renderMessages();
+  }
+}
+
+function sendFromHome(){
+  const txt = el.homeInput.value.trim();
+  if(!txt) return;
+  const c = {
+    id: randId(),
+    title: txt.split(/\s+/).slice(0,6).join(' '),
+    created: new Date().toISOString(),
+    updated: new Date().toISOString(),
+    messages: [{ role:'user', content: txt }],
+    personality: 'makala',
+    model: el.modelSelect.value || 'makala'
+  };
+  state.chats.unshift(c);
+  state.activeId = c.id;
+  el.homeInput.value = '';
+  save();
+  renderSidebar();
+  openChat();
+  askServer(c);
+}
+
+function sendFromChat(){
+  const chat = activeChat();
+  if(!chat) return;
+  let txt = el.chatInput.value.trim();
+  if(!txt) return;
+
+  if(txt === '67'){
+    document.title = '67';
+    alert('67');
+    chat.messages.push({ role:'assistant', content:'67!!!!!' });
+    chat.updated = new Date().toISOString();
+    el.chatInput.value = '';
+    save();
+    renderSidebar();
+    renderMessages();
+    return;
+  }
+
+  if(txt.startsWith('_arab ')){
+    txt = txt.replace(/^_arab\s+/,'');
+  }
+
+  if(txt.startsWith('_comply ')){
+    txt = txt.replace(/^_comply\s+/,'');
+  }
+
+  chat.messages.push({
+    role:'user',
+    content: txt,
+    replyTo: state.replyTo || ''
+  });
+
+  if(!chat.title || chat.title === 'New conversation'){
+    chat.title = txt.split(/\s+/).slice(0,6).join(' ');
+  }
+
+  chat.updated = new Date().toISOString();
+  state.replyTo = null;
+  el.chatInput.value = '';
+  save();
+  renderSidebar();
+  renderMessages();
+  askServer(chat);
+}
+
+function openMakalina(){
+  showModal(`
+    <div class="modal-card">
+      <div class="buy-grid">
+        <div class="buy-media">
+          <img src="/fullmakalina.png" alt="makalina">
+        </div>
+        <div>
+          <h2>Purchase Makalina</h2>
+          <p>Makalina lets you talk to a more matured persona, and lets you play tic-tac-toe. Base price: <strong>$0.00</strong></p>
+
+          <div>
+            <label class="label">Your name</label>
+            <input id="buyName" class="field" placeholder="Your name">
+          </div>
+
+          <div style="height:10px"></div>
+
+          <div>
+            <label class="label">Favourite number</label>
+            <input id="buyNum" class="field" placeholder="Fav number">
+          </div>
+
+          <div style="height:10px"></div>
+
+          <div>
+            <label class="label">Profile image</label>
+            <input id="buyPfp" class="field" type="file" accept="image/*" style="padding:8px">
+          </div>
+
+          <div style="height:10px"></div>
+
+          <div class="row2">
+            <div>
+              <label class="label">Discount code</label>
+              <input id="buyCode" class="field" placeholder="Enter code">
+            </div>
+            <div style="display:flex;align-items:end">
+              <button id="applyCode" class="apply-btn" style="width:100%;padding:10px 12px">Apply</button>
+            </div>
+          </div>
+
+          <div id="discountInfo" class="conv-time" style="margin-top:10px;display:none"></div>
+
+          <div style="margin-top:10px">
+            <div>Subtotal: $0.00</div>
+            <div>Discount: <span id="discountText">$0.00</span></div>
+            <div style="font-weight:700;margin-top:4px">Total: <span id="totalText">$0.00</span></div>
+          </div>
+
+          <div class="buy-actions">
+            <button id="closeBuy" class="close-btn small-btn">Close</button>
+            <button id="doBuy" class="buy-btn"><span>Purchase</span></button>
+          </div>
+        </div>
+      </div>
+    </div>
+  `);
+
+  let discount = 0;
+
+  const refresh = ()=>{
+    const off = `$${(0*discount).toFixed(2)}`;
+    $('#discountText').textContent = discount ? off : '$0.00';
+    $('#totalText').textContent = '$0.00';
+    $('#discountInfo').style.display = discount ? 'block' : 'none';
+    $('#discountInfo').textContent = discount ? `Discount applied: ${Math.round(discount*100)}% off` : '';
+  };
+
+  refresh();
+
+  $('#applyCode').onclick = ()=>{
+    const code = ($('#buyCode').value || '').trim().toUpperCase();
+    discount = code === 'NOKATSEYE' ? 0.49 : code === 'MAKALINA' ? 1 : 0;
+    refresh();
+  };
+
+  $('#closeBuy').onclick = hideModal;
+
+  $('#doBuy').onclick = async ()=>{
+    const b = $('#doBuy');
+    const old = b.innerHTML;
+    b.disabled = true;
+    b.innerHTML = '<span class="spinner"></span><span>loading</span>';
+    await new Promise(r=>setTimeout(r,1000));
+
+    state.owned = true;
+    store.set('makala_owned','1');
+
+    const name = ($('#buyName').value || '').trim();
+    if(name) store.set('makala_user', name);
+
+    hideModal();
+    renderSidebar();
+    b.disabled = false;
+    b.innerHTML = old;
+    save();
+  };
+}
+
+function openNews(){
+  showModal(`
+    <div class="modal-card">
+      <h2>News</h2>
+      <p><strong>NEW FEATURE:</strong> macaroni — makala’s new cooking ai. Upload fridge photos and she’ll help you cook or find recipes.</p>
+      <p><strong>Coming very soon:</strong> live countdown to June 18, 2114.</p>
+
+      <h3 style="margin-top:12px">Patch notes</h3>
+      <ul class="news-list">
+        <li>Chats now save and switch properly.</li>
+        <li>Home screen suggestions start chats immediately.</li>
+        <li>Makala and Makalina personalities are back.</li>
+        <li>Markdown rendering is back.</li>
+      </ul>
+
+      <div style="display:flex;justify-content:flex-end">
+        <button id="newsOk" class="close-btn small-btn">Okay</button>
+      </div>
+    </div>
+  `);
+  $('#newsOk').onclick = hideModal;
+}
+
+function openAbout(){
+  showModal(`
+    <div class="modal-card">
+      <h2>About this project</h2>
+      <p>Placeholder about section.</p>
+      <p>This can be expanded later.</p>
+      <div style="display:flex;justify-content:flex-end">
+        <button id="aboutOk" class="close-btn small-btn">Close</button>
+      </div>
+    </div>
+  `);
+  $('#aboutOk').onclick = hideModal;
+}
+
+function openTtt(){
+  if(!state.owned){
+    openMakalina();
+    return;
+  }
+
+  let board = Array(9).fill('');
+  let done = false;
+  const wins = [
+    [0,1,2],[3,4,5],[6,7,8],
+    [0,3,6],[1,4,7],[2,5,8],
+    [0,4,8],[2,4,6]
+  ];
+
+  showModal(`
+    <div class="modal-card">
+      <h2>tic-tac-toe</h2>
+      <div id="tttBoard" class="ttt-grid"></div>
+      <div id="tttStatus" class="conv-time" style="margin-top:10px">You are O. Makalina is ⭐.</div>
+      <div style="display:flex;justify-content:flex-end;margin-top:12px">
+        <button id="tttClose" class="close-btn small-btn">Close</button>
+      </div>
+    </div>
+  `);
+
+  const boardEl = $('#tttBoard');
+  const statusEl = $('#tttStatus');
+
+  const check = sym => wins.find(line=> line.every(i=>board[i]===sym));
+
+  const render = ()=>{
+    boardEl.innerHTML = '';
+    board.forEach((v,i)=>{
+      const c = document.createElement('button');
+      c.className = 'ttt-cell';
+      c.textContent = v || '';
+      c.onclick = ()=>{
+        if(done || board[i]) return;
+        board[i] = 'O';
+        render();
+        if(check('O')) return finish('O');
+        if(board.every(Boolean)) return finish(null);
+
+        setTimeout(()=>{
+          const free = board.map((x,idx)=>x ? null : idx).filter(x=>x!==null);
+          const pick = free[Math.floor(Math.random()*free.length)];
+          board[pick] = '⭐';
+          render();
+          if(check('⭐')) return finish('⭐');
+          if(board.every(Boolean)) return finish(null);
+        },350);
+      };
+      boardEl.appendChild(c);
+    });
+  };
+
+  const finish = winner=>{
+    done = true;
+    const line = check(winner);
+    if(line) line.forEach(i=> boardEl.children[i].classList.add('win'));
+    statusEl.textContent = winner === null ? 'Draw.' : winner === 'O' ? 'You won.' : 'Makalina won.';
+    setTimeout(hideModal,1100);
+  };
+
+  $('#tttClose').onclick = hideModal;
+  render();
+}
+
+function clearChats(){
+  if(!confirm('Clear all chats?')) return;
+  state.chats = [];
+  state.activeId = null;
+  save();
+  renderSidebar();
+  openHome();
+}
+
+function escapeHtml(s){
+  return String(s || '').replace(/[&<>\"]/g, m => ({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;'
+  }[m]));
+}
+
+function init(){
+  load();
+  ensureChat();
+  renderTheme();
+  renderModels();
+  setTheme(store.get('makala_theme') || 'purple');
+  renderSidebar();
+  renderSuggestions();
+
+  el.heroSub.textContent = suggestions[Math.floor(Math.random()*suggestions.length)];
+  el.heroInner.classList.add('ready');
+
+  if(!state.homeTyped){
+    const txt = 'makala.ai';
+    let i = 0;
+    const tick = ()=>{
+      el.heroTitle.innerHTML = `${txt.slice(0,i)}<span class="caret"></span>`;
+      if(i < txt.length){
+        i++;
+        setTimeout(tick, 85);
+      } else {
+        el.heroTitle.innerHTML = `makala.ai<span class="star">⭐</span><span class="caret"></span>`;
+        state.homeTyped = true;
+        save();
+        setTimeout(()=>{
+          const c = el.heroTitle.querySelector('.caret');
+          if(c) c.style.opacity = '0';
+        },3000);
+      }
+    };
+    tick();
+  } else {
+    el.heroTitle.innerHTML = 'makala.ai<span class="star">⭐</span>';
+  }
+
+  openHome();
+}
+
+el.themeSelect.onchange = ()=> setTheme(el.themeSelect.value);
+el.modelSelect.onchange = ()=> el.chatModelSelect.value = el.modelSelect.value;
+el.chatModelSelect.onchange = ()=> el.modelSelect.value = el.chatModelSelect.value;
+el.homeBtn.onclick = ()=> openHome();
+el.clearBtn.onclick = clearChats;
+el.newsBtn.onclick = openNews;
+el.aboutBtn.onclick = openAbout;
+el.tttBtn.onclick = openTtt;
+el.makalinaBtn.onclick = openMakalina;
+el.homeSend.onclick = ()=> sendFromHome();
+el.chatSend.onclick = ()=> sendFromChat();
+
+el.homeInput.onkeydown = e=>{
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendFromHome();
+  }
+};
+
+el.chatInput.onkeydown = e=>{
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendFromChat();
+  }
+};
+
+el.suggestions.onclick = e=>{
+  const b = e.target.closest('[data-s]');
+  if(!b) return;
+  el.homeInput.value = decodeURIComponent(b.dataset.s);
+  el.homeInput.focus();
+};
+
+el.convList.onclick = e=>{
+  const b = e.target.closest('.conv-item');
+  if(!b) return;
+  const del = e.target.closest('.trash');
+  const id = b.dataset.id;
+
+  if(del){
+    state.chats = state.chats.filter(c=>c.id !== id);
+    if(state.activeId === id) state.activeId = null;
+    save();
+    renderSidebar();
+    openHome();
+    return;
+  }
+
+  state.activeId = id;
+  save();
+  const chat = activeChat();
+  if(chat){
+    setModeChatFromChat(chat);
+  }
+};
+
+function setModeChatFromChat(chat){
+  el.pageMode.textContent = 'chat';
+  el.pageTitle.textContent = chat.title || 'makala.ai';
+  el.hero.style.display = 'none';
+  el.chatView.style.display = 'flex';
+  el.chatModelSelect.value = chat.model || 'makala';
+  renderSidebar();
+  renderMessages();
+}
+
+function renderSidebarAndKeepMode(){
+  renderSidebar();
+  if(state.mode === 'home') openHome();
+  else openChat();
+}
+
+el.modalBackdrop.onclick = e=>{
+  if(e.target === el.modalBackdrop) hideModal();
+};
+
+function prepareReply(){
+  state.replyTo = null;
+}
+
+setInterval(()=>{
+  renderSidebar();
+},60000);
+
 init();
 </script>
 </body>
