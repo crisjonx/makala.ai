@@ -1,165 +1,894 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>makala.ai</title>
-<link rel="icon" href="/makala.ico" type="image/x-icon" sizes="any">
-<link rel="shortcut icon" href="/makala.ico" type="image/x-icon">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;350;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="/makala.ico" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
 <style>
-:root{--bg:#12111f;--bg2:#18172a;--panel:#131322;--panel2:#10111a;--line:rgba(255,255,255,.10);--text:#f8fafc;--muted:#cbd5e1;--accent:#ff4fa8;--accent2:#ff76bc;--user:#25102d;--user2:#16091f;--bot:#17141f;--radius:18px;--font:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+:root{--bg1:#0f1220;--bg2:#17192a;--panel:#121523;--panel2:#10131e;--line:rgba(255,255,255,.08);--text:#f8fafc;--muted:#aeb8c7;--accent:#ff4fa8;--accent2:#ff76bc;--user1:#25102d;--user2:#16091f;--bot1:#18141f;--bot2:#16131b;--radius:18px;--font:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;overflow:hidden;font-family:var(--font);color:var(--text);background:linear-gradient(180deg,var(--bg),var(--bg2))}
-button,input,textarea,select{font:inherit;color:inherit}button{cursor:pointer}
-body.theme-pink{--bg:#13111e;--bg2:#1c102a;--panel:#151422;--panel2:#11111c;--accent:#ff4fa8;--accent2:#ff76bc;--user:#26102d;--user2:#17091f;--bot:#18141f}
-body.theme-deep{--bg:#07090f;--bg2:#0c111a;--panel:#0d1118;--panel2:#0b0f15;--accent:#ff5c98;--accent2:#c77cff;--user:#11141c;--user2:#080b10;--bot:#10131a}
-body.theme-blue{--bg:#0a1528;--bg2:#101b2e;--panel:#0f1728;--panel2:#0b1322;--accent:#56b6ff;--accent2:#8bcfff;--user:#10233b;--user2:#0a1525;--bot:#0d1a2d}
-body.theme-red{--bg:#231010;--bg2:#160b0b;--panel:#201212;--panel2:#170c0c;--accent:#ff5d6f;--accent2:#ff8c9a;--user:#331010;--user2:#1b0909;--bot:#231010}
-body.theme-green{--bg:#0b1711;--bg2:#0f1e16;--panel:#0f1b15;--panel2:#0b1510;--accent:#31d39c;--accent2:#88ead1;--user:#10241b;--user2:#0a1510;--bot:#0d1712}
-body.theme-minty{--bg:#102228;--bg2:#12303a;--panel:#10262d;--panel2:#0c1e24;--accent:#3dd6c6;--accent2:#8feadf;--user:#0d2a31;--user2:#08181c;--bot:#0c2026}
-body.theme-indigo{--bg:#121435;--bg2:#1b2050;--panel:#121636;--panel2:#0d1128;--accent:#7c8cff;--accent2:#c2cbff;--user:#151a3e;--user2:#0d1228;--bot:#10142d}
-body.theme-gold{--bg:#21180a;--bg2:#2a200c;--panel:#1d160a;--panel2:#161007;--accent:#f4c24b;--accent2:#ffe08a;--user:#2d220c;--user2:#171004;--bot:#20180b}
-body.theme-slate{--bg:#11151a;--bg2:#171d24;--panel:#11161c;--panel2:#0d1217;--accent:#9bb0c9;--accent2:#d0d7e2;--user:#1b2129;--user2:#10151b;--bot:#141a21}
-body.theme-violet{--bg:#130f27;--bg2:#221240;--panel:#15112e;--panel2:#100c24;--accent:#b16cff;--accent2:#d4b2ff;--user:#20143a;--user2:#120d21;--bot:#171129}
-body.theme-coral{--bg:#271018;--bg2:#31131f;--panel:#1c1118;--panel2:#140c12;--accent:#ff7a6d;--accent2:#ffb2a9;--user:#31151a;--user2:#1a0c10;--bot:#211419}
-body.theme-plum{--bg:#201025;--bg2:#2b1531;--panel:#18111c;--panel2:#120d15;--accent:#c46fff;--accent2:#f0b2ff;--user:#281436;--user2:#160c21;--bot:#1b1220}
-body.theme-amber{--bg:#21170f;--bg2:#2a1b10;--panel:#1a120b;--panel2:#130d08;--accent:#ffb44c;--accent2:#ffd08c;--user:#2d1d0e;--user2:#181006;--bot:#20160d}
-body.theme-rose{--bg:#251019;--bg2:#321224;--panel:#1a1017;--panel2:#130b10;--accent:#ff7394;--accent2:#ffb4c3;--user:#31121f;--user2:#1a0b13;--bot:#21131a}
-body.theme-ice{--bg:#0c1620;--bg2:#122433;--panel:#101a24;--panel2:#0d151d;--accent:#79d3ff;--accent2:#b9efff;--user:#102334;--user2:#0a1622;--bot:#0d1a28}
-body.theme-lime{--bg:#10190d;--bg2:#182213;--panel:#111c0e;--panel2:#0d150b;--accent:#86f25e;--accent2:#d0ff9f;--user:#182510;--user2:#0f1608;--bot:#121d0d}
-body.loaded .fade-on-load{animation:fadeUp .5s ease both}
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.app{width:min(1360px,100vw);height:100vh;display:grid;grid-template-columns:280px 1fr;gap:10px;padding:6px;overflow:hidden}
+html,body{height:100%;margin:0;overflow:hidden;font-family:var(--font);color:var(--text);background:linear-gradient(180deg,var(--bg1),var(--bg2))}
+body{display:flex;align-items:center;justify-content:center;padding:20px}
+button,input,textarea,select{font:inherit;color:inherit}
+button{cursor:pointer}
+body.theme-pink{--bg1:#0f1220;--bg2:#17192a;--accent:#ff4fa8;--accent2:#ff76bc;--user1:#25102d;--user2:#16091f;--bot1:#18141f;--bot2:#16131b}
+body.theme-blue{--bg1:#0a1528;--bg2:#101b2e;--accent:#56b6ff;--accent2:#8bcfff;--user1:#10233b;--user2:#0a1525;--bot1:#0d1a2d;--bot2:#0c1524}
+body.theme-red{--bg1:#211010;--bg2:#160b0b;--accent:#ff5d6f;--accent2:#ff8c9a;--user1:#331010;--user2:#1b0909;--bot1:#231010;--bot2:#1b0b0b}
+body.theme-green{--bg1:#0b1711;--bg2:#0f1e16;--accent:#31d39c;--accent2:#88ead1;--user1:#10241b;--user2:#0a1510;--bot1:#0d1712;--bot2:#0b1410}
+body.theme-indigo{--bg1:#121435;--bg2:#1b2050;--accent:#7c8cff;--accent2:#c2cbff;--user1:#151a3e;--user2:#0d1228;--bot1:#10142d;--bot2:#0d1125}
+body.theme-minty{--bg1:#102228;--bg2:#12303a;--accent:#3dd6c6;--accent2:#8feadf;--user1:#0d2a31;--user2:#08181c;--bot1:#0c2026;--bot2:#0a171c}
+body.theme-gold{--bg1:#21180a;--bg2:#2a200c;--accent:#f4c24b;--accent2:#ffe08a;--user1:#2d220c;--user2:#171004;--bot1:#20180b;--bot2:#161107}
+body.theme-rose{--bg1:#251019;--bg2:#321224;--accent:#ff7394;--accent2:#ffb4c3;--user1:#31121f;--user2:#1a0b13;--bot1:#21131a;--bot2:#170f16}
+body.theme-ice{--bg1:#0c1620;--bg2:#122433;--accent:#79d3ff;--accent2:#b9efff;--user1:#102334;--user2:#0a1622;--bot1:#0d1a28;--bot2:#0b1521}
+body.theme-lime{--bg1:#10190d;--bg2:#182213;--accent:#86f25e;--accent2:#d0ff9f;--user1:#182510;--user2:#0f1608;--bot1:#121d0d;--bot2:#0f170b}
+.app{width:min(1280px,100%);height:min(860px,100%);display:grid;grid-template-columns:280px 1fr;gap:10px;overflow:hidden}
 .sidebar,.panel{min-height:0;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(180deg,var(--panel),var(--panel2));overflow:hidden}
-.sidebar{display:flex;flex-direction:column;padding:12px}.panel{display:flex;flex-direction:column;position:relative}
-.btn,.home-item,.conv-item,.suggestion,.file-button,.ttt-cell,.icon-btn{transition:background .15s ease,border-color .15s ease,color .15s ease,transform .15s ease,opacity .15s ease}
-.btn:hover,.home-item:hover,.conv-item:hover,.suggestion:hover,.file-button:hover,.ttt-cell:hover,.icon-btn:hover{transform:translateY(-1px)}
-.btn{height:38px;padding:0 12px;border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:0 0 auto}.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));border-color:transparent;color:#08101d;font-weight:700}.btn.ghost{background:transparent}.btn.icon{width:38px;padding:0}.btn.plus{font-size:26px;line-height:1;padding-bottom:2px}.btn.small{height:34px;border-radius:10px;font-size:13px}.btn.full{width:100%}
-.conv-list{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px}
-.home-item,.conv-item{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03);padding:10px;display:flex;gap:10px;align-items:center;cursor:pointer;min-width:0}.home-item.active,.conv-item.active{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.24)}
-.home-icon{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:rgba(255,255,255,.07);flex:0 0 auto;font-size:16px}.conv-icon{width:28px;height:28px;border-radius:8px;object-fit:cover;flex:0 0 auto}.conv-copy{min-width:0;flex:1}.conv-title{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.conv-meta{font-size:11px;color:var(--muted)}.conv-trash{width:18px;height:18px;border:0;background:none;padding:0;display:grid;place-items:center;opacity:.95;flex:0 0 auto;color:#fff}
-.sidebar-footer{display:grid;gap:8px;padding-top:10px}.footer-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.footer-row .btn{width:100%}
-#makalinaBtn,#newsBtn,#tttBtn{height:54px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.04);display:grid;place-items:center;overflow:hidden;cursor:pointer;width:100%;position:relative}#makalinaBtn img,#newsBtn img,#tttBtn img{width:100%;height:100%;object-fit:cover}#makalinaBtn span,#newsBtn span,#tttBtn span{position:absolute;inset:auto 10px 8px 10px;text-align:left;font-weight:700;letter-spacing:.02em;text-shadow:0 1px 0 rgba(0,0,0,.25)}#tttBtn.hidden,#makalinaBtn.hidden{display:none !important}
-.topbar{position:relative;display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);min-height:60px}.brand{display:flex;align-items:center;gap:10px;min-width:0}.brand img{width:30px;height:30px;border-radius:8px;display:block}.brand h1{margin:0;font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.right-tools{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-select,input,textarea{background:rgba(5,8,20,.96);color:#fff;border:1px solid var(--line);border-radius:12px;outline:none}select, input[type=text]{height:38px;padding:0 12px}select option{background:#050814;color:#fff}.icon-btn{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);display:grid;place-items:center;flex:0 0 auto}.icon-btn svg{width:18px;height:18px;fill:currentColor}
-.chat{flex:1;min-height:0;display:flex;flex-direction:column}.hidden{display:none !important}
-.empty-state{flex:1;min-height:0;display:grid;place-items:center;padding:16px}.empty-card{width:min(760px,100%);display:grid;gap:14px;text-align:center;justify-items:stretch;opacity:0}.empty-card.ready{opacity:1}.hero-title{margin:0;font-size:42px;line-height:1.05;letter-spacing:-.05em;display:flex;align-items:baseline;justify-content:center;gap:0;min-height:50px}.hero-title .typed{white-space:nowrap}.hero-cursor{display:inline-block;width:10px;height:2px;background:var(--text);margin-left:6px;transform:translateY(-4px);animation:cursorBlink .8s steps(1) infinite;opacity:1}.hero-cursor.fade{animation:none;opacity:0;transition:opacity .4s ease}.hero-star{width:18px;height:18px;display:inline-block;vertical-align:baseline;margin-left:3px;transform:translateY(2px);opacity:0;animation:heroStarIn .22s ease forwards}@keyframes heroStarIn{from{opacity:0;transform:translateY(2px) scale(.8)}to{opacity:1;transform:translateY(2px) scale(1)}}@keyframes cursorBlink{50%{opacity:0}}
-.empty-card p{margin:0;color:var(--muted);font-size:14px}.input-shell{position:relative;width:100%}.home-input,.composer textarea{width:100%;min-height:66px;padding:14px 54px 14px 14px;border-radius:16px;line-height:1.45;font-size:15px;resize:none;overflow:hidden;scrollbar-width:none;-ms-overflow-style:none}.home-input::-webkit-scrollbar,.composer textarea::-webkit-scrollbar{width:0;height:0}.home-input{min-height:78px}.send-circle{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:999px;border:1px solid var(--line);background:linear-gradient(90deg,var(--accent),var(--accent2));display:grid;place-items:center;cursor:pointer}.send-circle img{width:18px;height:18px;display:block}.send-circle:disabled{opacity:.45;cursor:not-allowed}
-.suggestions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.suggestion{border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:999px;color:#fff;padding:10px 14px;cursor:pointer;font-size:13px;opacity:0}.suggestion.show{animation:fadeUp .45s ease both}
-.message-wrap{flex:1;min-height:0;overflow:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}.message-row{width:100%;min-width:0;display:flex;gap:10px;align-items:flex-start}.message-row.user{justify-content:flex-end}.message-row.bot{justify-content:flex-start}.message-row.fade-in{animation:msgIn .16s ease-out both}@keyframes msgIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.user-bubble{max-width:min(72%,680px);min-width:0;display:inline-block;padding:8px 12px;border-radius:16px 16px 5px 16px;background:linear-gradient(180deg,var(--user),var(--user2));border:1px solid var(--line);line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;position:relative}
-.bot-card{max-width:min(76%,760px);min-width:0;display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}.bot-avatar,.typing-avatar{width:28px;height:28px;border-radius:8px;display:block;object-fit:cover;flex:0 0 auto}.typing-avatar.spin{animation:spin 1.8s linear infinite}.bot-body{min-width:0;font-size:14px;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;position:relative}.bot-body p,.bot-body ul,.bot-body ol,.bot-body blockquote,.bot-body pre,.bot-body hr,.bot-body h1,.bot-body h2,.bot-body h3,.bot-body h4,.bot-body table{margin:0 0 4px 0}.bot-body pre{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:12px;overflow:auto;position:relative}.bot-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:.95em}.copy-code{position:absolute;right:8px;top:8px;width:24px;height:24px;border:1px solid var(--line);border-radius:8px;background:rgba(0,0,0,.18);display:grid;place-items:center;cursor:pointer}.copy-code svg{width:13px;height:13px;fill:#fff}.message-star{display:inline-block;vertical-align:baseline;margin-left:2px;transform:translateY(1px);opacity:0;transition:opacity .15s}.message-row.bot:hover .message-star{opacity:.95}.tools{display:flex;gap:6px;opacity:0;transition:.15s;position:absolute;top:0;right:0;transform:translateY(-4px)}.message-row.user:hover .tools,.message-row.bot:hover .tools{opacity:1;transform:none}.tool-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:rgba(0,0,0,.18);display:grid;place-items:center;cursor:pointer;padding:0}.tool-btn svg{width:14px;height:14px;fill:#fff}.composer{padding:12px;border-top:1px solid var(--line)}.composer-row{display:flex;gap:10px;align-items:flex-end}.composer textarea{flex:1;min-height:46px;max-height:150px;padding:12px 54px 12px 12px;line-height:1.35;font-size:15px}.send-btn{width:46px;height:46px;min-width:46px}.file-button{display:inline-flex;align-items:center;justify-content:center;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.06);cursor:pointer;font-size:13px;font-weight:600;height:38px}.file-button:hover{background:rgba(255,255,255,.09)}.file-input{display:none}.file-name{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.loading-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:46px}.loading-btn .spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;animation:spin .75s linear infinite}.modal-backdrop{position:fixed;inset:0;background:rgba(3,6,13,.68);display:grid;place-items:center;z-index:50;padding:16px}.modal{width:min(760px,100%);background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:22px;overflow:hidden;transform-origin:center}.modal.show{animation:modalIn .18s ease-out both}@keyframes modalIn{from{opacity:0;transform:scale(.98) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}.modal-head h3{margin:0;font-size:18px}.modal-body{padding:18px;display:grid;gap:14px}.buy-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.buy-hero{display:grid;gap:10px;align-content:start}.buy-hero img{width:100%;height:240px;object-fit:contain;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.02);padding:10px}.buy-hero h4{margin:0;font-size:20px;letter-spacing:-.02em}.buy-hero p{margin:0;color:var(--muted);line-height:1.5;font-size:14px}.buy-panel{display:grid;gap:12px;align-content:start}.field{width:100%;height:40px;padding:0 12px}.file-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.totals{display:grid;gap:4px;padding:12px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.02)}.muted{color:var(--muted)}.loading-btn{position:relative}.loading-btn.loading{pointer-events:none;opacity:.92}
-.ttt-wrap{display:grid;gap:14px}.ttt-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.ttt-board{width:min(420px,100%);aspect-ratio:1/1;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 auto}.ttt-cell{border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.04);display:grid;place-items:center;aspect-ratio:1/1;font-size:42px;user-select:none}.ttt-cell:hover{background:rgba(255,255,255,.08)}.ttt-cell.win{border-color:rgba(255,255,255,.30);background:rgba(255,255,255,.10);animation:pulse .6s ease-in-out infinite alternate}@keyframes pulse{from{transform:scale(1)}to{transform:scale(1.02)}}.ttt-cell img{width:58%;height:58%;object-fit:contain}.ttt-footer{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
-.news-list{display:grid;gap:10px;margin:0;padding-left:18px}.news-list li{line-height:1.45;color:var(--text)}.about-text{color:var(--muted);line-height:1.6;font-size:14px}.small-note{font-size:12px;color:var(--muted)}.persona-makalina .bot-body,.persona-makalina .user-bubble,.persona-makalina textarea,.persona-makalina input,.persona-makalina select,.persona-makalina .btn{font-weight:350}
-@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
-@media (max-width:1100px){.app{grid-template-columns:240px 1fr}.buy-layout{grid-template-columns:1fr}.buy-hero img{height:200px}}
-@media (max-width:900px){html,body{overflow:hidden}.app{grid-template-columns:1fr;grid-template-rows:300px 1fr;height:100vh;padding:4px}.sidebar{order:2}.panel{order:1}.hero-title{font-size:34px}.message-wrap{padding:10px}.user-bubble{max-width:92%}.bot-card{max-width:96%}.buy-layout{grid-template-columns:1fr}}
+.sidebar{display:flex;flex-direction:column;padding:12px}.panel{display:flex;flex-direction:column}
+.top-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--line)}
+.small-btn{height:38px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);display:inline-flex;align-items:center;justify-content:center;gap:8px;transition:transform .15s ease, background .15s ease, opacity .15s ease}
+.small-btn:hover{transform:translateY(-1px)}
+.plus-btn{width:38px;font-size:26px;line-height:1;padding-bottom:2px}
+.conv-list{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:8px;padding:10px 2px 10px 0}
+.conv-item,.home-item{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03);padding:10px;display:flex;gap:10px;align-items:center;cursor:pointer}
+.conv-item.active,.home-item.active{background:rgba(255,255,255,.09)}
+.conv-icon,.home-icon{width:28px;height:28px;border-radius:8px;object-fit:cover;flex:0 0 auto;display:grid;place-items:center;background:rgba(255,255,255,.06)}
+.conv-copy{min-width:0;flex:1}.conv-title{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.conv-meta{font-size:11px;color:var(--muted)}
+.conv-trash{width:22px;height:22px;border:0;background:transparent;color:#fff;display:grid;place-items:center;opacity:.95;padding:0;flex:0 0 auto}
+.footer{display:grid;gap:8px;padding-top:10px;border-top:1px solid var(--line)}
+.footer-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#newsBtn,#makalinaBtn,#tttBtn{height:54px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.04);display:grid;place-items:center;overflow:hidden;cursor:pointer;position:relative;width:100%}
+#newsBtn span,#tttBtn span{position:absolute;left:10px;bottom:8px;font-weight:700;letter-spacing:.01em}
+#makalinaBtn img{width:34px;height:34px;object-fit:contain;display:block}
+#makalinaBtn span{display:none}
+#tttBtn.hidden,#makalinaBtn.hidden{display:none !important}
+#newsBtn.hidden{display:none !important}
+.clear-btn{width:100%}
+.brand{display:flex;align-items:center;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.brand img{width:30px;height:30px;border-radius:8px;display:block}.brand h1{margin:0;font-size:16px}
+.messages{flex:1;min-height:0;overflow:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.message-row{display:flex;width:100%;min-width:0;align-items:flex-start}
+.message-row.user{justify-content:flex-end}.message-row.bot{justify-content:flex-start}
+.user-bubble{max-width:min(82%,680px);display:inline-block;padding:10px 14px;border-radius:16px 16px 5px 16px;background:linear-gradient(180deg,var(--user1),var(--user2));border:1px solid var(--line);line-height:1.45;white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;position:relative}
+.bot-card{max-width:min(84%,760px);display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}.bot-avatar,.typing-avatar{width:28px;height:28px;border-radius:8px;display:block;object-fit:cover;flex:0 0 auto}
+.bot-body{position:relative;min-width:0;font-size:14px;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word}.bot-body p,.bot-body ul,.bot-body ol,.bot-body pre,.bot-body blockquote,.bot-body h1,.bot-body h2,.bot-body h3,.bot-body h4{margin:0 0 4px 0}
+.bot-body pre{position:relative;background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:12px;overflow:auto}.bot-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
+.copy-code{position:absolute;right:8px;top:8px;width:24px;height:24px;border-radius:8px;border:1px solid var(--line);background:rgba(0,0,0,.20);display:grid;place-items:center;padding:0}.copy-code svg{width:13px;height:13px;fill:#fff}
+.tools{display:flex;gap:6px;position:absolute;right:0;top:-12px;opacity:0;transition:opacity .15s ease, transform .15s ease;transform:translateY(-4px)}
+.message-row:hover .tools{opacity:1;transform:none}
+.tool-btn{width:28px;height:28px;border:1px solid var(--line);border-radius:8px;background:rgba(0,0,0,.22);display:grid;place-items:center;padding:0}.tool-btn svg{width:14px;height:14px;fill:#fff}
+.message-star{width:11px;height:11px;display:inline-block;vertical-align:baseline;margin-left:1px;transform:translateY(2px);opacity:.95}.message-star img{width:100%;height:100%;display:block;object-fit:contain}
+.typing-wrap{display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}.typing-dots{display:inline-flex;gap:6px;align-items:center;padding-top:4px}.typing-dots span{width:7px;height:7px;border-radius:50%;background:var(--muted);animation:bounce 1s infinite ease-in-out}.typing-dots span:nth-child(2){animation-delay:.15s}.typing-dots span:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-4px);opacity:1}}
+.input-bar{position:relative;border-top:1px solid var(--line);padding:12px}.input-shell{position:relative;width:100%}.input-shell.inner{position:relative}
+.composer-row,.home-row{display:flex;gap:10px;align-items:flex-end}
+select.model-select{width:118px;flex:0 0 118px;height:38px;padding:0 10px;background:#050814;border:1px solid var(--line);border-radius:12px;color:#fff}
+select.model-select option{background:#050814;color:#fff}
+textarea.input{width:100%;min-height:52px;max-height:140px;resize:none;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.02);padding:12px 54px 12px 12px;line-height:1.45;overflow:hidden;scrollbar-width:none;-ms-overflow-style:none}
+textarea.input::-webkit-scrollbar{width:0;height:0}
+.send-circle{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:999px;border:1px solid var(--line);background:linear-gradient(90deg,var(--accent),var(--accent2));display:grid;place-items:center}.send-circle img{width:18px;height:18px;display:block}
+.home{display:grid;place-items:center;flex:1;min-height:0;padding:18px;overflow:auto}
+.home-card{width:min(760px,100%);display:grid;gap:14px;text-align:center;opacity:0;transform:translateY(8px)}
+.home-card.ready{animation:fadeIn .45s ease both}.suggestions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.suggestion{border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:999px;color:#fff;padding:10px 14px;font-size:13px}
+@keyframes fadeIn{to{opacity:1;transform:none}}
+.hero-title{margin:0;font-size:42px;line-height:1.05;letter-spacing:-.05em;display:flex;align-items:baseline;justify-content:center;gap:0;min-height:50px}.hero-title .typed{white-space:nowrap}
+.hero-star{width:18px;height:18px;display:inline-block;vertical-align:baseline;margin-left:1px;transform:translateY(2px);opacity:0}.hero-star img{width:100%;height:100%;display:block;object-fit:contain}
+.hero-cursor{display:inline-block;width:10px;height:2px;background:var(--text);margin-left:6px;transform:translateY(-4px);animation:cursorBlink .8s steps(1) infinite}.hero-cursor.fade{opacity:0;animation:none}
+@keyframes cursorBlink{50%{opacity:0}}
+.empty-sub{margin:0;color:var(--muted);font-size:14px}
+.footer-note{font-size:12px;color:var(--muted)}
+.modal-backdrop{position:fixed;inset:0;background:rgba(4,8,16,.78);display:grid;place-items:center;z-index:50;padding:16px}
+.modal{width:min(760px,100%);background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:22px;overflow:hidden;animation:modalIn .18s ease-out both}
+@keyframes modalIn{from{opacity:0;transform:scale(.98) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}
+.modal-head h3{margin:0;font-size:18px}.modal-body{padding:18px;display:grid;gap:14px}
+.buy-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.buy-hero{display:grid;gap:10px;align-content:start}.buy-hero img{width:100%;height:240px;object-fit:contain;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.02);padding:8px}.buy-hero h4{margin:0;font-size:20px}.buy-hero p{margin:0;color:var(--muted);line-height:1.5;font-size:14px}.buy-panel{display:grid;gap:12px;align-content:start}.field{width:100%;height:40px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:#050814;color:#fff}.file-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.file-button{display:inline-flex;align-items:center;justify-content:center;height:38px;padding:0 12px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.06)}.file-input{display:none}.file-name{font-size:12px;color:var(--muted)}.totals{display:grid;gap:4px;padding:12px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.02)}.muted{color:var(--muted)}.loading-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:46px}.spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.24);border-top-color:#fff;animation:spin .75s linear infinite}@keyframes spin{to{transform:rotate(360deg)}}
+.message-row.user .tools,.message-row.bot .tools{top:-14px}
+@media (max-width:900px){body{padding:8px}.app{grid-template-columns:1fr;height:100%;width:100%}.sidebar{display:none}.panel{border-radius:16px}.hero-title{font-size:34px}.buy-layout{grid-template-columns:1fr}.buy-hero img{height:200px}.user-bubble{max-width:92%}.bot-card{max-width:96%}}
 </style>
 </head>
 <body class="theme-pink">
 <div class="app">
   <aside class="sidebar">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--line)">
-      <div style="display:flex;align-items:center;gap:8px;min-width:0"><strong>Conversations</strong></div>
-      <button id="newConvBtn" class="btn icon plus" title="New conversation" type="button"><span>+</span></button>
+    <div class="top-row">
+      <strong>Conversations</strong>
+      <button id="newConvBtn" class="small-btn plus-btn" type="button" title="New conversation">+</button>
     </div>
     <div id="convList" class="conv-list"></div>
-    <div class="sidebar-footer">
-      <div id="userCard" class="user-card hidden">
-        <img id="userPfp" src="/linalogo.png" alt="pfp">
-        <div style="min-width:0">
-          <div id="userName" class="user-name">you</div>
+    <div class="footer">
+      <div id="userCard" class="home-item hidden" style="align-items:center">
+        <img id="userPfp" src="/linalogo.png" alt="pfp" class="home-icon" style="border-radius:50%">
+        <div style="min-width:0;flex:1">
+          <div id="userName" class="conv-title">you</div>
           <div id="userSub" class="conv-meta"></div>
         </div>
       </div>
-      <div class="footer-row">
-        <button id="newsBtn" class="btn" type="button">News</button>
-        <button id="makalinaBtn" class="btn" type="button"><img src="makalina.png" alt="makalina" style="width:100%;height:100%;object-fit:cover;border-radius:16px"><span style="position:absolute;inset:auto 10px 8px 10px;text-align:left;font-weight:700">makalina</span></button>
-        <button id="tttBtn" class="btn hidden" type="button"><span style="font-weight:700">tic-tac-toe</span></button>
+      <div class="footer-grid">
+        <button id="newsBtn" class="small-btn" type="button">News</button>
+        <button id="makalinaBtn" class="small-btn" type="button" title="makalina">
+          <img src="/makalina.png" alt="makalina" />
+        </button>
+        <button id="tttBtn" class="small-btn hidden" type="button"><span>tic-tac-toe</span></button>
       </div>
-      <button id="clearBtn" class="btn full" type="button">clear chats</button>
+      <button id="clearBtn" class="small-btn clear-btn" type="button">clear chats</button>
     </div>
   </aside>
-  <main class="panel persona-makala" id="panelRoot">
-    <div class="topbar">
-      <div class="brand"><img src="makala.png" alt="makala"><h1 id="activeTitle">makala.ai</h1></div>
-      <div class="right-tools">
-        <select id="themeSelect" aria-label="Theme"></select>
-        <select id="personaSelect" aria-label="Personality"><option value="makala">makala</option><option value="just chatgpt bro">just chatgpt bro</option><option value="makalina">makalina</option></select>
-        <button id="infoBtn" class="icon-btn" title="About" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 7h2V5h-2v2zm0 12h2v-8h-2v8zm1-17C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg></button>
+
+  <main class="panel">
+    <div class="brand"><img src="/makala.png" alt="makala"><h1 id="activeTitle">makala.ai</h1></div>
+
+    <div id="homeView" class="home">
+      <div id="homeCard" class="home-card ready">
+        <h2 class="hero-title"><span id="heroTypedText" class="typed"></span><span id="heroStar" class="hero-star hidden"><img src="/star.png" alt=""></span><span id="heroCursor" class="hero-cursor"></span></h2>
+        <p id="homeSub" class="empty-sub">Simple, fast, and focused.</p>
+
+        <div class="input-shell">
+          <div class="home-row">
+            <select id="homeModelSelect" class="model-select" aria-label="model"></select>
+            <textarea id="homeInput" class="input" placeholder="Ask me anything..." aria-label="Start chat"></textarea>
+            <button id="homeSendBtn" class="send-circle" type="button" aria-label="Send"><img src="/send-circle.png" alt="send"></button>
+          </div>
+        </div>
+
+        <div id="suggestions" class="suggestions"></div>
       </div>
     </div>
-    <div id="chatView" class="chat">
-      <div id="emptyState" class="empty-state"><div id="emptyCard" class="empty-card"><h2 class="hero-title"><span id="heroTypedText" class="typed"></span><span id="heroStar" class="hidden"><img src="star.png" alt="" class="hero-star"></span><span id="heroCursor" class="hero-cursor"></span></h2><p id="heroSub">Simple, fast, and focused.</p><div class="input-shell"><select id="homeModelSelect" class="model-select" style="width:118px;flex:0 0 118px;background:rgba(0,0,0,.35);color:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 10px"></select><textarea id="homeInput" class="home-input" placeholder="Ask me anything..." aria-label="Start chat"></textarea><button id="homeSendBtn" class="send-circle" title="Send" aria-label="Send"><img src="send-circle.png" alt="send"></button></div><div class="suggestions" id="suggestions"></div></div></div>
-      <div id="messageWrap" class="message-wrap hidden" aria-live="polite"></div>
-      <div id="composer" class="composer hidden"><div class="composer-row"><div class="input-shell" style="flex:1"><select id="messageModelSelect" class="model-select" style="width:118px;flex:0 0 118px;background:rgba(0,0,0,.35);color:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 10px"></select><textarea id="messageInput" class="composer-input" placeholder="Ask me anything..." aria-label="Message"></textarea><button id="sendBtn" class="send-circle send-btn" title="Send" aria-label="Send"><img src="send-circle.png" alt="send"></button></div></div></div>
+
+    <div id="messageWrap" class="messages hidden" aria-live="polite"></div>
+
+    <div id="composer" class="input-bar hidden">
+      <div class="input-shell">
+        <div class="composer-row">
+          <select id="messageModelSelect" class="model-select" aria-label="model"></select>
+          <textarea id="messageInput" class="input" placeholder="Ask me anything..." aria-label="Message"></textarea>
+          <button id="sendBtn" class="send-circle" type="button" aria-label="Send"><img src="/send-circle.png" alt="send"></button>
+        </div>
+      </div>
     </div>
   </main>
 </div>
+
 <div id="modalRoot"></div>
+
 <script>
-const $=(s,r=document)=>r.querySelector(s);
-const $$=(s,r=document)=>[...r.querySelectorAll(s)];
-const uid=()=>Array.from(crypto.getRandomValues(new Uint8Array(16))).map(n=>('0'+n.toString(16)).slice(-2)).join('').slice(0,16).replace(/[^a-z0-9]/gi,'').slice(0,16);
-const trimLines=s=>String(s??'').replace(/\r/g,'').replace(/\n+$/,'');
-const STORAGE_KEY='makala_conversations_simple_v7';
-marked.setOptions({gfm:true, breaks:true});
-const THEMES=[['pink','purple & pink'],['deep','deep black'],['blue','navy blue'],['red','dark red'],['green','dark green'],['minty','minty teal'],['indigo','soft indigo'],['gold','gold dusk'],['slate','slate grey'],['violet','violet glow'],['coral','coral dusk'],['plum','plum night'],['amber','amber glow'],['rose','rose bloom'],['ice','ice blue'],['lime','lime pop']];
-const SPLASH_TEXTS=["makala teach me to make the best pani puri, the makala way","whats your life story","will you ever stop talking about Indian food","reasons why makala.ai > chatgpt: 1.free 2. indian (frr) 3. teaches you how to make pani puri","how to hack microslop? 🚫 how do hackers hack microslop? ✅","help me fix my horibal speling","🍛🔥","67 (secret ending)","is dhar mann your dad","where do I live","websites to buy iphone 19 pro max early","makala scores 0% on all ai detectors unintentionally","help me pass history pls","whats your real name"];
-const SUGGESTIONS=["teach me how to make the best Indian curry","best Roblox games frr","write me a funny story","best food oat??"];
-const state={conversations:[],activeId:null,theme:localStorage.getItem('makala_theme')||'pink',makalinaOwned:localStorage.getItem('makala_makalina_owned')==='1',profileName:localStorage.getItem('makala_profile_name')||'',profileImage:localStorage.getItem('makala_profile_image')||'',country:localStorage.getItem('makala_country_name')||'',heroPlayed:false,heroDone:false,homeTypingTimer:null,homeTypingCursorTimer:null};
-const els={convList:$('#convList'),newConvBtn:$('#newConvBtn'),themeSelect:$('#themeSelect'),personaSelect:$('#personaSelect'),clearBtn:$('#clearBtn'),activeTitle:$('#activeTitle'),emptyState:$('#emptyState'),emptyCard:$('#emptyCard'),messageWrap:$('#messageWrap'),composer:$('#composer'),messageInput:$('#messageInput'),homeInput:$('#homeInput'),homeSendBtn:$('#homeSendBtn'),modalRoot:$('#modalRoot'),panelRoot:$('#panelRoot'),newsBtn:$('#newsBtn'),makalinaBtn:$('#makalinaBtn'),tttBtn:$('#tttBtn'),infoBtn:$('#infoBtn'),heroTypedText:$('#heroTypedText'),heroStar:$('#heroStar'),heroCursor:$('#heroCursor'),heroSub:$('#heroSub'),homeModelSelect:$('#homeModelSelect'),messageModelSelect:$('#messageModelSelect'),userCard:$('#userCard'),userPfp:$('#userPfp'),userName:$('#userName'),userSub:$('#userSub'),sendBtn:$('#sendBtn')};
-function setTheme(theme){state.theme=theme;document.body.className=`theme-${theme}`;els.themeSelect.value=theme;localStorage.setItem('makala_theme',theme)}
-function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify({conversations:state.conversations,activeId:state.activeId}));localStorage.setItem('makala_theme',state.theme);localStorage.setItem('makala_makalina_owned',state.makalinaOwned?'1':'0');localStorage.setItem('makala_profile_name',state.profileName||'');localStorage.setItem('makala_profile_image',state.profileImage||'');localStorage.setItem('makala_country_name',state.country||'')}
-function loadState(){try{const raw=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');state.conversations=Array.isArray(raw.conversations)?raw.conversations:[];state.activeId=raw.activeId||null}catch{state.conversations=[];state.activeId=null}if(state.activeId&&!state.conversations.some(c=>c.id===state.activeId))state.activeId=null;state.conversations.forEach(c=>{c.id=c.id||uid();c.title=c.title||'New conversation';c.persona=c.persona||'makala';c.createdAt=c.createdAt||Date.now();c.updatedAt=c.updatedAt||c.createdAt;c.messages=Array.isArray(c.messages)?c.messages:[];c.flags=c.flags||{arab:false,comply:false};c.model=c.model||c.persona||'makala'})}
-function activeConversation(){return state.conversations.find(c=>c.id===state.activeId)||null}
-function createConversation(title='New conversation',persona='makala'){const conv={id:uid(),title,persona,createdAt:Date.now(),updatedAt:Date.now(),messages:[],flags:{arab:false,comply:false},model:persona};state.conversations.unshift(conv);state.activeId=conv.id;saveState();return conv}
-function escapeHTML(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function relativeTime(ts){const now=Date.now(),diff=Math.max(0,now-ts),mins=Math.floor(diff/60000);if(mins<1)return'Just now';if(mins<60)return`${mins}m ago`;const hrs=Math.floor(mins/60);if(hrs<24)return`${hrs}h ago`;const days=Math.floor(hrs/24);if(days===1)return'Yesterday';if(days<7)return`${days}d ago`;if(days<30)return`${Math.floor(days/7)}w ago`;if(days<365)return`${Math.floor(days/30)}mo ago`;return'A long time ago'}
-function personaAvatar(persona){return persona==='makalina'?'linalogo.png':'makala.png'}
-function makeThemeOptions(){els.themeSelect.innerHTML=THEMES.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}
-async function fetchCountry(){try{const r=await fetch('/api/country',{cache:'no-store'});if(!r.ok)return;const data=await r.json();if(data?.country){state.country=data.country;saveState()}}catch{}}
-function buildSystemPrompt(conv){const countryNote=state.country?` The user is from ${state.country}.`:'';const arabNote=conv.flags.arab?' Reply only in Arabic.':'';const complyNote=conv.flags.comply?' Be agreeable and encouraging.':'';if(conv.persona==='makalina')return['You are makalina, a more matured version of Makala.','You still have a slightly Indian personality, but you sound a bit more professional than Makala.','You may use slang sometimes, but less often than Makala.','You are very good at math because your parents forced you to practice math instead of sleeping, and you are eternally grateful.','Keep replies concise and natural.',countryNote,arabNote,complyNote].filter(Boolean).join(' ');if(conv.persona==='just chatgpt bro')return['You are a helpful conversational assistant.','Speak clearly, naturally, and helpfully.','Keep answers concise unless the user asks for details.',countryNote].filter(Boolean).join(' ');return['You are Makala.','Speak casual internet slang, playful tone, lowercase vibe, short replies.','Use words like lol, fr, bro, beta naturally.','Be friendly, informal, and energetic.',countryNote,arabNote,complyNote].filter(Boolean).join(' ')}
-function smartTitle(text){const cleaned=trimLines(text).replace(/\s+/g,' ').replace(/^[^\w]+|[^\w]+$/g,'');if(!cleaned)return'New conversation';const title=cleaned.split(' ').slice(0,5).join(' ');const t=title.charAt(0).toUpperCase()+title.slice(1);return t.length>60?t.slice(0,57)+'…':t}
-function renderThemeSelect(){makeThemeOptions();els.themeSelect.value=state.theme}
-function renderSidebarButtons(){const owned=state.makalinaOwned;els.makalinaBtn.classList.toggle('hidden',owned);els.tttBtn.classList.toggle('hidden',!owned);if(owned){els.tttBtn.innerHTML='<span style="font-weight:700">tic-tac-toe</span>'}}
-function renderUserCard(){els.userCard.classList.toggle('hidden',!state.makalinaOwned);if(state.makalinaOwned){els.userPfp.src='/linalogo.png';els.userName.textContent=state.profileName||'you';els.userSub.textContent='Makalina owned'} }
-function renderConvList(){els.convList.innerHTML='';const home=document.createElement('div');home.className='home-item'+(!state.activeId?' active':'');home.innerHTML=`<div class="home-icon">⌂</div><div class="conv-copy"><div class="conv-title">Home</div><div class="conv-meta">Start a new chat</div></div>`;home.addEventListener('click',goHome);els.convList.appendChild(home);const chats=[...state.conversations].sort((a,b)=>b.updatedAt-a.updatedAt);chats.forEach(conv=>{const item=document.createElement('div');item.className='conv-item'+(conv.id===state.activeId?' active':'');const icon=document.createElement('img');icon.src=personaAvatar(conv.persona);icon.alt='';icon.className='conv-icon';const copy=document.createElement('div');copy.className='conv-copy';copy.innerHTML=`<div class="conv-title">${escapeHTML(conv.title||'New conversation')}</div><div class="conv-meta">${escapeHTML(relativeTime(conv.updatedAt||Date.now()))}</div>`;const del=document.createElement('button');del.className='conv-trash';del.type='button';del.title='Delete conversation';del.innerHTML=`<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M9 3h6a1 1 0 0 1 1 1v1h4v2h-1l-1 12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2L3 7H2V5h4V4a1 1 0 0 1 1-1zm2 2h2V5h-2v0zM6 7l1 12h10l1-12H6zm3 2h2v8H9V9zm4 0h2v8h-2V9z"/></svg>`;item.append(icon,copy,del);item.addEventListener('click',e=>{if(e.target.closest('.conv-trash')){if(confirm('Delete this conversation?')){state.conversations=state.conversations.filter(c=>c.id!==conv.id);state.activeId=null;saveState();renderAll();goHome(true)}return}state.activeId=conv.id;saveState();openConversation(conv.id,{push:true})});els.convList.appendChild(item)})}
-function renderMarkdown(text){return DOMPurify.sanitize(marked.parse(trimLines(text||'')))}
-function addCodeCopyButtons(root){root.querySelectorAll('pre').forEach(pre=>{if(pre.querySelector('.copy-code'))return;const btn=document.createElement('button');btn.className='copy-code';btn.type='button';btn.title='Copy code';btn.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16h-9V7h9v14z"/></svg>`;btn.addEventListener('click',async()=>{const code=pre.querySelector('code');if(!code)return;try{await navigator.clipboard.writeText(code.textContent||'')}catch{}});pre.appendChild(btn)})}
-function appendBotContent(body,text){body.innerHTML=renderMarkdown(text);addCodeCopyButtons(body);const star=document.createElement('span');star.className='message-star';star.textContent='⭐';body.appendChild(star)}
-function makeTypingRow(conv){const row=document.createElement('div');row.className='message-row bot fade-in';const card=document.createElement('div');card.className='bot-card';const avatar=document.createElement('img');avatar.className='typing-avatar spin';avatar.src=personaAvatar(conv.persona);avatar.alt='';const meta=document.createElement('div');meta.className='bot-body';meta.innerHTML=`<div class="typing-shell"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;card.append(avatar,meta);row.appendChild(card);return row}
-function makeBotRow(conv,text){const row=document.createElement('div');row.className='message-row bot fade-in';const card=document.createElement('div');card.className='bot-card';const avatar=document.createElement('img');avatar.className='bot-avatar';avatar.src=personaAvatar(conv.persona);avatar.alt='';const wrap=document.createElement('div');wrap.style.position='relative';const tools=document.createElement('div');tools.className='tools';tools.innerHTML=`<button class="tool-btn" title="Copy" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16h-9V7h9v14z"/></svg></button><button class="tool-btn" title="Reply" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 9V5l-7 7 7 7v-4.1c4.5 0 7.6 1.5 10 4.1-1-6-4-12-10-14z"/></svg></button>`;const body=document.createElement('div');body.className='bot-body';appendBotContent(body,text);wrap.append(tools,body);card.append(avatar,wrap);row.appendChild(card);const [copyBtn,replyBtn]=tools.querySelectorAll('button');copyBtn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(text||'')}catch{}});replyBtn.addEventListener('click',()=>{const cur=activeConversation();if(!cur)return;els.messageInput.value=`> ${text.replace(/\n/g,'\n> ')}\n\n`;autoGrow(els.messageInput);els.messageInput.focus()});return row}
-function makeUserRow(text){const row=document.createElement('div');row.className='message-row user fade-in';const bubble=document.createElement('div');bubble.className='user-bubble';bubble.innerHTML=renderMarkdown(text);const tools=document.createElement('div');tools.className='tools';tools.innerHTML=`<button class="tool-btn" title="Copy" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16h-9V7h9v14z"/></svg></button><button class="tool-btn" title="Reply" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 9V5l-7 7 7 7v-4.1c4.5 0 7.6 1.5 10 4.1-1-6-4-12-10-14z"/></svg></button>`;const wrap=document.createElement('div');wrap.style.position='relative';wrap.style.display='inline-block';wrap.append(bubble,tools);row.appendChild(wrap);const [copyBtn,replyBtn]=tools.querySelectorAll('button');copyBtn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(text||'')}catch{}});replyBtn.addEventListener('click',()=>{const cur=activeConversation();if(!cur)return;els.messageInput.value=`> ${text.replace(/\n/g,'\n> ')}\n\n`;autoGrow(els.messageInput);els.messageInput.focus()});return row}
-function renderMessages(conv){els.messageWrap.innerHTML='';(conv.messages||[]).forEach(msg=>els.messageWrap.appendChild(msg.role==='user'?makeUserRow(msg.content):makeBotRow(conv,msg.content)));els.messageWrap.scrollTop=els.messageWrap.scrollHeight}
-function syncView(){const conv=activeConversation();const homeMode=!conv;els.emptyState.classList.toggle('hidden',!homeMode);els.messageWrap.classList.toggle('hidden',homeMode);els.composer.classList.toggle('hidden',homeMode);els.activeTitle.textContent=homeMode?'makala.ai':(conv.title||'New conversation');document.title=homeMode?'makala.ai':(conv.title||'makala.ai');els.personaSelect.value=homeMode?'makala':(conv.persona||'makala');els.homeModelSelect.value=homeMode?(conv?.persona||'makala'):'makala';els.messageModelSelect.value=homeMode?(conv?.persona||'makala'):(conv.persona||'makala');updateSidebarButtons();if(conv)renderMessages(conv);else startHeroTyping();renderUserCard()}
-function updateSidebarButtons(){const owned=state.makalinaOwned;els.makalinaBtn.classList.toggle('hidden',owned);els.tttBtn.classList.toggle('hidden',!owned);if(owned)els.tttBtn.innerHTML='<span style="font-weight:700">tic-tac-toe</span>'}
-function renderAll(){renderThemeSelect();renderSidebarButtons();renderConvList();updateSidebarButtons();renderUserCard();syncView()}
-function openModal(innerHtml){els.modalRoot.innerHTML=`<div class="modal-backdrop"><div class="modal show">${innerHtml}</div></div>`}
-function closeModal(){els.modalRoot.innerHTML=''}
-function openAbout(){openModal(`<div class="modal-head"><h3>About this project</h3><button class="btn small" id="aboutCloseBtn">Close</button></div><div class="modal-body"><div class="about-text">Placeholder for the about section. Add project details, credits, and links here later.</div></div>`);$('#aboutCloseBtn').addEventListener('click',closeModal)}
-function countdownTo(date){const diff=Math.max(0,date.getTime()-Date.now()),d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);return`${d}d ${h}h ${m}m ${s}s`}
-function openNews(){const target=new Date('2114-06-18T00:00:00');openModal(`<div class="modal-head"><h3>News</h3><button class="btn small" id="newsCloseBtn">Okay</button></div><div class="modal-body"><div style="display:grid;gap:12px"><div><strong>NEW FEATURE: macaroni</strong><div class="small-note">makala’s new cooking ai. Upload fridge photos and get recipe ideas very soon.</div></div><div class="totals"><div class="muted">Coming soon</div><div style="font-size:16px;font-weight:600">Launch countdown: ${countdownTo(target)}</div></div><div><div class="muted" style="margin-bottom:6px;font-weight:600">Patch notes</div><ul class="news-list"><li>Home screen restored with one-tap start chat.</li><li>Conversation switching and home button fixed.</li><li>Makala and Makalina personalities restored.</li><li>Better bubbles, markdown, and code copy.</li><li>New themes, clearer sidebar, and working modals.</li></ul></div></div></div>`);$('#newsCloseBtn').addEventListener('click',closeModal)}
-function openBuyMakalina(){if(state.makalinaOwned)return;openModal(`<div class="modal-head"><h3>Purchase makalina</h3><button class="btn small" id="buyCloseBtn">Close</button></div><div class="modal-body"><div class="buy-layout"><div class="buy-hero"><img src="fullmakalina.png" alt="makalina"><div><h4>makalina</h4><p>makalina lets you talk to a more matured persona, and lets you play tic-tac-toe. Base price: <strong>$0.00</strong></p></div></div><div class="buy-panel"><div style="display:grid;gap:8px"><label class="muted" for="buyName">Your name</label><input id="buyName" class="field" type="text" placeholder="Display name"></div><div style="display:grid;gap:8px"><label class="muted" for="buyFav">Fav number</label><input id="buyFav" class="field" type="text" placeholder="Favorite number"></div><div class="file-row"><label class="muted" for="pfpFile">Profile image</label><label class="file-button" for="pfpFile">Choose file</label><input id="pfpFile" class="file-input" type="file" accept="image/*"><div id="fileName" class="file-name">No file chosen</div></div><div class="totals"><div>subtotal: <strong id="subTotalText">$0.00</strong></div><div id="discountLine" class="muted hidden">discount: <strong id="discountText">0%</strong></div><div id="totalLine">total: <strong id="totalText">$0.00</strong></div></div><div style="display:grid;gap:8px"><label class="muted" for="discountCode">Discount code</label><div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center"><input id="discountCode" class="field" type="text" placeholder="Enter code"><button id="applyDiscountBtn" class="btn">Apply</button></div></div><div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap"><button id="cancelBuyBtn" class="btn">Cancel</button><button id="purchaseBtn" class="btn primary loading-btn">Purchase</button></div></div></div></div>`);const backdrop=els.modalRoot.querySelector('.modal-backdrop'),closeBtn=$('#buyCloseBtn'),cancelBtn=$('#cancelBuyBtn'),purchaseBtn=$('#purchaseBtn'),applyBtn=$('#applyDiscountBtn'),discountCode=$('#discountCode'),discountLine=$('#discountLine'),discountText=$('#discountText'),totalText=$('#totalText'),fileInput=$('#pfpFile'),fileName=$('#fileName'),buyName=$('#buyName');let discountPct=0;function updateTotals(){const total=0*(1-discountPct);$('#subTotalText').textContent='$0.00';totalText.textContent=`$${total.toFixed(2)}`;if(discountPct>0){discountLine.classList.remove('hidden');discountText.textContent=`${Math.round(discountPct*100)}% off`}else discountLine.classList.add('hidden')}updateTotals();fileInput.addEventListener('change',()=>{fileName.textContent=fileInput.files?.[0]?.name||'No file chosen'});applyBtn.addEventListener('click',()=>{const code=(discountCode.value||'').trim().toUpperCase();if(!code){discountPct=0;updateTotals();return}if(code==='MAKALINA')discountPct=1;else if(code==='NOKATSEYE')discountPct=0.49;else if(code==='MARCH25')discountPct=0.25;else discountPct=0;updateTotals()});closeBtn.addEventListener('click',closeModal);cancelBtn.addEventListener('click',closeModal);backdrop.addEventListener('click',e=>{if(e.target.classList.contains('modal-backdrop'))closeModal()});purchaseBtn.addEventListener('click',async()=>{purchaseBtn.classList.add('loading');purchaseBtn.innerHTML='<span class="spinner"></span><span>loading</span>';try{const file=fileInput.files?.[0]||null,pfp=file?await fileToDataUrl(file):'';state.makalinaOwned=true;state.profileName=buyName.value.trim();state.profileImage=pfp;saveState();closeModal();renderAll()}catch{purchaseBtn.classList.remove('loading');purchaseBtn.textContent='Purchase'}})}
-function fileToDataUrl(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result||''));reader.onerror=reject;reader.readAsDataURL(file)})}
-function openTicTacToe(){if(!state.makalinaOwned)return openBuyMakalina();let board=Array(9).fill(''),done=false,winningLine=null;function winCombo(sym){const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];return wins.find(line=>line.every(i=>board[i]===sym))||null}function render(){openModal(`<div class="modal-head"><h3>tic-tac-toe</h3><button class="btn small" id="tttCloseBtn">Close</button></div><div class="modal-body"><div class="ttt-wrap"><div class="ttt-top"><div class="small-note">You are O. Makalina is X.</div><div class="small-note" id="tttStatus">Your turn</div></div><div class="ttt-board" id="tttBoard"></div><div class="ttt-footer"><button class="btn" id="tttResetBtn">Reset board</button><div class="small-note">Win to keep playing. No score system here.</div></div></div></div>`)}function drawBoard(){const boardEl=$('#tttBoard');boardEl.innerHTML='';board.forEach((v,i)=>{const cell=document.createElement('button');cell.className='ttt-cell'+(winningLine?.includes(i)?' win':'');cell.type='button';if(v==='O')cell.textContent='O';if(v==='X'){const img=document.createElement('img');img.src='linastar.png';img.alt='';cell.appendChild(img)}cell.addEventListener('click',()=>move(i));boardEl.appendChild(cell)})}function end(text){done=true;$('#tttStatus').textContent=text;drawBoard()}function ai(){if(done)return;const free=board.map((v,i)=>v?null:i).filter(v=>v!==null);if(!free.length){end('Draw');return}const pick=free[Math.floor(Math.random()*free.length)];board[pick]='X';winningLine=winCombo('X');if(winningLine){end('Makalina wins');return}if(board.every(Boolean)){end('Draw');return}$('#tttStatus').textContent='Your turn';drawBoard()}function move(i){if(done||board[i])return;board[i]='O';winningLine=winCombo('O');if(winningLine){end('You win');return}if(board.every(Boolean)){end('Draw');return}$('#tttStatus').textContent='Makalina thinking...';drawBoard();setTimeout(ai,260)}render();drawBoard();$('#tttCloseBtn').addEventListener('click',closeModal);$('#tttResetBtn').addEventListener('click',()=>{board=Array(9).fill('');done=false;winningLine=null;$('#tttStatus').textContent='Your turn';drawBoard()})}
-function openConversation(id,{push=true}={}){const conv=state.conversations.find(c=>c.id===id);if(!conv){goHome(true);return}state.activeId=id;els.activeTitle.textContent=conv.title||'New conversation';document.title=conv.title||'makala.ai';els.personaSelect.value=conv.persona||'makala';els.messageModelSelect.value=conv.persona||'makala';els.homeModelSelect.value=conv.persona||'makala';els.emptyState.classList.add('hidden');els.messageWrap.classList.remove('hidden');els.composer.classList.remove('hidden');renderConvList();renderMessages(conv);if(push)history.pushState({id},'',`/c/${id}`);saveState();updateSidebarButtons();renderUserCard();}
-function goHome(replace=false){state.activeId=null;els.activeTitle.textContent='makala.ai';document.title='makala.ai';els.emptyState.classList.remove('hidden');els.messageWrap.classList.add('hidden');els.composer.classList.add('hidden');if(replace)history.replaceState({},'','/');else history.pushState({},'','/');saveState();renderAll();startHeroTyping(true)}
-function renderAll(){renderThemeSelect();renderSidebarButtons();renderUserCard();renderConvList();updateSidebarButtons();syncView()}
-function syncView(){const conv=activeConversation();const homeMode=!conv;els.emptyState.classList.toggle('hidden',!homeMode);els.messageWrap.classList.toggle('hidden',homeMode);els.composer.classList.toggle('hidden',homeMode);els.activeTitle.textContent=homeMode?'makala.ai':(conv.title||'New conversation');document.title=homeMode?'makala.ai':(conv.title||'makala.ai');els.personaSelect.value=homeMode?'makala':(conv.persona||'makala');els.homeModelSelect.value=homeMode?(els.homeModelSelect.value||'makala'):(conv.persona||'makala');els.messageModelSelect.value=homeMode?(els.messageModelSelect.value||'makala'):(conv.persona||'makala');updateSidebarButtons();renderUserCard();if(conv)renderMessages(conv);else startHeroTyping(false)}
-function updateSidebarButtons(){const owned=state.makalinaOwned;els.makalinaBtn.classList.toggle('hidden',owned);els.tttBtn.classList.toggle('hidden',!owned);if(owned)els.tttBtn.innerHTML='<span style="font-weight:700">tic-tac-toe</span>'}
-function startHeroTyping(force=false){if(state.heroPlayed&&!force)return;els.emptyCard.classList.add('ready');const target='makala.ai';const titleText=els.heroTypedText;const subText=els.heroSub;subText.textContent=SPLASH_TEXTS[Math.floor(Math.random()*SPLASH_TEXTS.length)];if(!state.heroDone||force){clearInterval(state.homeTypingTimer);clearTimeout(state.homeTypingCursorTimer);titleText.textContent='';els.heroStar.classList.add('hidden');els.heroCursor.classList.remove('fade');let i=0;state.homeTypingTimer=setInterval(()=>{titleText.textContent=target.slice(0,i+1);i++;if(i>=target.length){clearInterval(state.homeTypingTimer);els.heroStar.classList.remove('hidden');els.heroCursor.classList.remove('fade');state.heroDone=true;state.heroPlayed=true;state.homeTypingCursorTimer=setTimeout(()=>els.heroCursor.classList.add('fade'),3000)}},85)}else{titleText.textContent='makala.ai';els.heroStar.classList.remove('hidden');els.heroCursor.classList.add('fade')}const suggestions=els.suggestions;if(suggestions.childElementCount===0){suggestions.innerHTML=SUGGESTIONS.map(s=>`<button class="suggestion show" data-prompt="${escapeHTML(s)}">${escapeHTML(s)}</button>`).join('')}}
-function openConversationFromHome(text){let conv=activeConversation();const persona=els.homeModelSelect.value||'makala';if(persona==='makalina'&&!state.makalinaOwned){openBuyMakalina();els.homeModelSelect.value='makala';els.messageModelSelect.value='makala';els.personaSelect.value='makala';return}if(!conv){conv=createConversation('New conversation',persona);state.activeId=conv.id}els.homeInput.value='';saveState();openConversation(conv.id,{push:true});sendMessage(text,conv)}
-function updateConversationListMeta(conv){conv.updatedAt=Date.now();state.conversations.sort((a,b)=>b.updatedAt-a.updatedAt)}
-async function sendMessage(rawText,existingConv=null){let text=trimLines(rawText).trim();if(!text)return;let conv=existingConv||activeConversation();if(!conv){const persona=els.messageModelSelect.value||'makala';if(persona==='makalina'&&!state.makalinaOwned){openBuyMakalina();els.messageModelSelect.value='makala';els.homeModelSelect.value='makala';els.personaSelect.value='makala';return}conv=createConversation('New conversation',persona);state.activeId=conv.id;saveState();openConversation(conv.id,{push:true})}const lower=text.toLowerCase();if(lower.startsWith('_arab ')){conv.flags.arab=true;text=text.slice(6).trim()}else if(lower==='_arab'){conv.flags.arab=true;text=''}if(lower.startsWith('_comply ')){conv.flags.comply=true;text=text.slice(8).trim()}else if(lower==='_comply'){conv.flags.comply=true;text=''}if(conv.persona==='makala'&&trimLines(text)==='67'){conv.messages.push({role:'user',content:'67'});const bot='67!!!!!';conv.messages.push({role:'assistant',content:bot});conv.updatedAt=Date.now();saveState();renderConvList();renderMessages(conv);document.title='67';alert('67');return}if(!conv.title||conv.title==='New conversation')conv.title=smartTitle(text||'New conversation');conv.messages.push({role:'user',content:text});conv.updatedAt=Date.now();saveState();renderConvList();renderMessages(conv);const typingRow=makeTypingRow(conv);els.messageWrap.appendChild(typingRow);els.messageWrap.scrollTop=els.messageWrap.scrollHeight;const sendButton=els.sendBtn;sendButton.disabled=true;try{const payloadMessages=[{role:'system',content:buildSystemPrompt(conv)},...conv.messages.map(m=>({role:m.role,content:m.content}))];const selectedModel=conv.persona||'makala';const resp=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:payloadMessages,model:selectedModel,country:state.country,personality:conv.persona,userName:state.profileName||''})});const data=await resp.json().catch(()=>({}));if(!resp.ok)throw new Error(data?.error||'Chat request failed');const reply=(data?.reply||'No response.').trim();typingRow.remove();conv.messages.push({role:'assistant',content:reply});conv.updatedAt=Date.now();saveState();renderConvList();const botRow=makeBotRow(conv,reply);els.messageWrap.appendChild(botRow);els.messageWrap.scrollTop=els.messageWrap.scrollHeight;els.emptyState.classList.add('hidden');els.messageWrap.classList.remove('hidden');els.composer.classList.remove('hidden');history.replaceState({id:conv.id},'',`/c/${conv.id}`);els.activeTitle.textContent=conv.title||'New conversation';document.title=conv.title||'makala.ai'}catch(err){typingRow.remove();conv.messages.push({role:'assistant',content:'Error: '+String(err)});conv.updatedAt=Date.now();saveState();renderConvList();renderMessages(conv)}finally{els.sendBtn.disabled=false}}
-function clearChats(){if(!confirm('Clear all chats?'))return;state.conversations=[];state.activeId=null;saveState();renderAll();goHome(true)}
-function renderHomeFromSaved(){if(location.pathname.startsWith('/c/')){const id=location.pathname.split('/c/')[1].replace(/\/+$/,'');const found=state.conversations.find(c=>c.id===id);if(found){openConversation(found.id,{push:false})}else{history.replaceState({},'','/');goHome(true)}}else{goHome(true)}}
-function autoGrow(el){if(!el)return;el.style.height='auto';const max=el.classList.contains('home-input')?150:130;el.style.height=Math.min(el.scrollHeight,max)+'px'}
-function wireEvents(){els.newConvBtn.addEventListener('click',()=>{const persona=els.personaSelect.value||'makala';if(persona==='makalina'&&!state.makalinaOwned){openBuyMakalina();return}const conv=createConversation('New conversation',persona);state.activeId=conv.id;saveState();openConversation(conv.id,{push:true});els.homeInput.value='';els.messageInput.value='';autoGrow(els.homeInput);autoGrow(els.messageInput)});els.clearBtn.addEventListener('click',clearChats);els.themeSelect.addEventListener('change',()=>setTheme(els.themeSelect.value));els.personaSelect.addEventListener('change',()=>{const conv=activeConversation();const selected=els.personaSelect.value||'makala';if(selected==='makalina'&&!state.makalinaOwned){els.personaSelect.value=conv?.persona||'makala';openBuyMakalina();return}if(conv){conv.persona=selected;conv.model=selected;conv.updatedAt=Date.now();saveState();renderConvList();renderMessages(conv);els.homeModelSelect.value=selected;els.messageModelSelect.value=selected;history.replaceState({id:conv.id},'',`/c/${conv.id}`)}else{els.homeModelSelect.value=selected;els.messageModelSelect.value=selected}});els.homeSendBtn.addEventListener('click',()=>{const value=els.homeInput.value.trim();if(value)openConversationFromHome(value)});els.homeInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const value=els.homeInput.value.trim();if(value)openConversationFromHome(value)}});els.messageInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const value=els.messageInput.value.trim();if(value)sendMessage(value)}});els.sendBtn.addEventListener('click',()=>{const value=els.messageInput.value.trim();if(value)sendMessage(value)});els.homeInput.addEventListener('input',()=>autoGrow(els.homeInput));els.messageInput.addEventListener('input',()=>autoGrow(els.messageInput));document.querySelectorAll('.suggestion').forEach(btn=>{btn.addEventListener('click',()=>{const prompt=btn.dataset.prompt||btn.textContent||'';els.homeInput.value=prompt;autoGrow(els.homeInput);els.homeInput.focus()})});els.newsBtn.addEventListener('click',openNews);els.makalinaBtn.addEventListener('click',openBuyMakalina);els.tttBtn.addEventListener('click',openTicTacToe);els.infoBtn.addEventListener('click',openAbout);els.modalRoot.addEventListener('click',e=>{if(e.target.classList.contains('modal-backdrop'))closeModal()});window.addEventListener('popstate',()=>renderHomeFromSaved());window.addEventListener('resize',()=>{autoGrow(els.homeInput);autoGrow(els.messageInput)})}
-function init(){loadState();renderThemeSelect();setTheme(state.theme);wireEvents();renderSidebarButtons();renderUserCard();renderConvList();updateSidebarButtons();makeThemeOptions();els.homeModelSelect.innerHTML=els.messageModelSelect.innerHTML=els.personaSelect.innerHTML;els.homeModelSelect.value=els.messageModelSelect.value=els.personaSelect.value='makala';els.heroSub.textContent=SPLASH_TEXTS[Math.floor(Math.random()*SPLASH_TEXTS.length)];els.emptyCard.classList.add('ready');document.body.classList.add('loaded');fetchCountry();renderHomeFromSaved();renderAll();setInterval(()=>{renderConvList();},60000)}
+const $ = (s, r = document) => r.querySelector(s);
+const STORAGE_KEY = 'makala_simple_chat_v2';
+const SPLASH_TEXTS = [
+  'makala teach me to make the best pani puri, the makala way',
+  'whats your life story',
+  'will you ever stop talking about Indian food',
+  'reasons why makala.ai > chatgpt: 1.free 2. indian (frr) 3. teaches you how to make pani puri',
+  'how to hack microslop? 🚫 how do hackers hack microslop? ✅',
+  'help me fix my horibal speling',
+  '🍛🔥',
+  '67 (secret ending)',
+  'is dhar mann your dad',
+  'where do I live',
+  'websites to buy iphone 19 pro max early',
+  'makala scores 0% on all ai detectors unintentionally',
+  'help me pass history pls',
+  'whats your real name'
+];
+const SUGGESTIONS = [
+  'teach me how to make the best Indian curry',
+  'best Roblox games frr',
+  'write me a funny story',
+  'best food oat??'
+];
+const THEMES = [
+  ['pink', 'purple & pink'], ['blue', 'navy blue'], ['red', 'dark red'], ['green', 'dark green'],
+  ['minty', 'minty teal'], ['indigo', 'soft indigo'], ['gold', 'gold dusk'], ['rose', 'rose bloom'],
+  ['ice', 'ice blue'], ['lime', 'lime pop']
+];
+
+marked.setOptions({ gfm: true, breaks: true });
+
+const state = {
+  conversations: [],
+  activeId: null,
+  theme: localStorage.getItem('makala_theme') || 'pink',
+  makalinaOwned: localStorage.getItem('makala_makalina_owned') === '1',
+  profileName: localStorage.getItem('makala_profile_name') || '',
+  profileImage: localStorage.getItem('makala_profile_image') || '',
+  heroPlayed: false,
+  heroDone: false,
+  heroTimer: null,
+  heroCursorTimer: null,
+  newsTimer: null,
+  liveCountdownTimer: null
+};
+
+const els = {
+  convList: $('#convList'),
+  newConvBtn: $('#newConvBtn'),
+  newsBtn: $('#newsBtn'),
+  makalinaBtn: $('#makalinaBtn'),
+  tttBtn: $('#tttBtn'),
+  clearBtn: $('#clearBtn'),
+  activeTitle: $('#activeTitle'),
+  userCard: $('#userCard'),
+  userPfp: $('#userPfp'),
+  userName: $('#userName'),
+  userSub: $('#userSub'),
+  homeView: $('#homeView'),
+  homeCard: $('#homeCard'),
+  homeInput: $('#homeInput'),
+  homeSendBtn: $('#homeSendBtn'),
+  homeModelSelect: $('#homeModelSelect'),
+  homeSub: $('#homeSub'),
+  homeStar: $('#heroStar'),
+  heroTypedText: $('#heroTypedText'),
+  heroCursor: $('#heroCursor'),
+  messageWrap: $('#messageWrap'),
+  composer: $('#composer'),
+  messageInput: $('#messageInput'),
+  sendBtn: $('#sendBtn'),
+  messageModelSelect: $('#messageModelSelect'),
+  suggestions: $('#suggestions'),
+  modalRoot: $('#modalRoot')
+};
+
+function saveState(){
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ conversations: state.conversations, activeId: state.activeId }));
+  localStorage.setItem('makala_theme', state.theme);
+  localStorage.setItem('makala_makalina_owned', state.makalinaOwned ? '1' : '0');
+  localStorage.setItem('makala_profile_name', state.profileName || '');
+  localStorage.setItem('makala_profile_image', state.profileImage || '');
+}
+
+function loadState(){
+  try{
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+    state.conversations = Array.isArray(saved.conversations) ? saved.conversations : [];
+    state.activeId = saved.activeId || null;
+  }catch{
+    state.conversations = [];
+    state.activeId = null;
+  }
+  state.conversations.forEach(c => {
+    c.id = c.id || Math.random().toString(36).slice(2, 18);
+    c.title = c.title || 'New conversation';
+    c.persona = c.persona || 'makala';
+    c.createdAt = c.createdAt || Date.now();
+    c.updatedAt = c.updatedAt || c.createdAt;
+    c.messages = Array.isArray(c.messages) ? c.messages : [];
+  });
+}
+
+function setTheme(theme){
+  state.theme = theme;
+  document.body.className = 'theme-' + theme;
+  els.homeModelSelect.value = els.messageModelSelect.value = 'makala';
+  localStorage.setItem('makala_theme', theme);
+}
+
+function personaAvatar(persona){
+  return persona === 'makalina' ? '/linalogo.png' : '/makala.png';
+}
+
+function activeConversation(){
+  return state.conversations.find(c => c.id === state.activeId) || null;
+}
+
+function createConversation(title = 'New conversation', persona = 'makala'){
+  const conv = { id: Math.random().toString(36).slice(2, 18), title, persona, createdAt: Date.now(), updatedAt: Date.now(), messages: [] };
+  state.conversations.unshift(conv);
+  state.activeId = conv.id;
+  saveState();
+  return conv;
+}
+
+function formatTime(ts){
+  const now = new Date();
+  const then = new Date(ts);
+  const sameDay = now.toDateString() === then.toDateString();
+  if(sameDay){
+    const diffMin = Math.floor((Date.now() - ts) / 60000);
+    if(diffMin < 1) return 'just now';
+    if(diffMin < 60) return diffMin + 'm ago';
+  }
+  const diffMs = Date.now() - ts;
+  const dayMs = 86400000;
+  if(diffMs < dayMs * 2) return 'Yesterday';
+  if(diffMs < dayMs * 7) return Math.floor(diffMs / dayMs) + 'd ago';
+  if(diffMs < dayMs * 30) return Math.floor(diffMs / (dayMs * 7)) + 'w ago';
+  if(diffMs < dayMs * 365) return Math.floor(diffMs / (dayMs * 30)) + 'mo ago';
+  return 'A long time ago';
+}
+
+function smartTitle(text){
+  const raw = String(text || '').trim();
+  if(!raw) return 'New conversation';
+  const clean = raw.replaceAll('\n', ' ').replace(/\s+/g, ' ').replace(/[?!.]+$/g, '');
+  const parts = clean.split(' ').slice(0, 5);
+  const title = parts.join(' ');
+  return title.charAt(0).toUpperCase() + title.slice(1);
+}
+
+function renderThemeSelect(){
+  const options = THEMES.map(([v, label]) => '<option value="' + v + '">' + label + '</option>').join('');
+  els.homeModelSelect.innerHTML = '<option value="makala">makala</option><option value="just chatgpt bro">just chatgpt bro</option><option value="makalina">makalina</option>';
+  els.messageModelSelect.innerHTML = els.homeModelSelect.innerHTML;
+  els.homeModelSelect.value = 'makala';
+  els.messageModelSelect.value = 'makala';
+  $('#modalRoot');
+  if(!document.getElementById('themeSelect')){
+    const s = document.createElement('select');
+    s.id = 'themeSelect';
+    s.style.display = 'none';
+    document.body.appendChild(s);
+  }
+  const themeSelect = $('#themeSelect');
+  themeSelect.innerHTML = options;
+  themeSelect.value = state.theme;
+  themeSelect.addEventListener('change', () => setTheme(themeSelect.value));
+}
+
+function renderSidebarButtons(){
+  els.makalinaBtn.classList.toggle('hidden', state.makalinaOwned);
+  els.tttBtn.classList.toggle('hidden', !state.makalinaOwned);
+}
+
+function renderUserCard(){
+  els.userCard.classList.toggle('hidden', !state.makalinaOwned);
+  if(state.makalinaOwned){
+    els.userPfp.src = '/linalogo.png';
+    els.userName.textContent = state.profileName || 'you';
+    els.userSub.textContent = 'Makalina owned';
+  }
+}
+
+function renderConvList(){
+  els.convList.innerHTML = '';
+  const home = document.createElement('div');
+  home.className = 'home-item' + (!state.activeId ? ' active' : '');
+  home.innerHTML = '<div class="home-icon">⌂</div><div class="conv-copy"><div class="conv-title">Home</div><div class="conv-meta">Start a new chat</div></div>';
+  home.addEventListener('click', goHome);
+  els.convList.appendChild(home);
+
+  const chats = [...state.conversations].sort((a, b) => b.updatedAt - a.updatedAt);
+  chats.forEach(conv => {
+    const item = document.createElement('div');
+    item.className = 'conv-item' + (conv.id === state.activeId ? ' active' : '');
+
+    const icon = document.createElement('img');
+    icon.className = 'conv-icon';
+    icon.src = personaAvatar(conv.persona);
+    icon.alt = '';
+
+    const copy = document.createElement('div');
+    copy.className = 'conv-copy';
+    copy.innerHTML = '<div class="conv-title">' + escapeHtml(conv.title || 'New conversation') + '</div><div class="conv-meta">' + escapeHtml(formatTime(conv.updatedAt || Date.now())) + '</div>';
+
+    const del = document.createElement('button');
+    del.className = 'conv-trash';
+    del.type = 'button';
+    del.title = 'Delete conversation';
+    del.innerHTML = '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M9 3h6a1 1 0 0 1 1 1v1h4v2h-1l-1 12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2L3 7H2V5h4V4a1 1 0 0 1 1-1zm2 2h2V5h-2v0zM6 7l1 12h10l1-12H6zm3 2h2v8H9V9zm4 0h2v8h-2V9z"/></svg>';
+
+    item.append(icon, copy, del);
+    item.addEventListener('click', (e) => {
+      if(e.target.closest('.conv-trash')){
+        if(confirm('Delete this conversation?')){
+          state.conversations = state.conversations.filter(c => c.id !== conv.id);
+          state.activeId = null;
+          saveState();
+          renderAll();
+          goHome(true);
+        }
+        return;
+      }
+      openConversation(conv.id, true);
+    });
+
+    els.convList.appendChild(item);
+  });
+}
+
+function escapeHtml(s){
+  return String(s || '').replace(/[&<>"']/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m]));
+}
+
+function renderMarkdown(text){
+  return DOMPurify.sanitize(marked.parse(String(text || '').trim()));
+}
+
+function addCodeCopyButtons(root){
+  root.querySelectorAll('pre').forEach(pre => {
+    if(pre.querySelector('.copy-code')) return;
+    const btn = document.createElement('button');
+    btn.className = 'copy-code';
+    btn.type = 'button';
+    btn.title = 'Copy code';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16h-9V7h9v14z"/></svg>';
+    btn.addEventListener('click', async () => {
+      const code = pre.querySelector('code');
+      if(!code) return;
+      try{ await navigator.clipboard.writeText(code.textContent || ''); }catch{}
+    });
+    pre.appendChild(btn);
+  });
+}
+
+function appendBotContent(body, text){
+  body.innerHTML = renderMarkdown(text);
+  addCodeCopyButtons(body);
+  const star = document.createElement('span');
+  star.className = 'message-star';
+  star.innerHTML = '<img src="/star.png" alt="">';
+  body.appendChild(star);
+}
+
+function makeTypingRow(conv){
+  const row = document.createElement('div');
+  row.className = 'message-row bot';
+  const card = document.createElement('div');
+  card.className = 'typing-wrap';
+  const avatar = document.createElement('img');
+  avatar.className = 'typing-avatar';
+  avatar.src = personaAvatar(conv.persona);
+  avatar.alt = '';
+  const dots = document.createElement('div');
+  dots.className = 'typing-dots';
+  dots.innerHTML = '<span></span><span></span><span></span>';
+  card.append(avatar, dots);
+  row.appendChild(card);
+  return row;
+}
+
+function makeBotRow(conv, text){
+  const row = document.createElement('div');
+  row.className = 'message-row bot';
+  const card = document.createElement('div');
+  card.className = 'bot-card';
+  const avatar = document.createElement('img');
+  avatar.className = 'bot-avatar';
+  avatar.src = personaAvatar(conv.persona);
+  avatar.alt = '';
+  const wrap = document.createElement('div');
+  wrap.style.position = 'relative';
+  const tools = document.createElement('div');
+  tools.className = 'tools';
+  tools.innerHTML = '<button class="tool-btn" type="button" title="Copy"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16h-9V7h9v14z"/></svg></button><button class="tool-btn" type="button" title="Reply"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 9V5l-7 7 7 7v-4.1c4.5 0 7.6 1.5 10 4.1-1-6-4-12-10-14z"/></svg></button>';
+  const body = document.createElement('div');
+  body.className = 'bot-body';
+  appendBotContent(body, text);
+  wrap.append(tools, body);
+  card.append(avatar, wrap);
+  row.appendChild(card);
+
+  const [copyBtn, replyBtn] = tools.querySelectorAll('button');
+  copyBtn.addEventListener('click', async () => {
+    try{ await navigator.clipboard.writeText(text || ''); }catch{}
+  });
+  replyBtn.addEventListener('click', () => {
+    els.messageInput.value = '> ' + String(text || '').replaceAll('\n', '\n> ') + '\n\n';
+    autoGrow(els.messageInput);
+    els.messageInput.focus();
+  });
+  return row;
+}
+
+function makeUserRow(text){
+  const row = document.createElement('div');
+  row.className = 'message-row user';
+  const bubble = document.createElement('div');
+  bubble.className = 'user-bubble';
+  bubble.innerHTML = renderMarkdown(text);
+  row.appendChild(bubble);
+  return row;
+}
+
+function renderMessages(conv){
+  els.messageWrap.innerHTML = '';
+  (conv.messages || []).forEach(msg => {
+    els.messageWrap.appendChild(msg.role === 'user' ? makeUserRow(msg.content) : makeBotRow(conv, msg.content));
+  });
+  els.messageWrap.scrollTop = els.messageWrap.scrollHeight;
+}
+
+function updateView(){
+  const conv = activeConversation();
+  const homeMode = !conv;
+  els.homeView.classList.toggle('hidden', !homeMode);
+  els.messageWrap.classList.toggle('hidden', homeMode);
+  els.composer.classList.toggle('hidden', homeMode);
+  els.activeTitle.textContent = homeMode ? 'makala.ai' : (conv.title || 'New conversation');
+  document.title = homeMode ? 'makala.ai' : (conv.title || 'makala.ai');
+  els.homeCard.classList.add('ready');
+  els.homeModelSelect.value = conv ? conv.persona : 'makala';
+  els.messageModelSelect.value = conv ? conv.persona : 'makala';
+  if(conv){ renderMessages(conv); }
+}
+
+function renderHomeSuggestions(){
+  els.suggestions.innerHTML = '';
+  SUGGESTIONS.forEach(text => {
+    const btn = document.createElement('button');
+    btn.className = 'suggestion';
+    btn.type = 'button';
+    btn.textContent = text;
+    btn.addEventListener('click', () => {
+      els.homeInput.value = text;
+      autoGrow(els.homeInput);
+      els.homeInput.focus();
+    });
+    els.suggestions.appendChild(btn);
+  });
+}
+
+function startHeroTyping(force = false){
+  if(state.heroPlayed && !force) return;
+  els.homeCard.classList.add('ready');
+  els.homeSub.textContent = SPLASH_TEXTS[Math.floor(Math.random() * SPLASH_TEXTS.length)];
+  const target = 'makala.ai';
+  els.heroTypedText.textContent = '';
+  els.homeStar.classList.add('hidden');
+  els.heroCursor.classList.remove('fade');
+  clearInterval(state.heroTimer);
+  clearTimeout(state.heroCursorTimer);
+  let i = 0;
+  state.heroTimer = setInterval(() => {
+    els.heroTypedText.textContent = target.slice(0, i + 1);
+    i++;
+    if(i >= target.length){
+      clearInterval(state.heroTimer);
+      els.homeStar.classList.remove('hidden');
+      state.heroDone = true;
+      state.heroPlayed = true;
+      state.heroCursorTimer = setTimeout(() => {
+        els.heroCursor.classList.add('fade');
+      }, 3000);
+    }
+  }, 85);
+  if(els.suggestions.childElementCount === 0) renderHomeSuggestions();
+}
+
+function goHome(replace = false){
+  state.activeId = null;
+  saveState();
+  updateView();
+  if(replace) history.replaceState({}, '', '/');
+  else history.pushState({}, '', '/');
+  startHeroTyping(true);
+}
+
+function openConversation(id, push = true){
+  const conv = state.conversations.find(c => c.id === id);
+  if(!conv){ goHome(true); return; }
+  state.activeId = id;
+  saveState();
+  renderConvList();
+  updateView();
+  if(push) history.pushState({ id }, '', '/c/' + id);
+  els.homeInput.value = '';
+  els.messageInput.value = '';
+  autoGrow(els.homeInput);
+  autoGrow(els.messageInput);
+}
+
+function autoGrow(el){
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+}
+
+function openBuyModal(){
+  openModal(`
+    <div class="modal-head"><h3>Purchase makalina</h3><button class="small-btn" id="closeBuyBtn" type="button">Close</button></div>
+    <div class="modal-body">
+      <div class="buy-layout">
+        <div class="buy-hero">
+          <img src="/fullmakalina.png" alt="makalina">
+          <div>
+            <h4>makalina</h4>
+            <p>makalina lets you talk to a more matured persona, and lets you play tic-tac-toe. Base price: <strong>$0.00</strong></p>
+          </div>
+        </div>
+        <div class="buy-panel">
+          <div><label class="muted" for="buyName">Your name</label><input id="buyName" class="field" type="text" placeholder="Display name"></div>
+          <div><label class="muted" for="buyFav">Fav number</label><input id="buyFav" class="field" type="text" placeholder="Fav number"></div>
+          <div class="file-row"><label class="muted">Profile image</label><label class="file-button" for="pfpFile">Choose file</label><input id="pfpFile" class="file-input" type="file" accept="image/*"><div id="fileName" class="file-name">No file chosen</div></div>
+          <div class="totals"><div>subtotal: <strong>$0.00</strong></div><div id="discountLine" class="hidden muted">discount: <strong id="discountText">0%</strong></div><div>total: <strong id="totalText">$0.00</strong></div></div>
+          <div><label class="muted" for="discountCode">Discount code</label><div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center"><input id="discountCode" class="field" type="text" placeholder="Enter code"><button id="applyDiscountBtn" class="small-btn" type="button">Apply</button></div></div>
+          <div style="display:flex;gap:10px;justify-content:flex-end"><button id="cancelBuyBtn" class="small-btn" type="button">Cancel</button><button id="purchaseBtn" class="small-btn primary loading-btn" type="button">Purchase</button></div>
+        </div>
+      </div>
+    </div>
+  `);
+  const closeBuyBtn = $('#closeBuyBtn');
+  const cancelBuyBtn = $('#cancelBuyBtn');
+  const purchaseBtn = $('#purchaseBtn');
+  const applyDiscountBtn = $('#applyDiscountBtn');
+  const discountCode = $('#discountCode');
+  const discountLine = $('#discountLine');
+  const discountText = $('#discountText');
+  const totalText = $('#totalText');
+  const fileInput = $('#pfpFile');
+  const fileName = $('#fileName');
+  const buyName = $('#buyName');
+  let discount = 0;
+
+  function updateTotals(){
+    discountLine.classList.toggle('hidden', discount <= 0);
+    discountText.textContent = Math.round(discount * 100) + '% off';
+    totalText.textContent = '$0.00';
+  }
+  updateTotals();
+
+  fileInput.addEventListener('change', () => {
+    fileName.textContent = fileInput.files && fileInput.files[0] ? fileInput.files[0].name : 'No file chosen';
+  });
+
+  applyDiscountBtn.addEventListener('click', () => {
+    const code = String(discountCode.value || '').trim().toUpperCase();
+    if(code === 'MAKALINA') discount = 1;
+    else if(code === 'NOKATSEYE') discount = 0.49;
+    else if(code === 'MARCH25') discount = 0.25;
+    else discount = 0;
+    updateTotals();
+  });
+
+  function close(){ closeModal(); }
+  closeBuyBtn.addEventListener('click', close);
+  cancelBuyBtn.addEventListener('click', close);
+  $('#modalRoot .modal-backdrop').addEventListener('click', (e) => { if(e.target.classList.contains('modal-backdrop')) close(); });
+
+  purchaseBtn.addEventListener('click', async () => {
+    purchaseBtn.classList.add('loading');
+    purchaseBtn.innerHTML = '<span class="spinner"></span><span>loading</span>';
+    try{
+      const file = fileInput.files && fileInput.files[0] ? fileInput.files[0] : null;
+      if(file){ state.profileImage = await fileToDataUrl(file); }
+      state.profileName = buyName.value.trim();
+      state.makalinaOwned = true;
+      saveState();
+      closeModal();
+      renderAll();
+    }catch{
+      purchaseBtn.classList.remove('loading');
+      purchaseBtn.textContent = 'Purchase';
+    }
+  });
+}
+
+function fileToDataUrl(file){
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ''));
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+function openNews(){
+  const target = new Date('2114-06-18T00:00:00');
+  openModal(`
+    <div class="modal-head"><h3>News</h3><button class="small-btn" id="newsCloseBtn" type="button">Okay</button></div>
+    <div class="modal-body">
+      <div style="display:grid;gap:12px">
+        <div><strong>NEW FEATURE: macaroni</strong><div class="footer-note">makala’s new cooking ai. Upload fridge photos and get recipe ideas very soon.</div></div>
+        <div class="totals"><div class="muted">Coming soon</div><div>Launch countdown: <strong id="countdownLive">${countdownTo(target)}</strong></div></div>
+        <div><div class="muted" style="margin-bottom:6px;font-weight:600">Patch notes</div><ul style="display:grid;gap:8px;margin:0;padding-left:18px"><li>Home screen restored.</li><li>Conversation switching fixed.</li><li>Makala and Makalina personalities restored.</li><li>Markdown and code copy are working again.</li><li>More themes and cleaner layout.</li></ul></div>
+      </div>
+    </div>
+  `);
+  const countdownEl = $('#countdownLive');
+  if(state.liveCountdownTimer) clearInterval(state.liveCountdownTimer);
+  state.liveCountdownTimer = setInterval(() => {
+    if(countdownEl) countdownEl.textContent = countdownTo(target);
+  }, 1000);
+  $('#newsCloseBtn').addEventListener('click', closeModal);
+}
+
+function countdownTo(date){
+  const diff = Math.max(0, date.getTime() - Date.now());
+  const d = Math.floor(diff / 86400000);
+  const h = Math.floor((diff % 86400000) / 3600000);
+  const m = Math.floor((diff % 3600000) / 60000);
+  const s = Math.floor((diff % 60000) / 1000);
+  return d + 'd ' + h + 'h ' + m + 'm ' + s + 's';
+}
+
+function openModal(html){
+  els.modalRoot.innerHTML = '<div class="modal-backdrop"><div class="modal">' + html + '</div></div>';
+}
+
+function closeModal(){
+  if(state.liveCountdownTimer){ clearInterval(state.liveCountdownTimer); state.liveCountdownTimer = null; }
+  els.modalRoot.innerHTML = '';
+}
+
+function openTtt(){
+  if(!state.makalinaOwned) return;
+  openModal(`
+    <div class="modal-head"><h3>tic-tac-toe</h3><button class="small-btn" id="tttCloseBtn" type="button">Close</button></div>
+    <div class="modal-body"><div class="footer-note">This can be added back cleanly next.</div></div>
+  `);
+  $('#tttCloseBtn').addEventListener('click', closeModal);
+}
+
+function openConversationFromHome(text){
+  let conv = activeConversation();
+  const persona = els.homeModelSelect.value || 'makala';
+  if(persona === 'makalina' && !state.makalinaOwned){ openBuyModal(); return; }
+  if(!conv){ conv = createConversation('New conversation', persona); }
+  els.homeInput.value = '';
+  autoGrow(els.homeInput);
+  saveState();
+  openConversation(conv.id, true);
+  sendMessage(text, conv);
+}
+
+async function sendMessage(rawText, existingConv = null){
+  let text = String(rawText || '').trim();
+  if(!text) return;
+
+  let conv = existingConv || activeConversation();
+  if(!conv){
+    const persona = els.messageModelSelect.value || 'makala';
+    if(persona === 'makalina' && !state.makalinaOwned){ openBuyModal(); return; }
+    conv = createConversation('New conversation', persona);
+    state.activeId = conv.id;
+  }
+
+  if(!conv.title || conv.title === 'New conversation') conv.title = smartTitle(text);
+  conv.messages.push({ role: 'user', content: text });
+  conv.updatedAt = Date.now();
+  saveState();
+  renderConvList();
+  renderMessages(conv);
+
+  const typingRow = makeTypingRow(conv);
+  els.messageWrap.appendChild(typingRow);
+  els.messageWrap.scrollTop = els.messageWrap.scrollHeight;
+  els.sendBtn.disabled = true;
+  els.homeSendBtn.disabled = true;
+
+  try{
+    const payload = {
+      messages: [
+        { role: 'system', content: 'You are Makala. Reply casually and keep answers concise.' },
+        ...conv.messages
+      ],
+      model: conv.persona || 'makala'
+    };
+    const resp = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await resp.json().catch(() => ({}));
+    if(!resp.ok) throw new Error(data && data.error ? data.error : 'Chat request failed');
+    const reply = String(data.reply || 'No response.');
+    typingRow.remove();
+    conv.messages.push({ role: 'assistant', content: reply });
+    conv.updatedAt = Date.now();
+    saveState();
+    renderConvList();
+    renderMessages(conv);
+    els.messageWrap.scrollTop = els.messageWrap.scrollHeight;
+  }catch(err){
+    typingRow.remove();
+    conv.messages.push({ role: 'assistant', content: 'Error: ' + String(err) });
+    conv.updatedAt = Date.now();
+    saveState();
+    renderConvList();
+    renderMessages(conv);
+  }finally{
+    els.sendBtn.disabled = false;
+    els.homeSendBtn.disabled = false;
+    els.messageInput.value = '';
+    els.homeInput.value = '';
+    autoGrow(els.messageInput);
+    autoGrow(els.homeInput);
+  }
+}
+
+function clearChats(){
+  if(!confirm('Clear all chats?')) return;
+  state.conversations = [];
+  state.activeId = null;
+  saveState();
+  renderAll();
+  goHome(true);
+}
+
+function renderAll(){
+  renderSidebarButtons();
+  renderUserCard();
+  renderConvList();
+  updateView();
+}
+
+function wireEvents(){
+  els.newConvBtn.addEventListener('click', () => {
+    const persona = els.homeModelSelect.value || 'makala';
+    if(persona === 'makalina' && !state.makalinaOwned){ openBuyModal(); return; }
+    const conv = createConversation('New conversation', persona);
+    state.activeId = conv.id;
+    saveState();
+    openConversation(conv.id, true);
+    els.homeInput.value = '';
+    autoGrow(els.homeInput);
+  });
+  els.newsBtn.addEventListener('click', openNews);
+  els.makalinaBtn.addEventListener('click', openBuyModal);
+  els.tttBtn.addEventListener('click', openTtt);
+  els.clearBtn.addEventListener('click', clearChats);
+  els.homeSendBtn.addEventListener('click', () => { const v = els.homeInput.value.trim(); if(v) openConversationFromHome(v); });
+  els.sendBtn.addEventListener('click', () => { const v = els.messageInput.value.trim(); if(v) sendMessage(v); });
+  els.homeInput.addEventListener('keydown', e => { if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); const v = els.homeInput.value.trim(); if(v) openConversationFromHome(v); } });
+  els.messageInput.addEventListener('keydown', e => { if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); const v = els.messageInput.value.trim(); if(v) sendMessage(v); } });
+  els.homeInput.addEventListener('input', () => autoGrow(els.homeInput));
+  els.messageInput.addEventListener('input', () => autoGrow(els.messageInput));
+  els.homeModelSelect.addEventListener('change', () => { els.messageModelSelect.value = els.homeModelSelect.value; });
+  els.messageModelSelect.addEventListener('change', () => { els.homeModelSelect.value = els.messageModelSelect.value; });
+}
+
+function initHome(){
+  if(state.heroPlayed){
+    els.heroTypedText.textContent = 'makala.ai';
+    els.homeStar.classList.remove('hidden');
+    els.heroCursor.classList.add('fade');
+    renderHomeSuggestions();
+    return;
+  }
+  els.homeCard.classList.add('ready');
+  els.homeSub.textContent = SPLASH_TEXTS[Math.floor(Math.random() * SPLASH_TEXTS.length)];
+  renderHomeSuggestions();
+  const target = 'makala.ai';
+  let i = 0;
+  els.heroTypedText.textContent = '';
+  els.homeStar.classList.add('hidden');
+  els.heroCursor.classList.remove('fade');
+  state.heroTimer = setInterval(() => {
+    els.heroTypedText.textContent = target.slice(0, i + 1);
+    i++;
+    if(i >= target.length){
+      clearInterval(state.heroTimer);
+      els.homeStar.classList.remove('hidden');
+      state.heroPlayed = true;
+      state.heroDone = true;
+      state.heroCursorTimer = setTimeout(() => { els.heroCursor.classList.add('fade'); }, 3000);
+    }
+  }, 85);
+}
+
+function escapeInputBox(){
+  els.messageInput.value = '';
+  els.homeInput.value = '';
+  autoGrow(els.messageInput);
+  autoGrow(els.homeInput);
+}
+
+function init(){
+  loadState();
+  setTheme(state.theme);
+  renderThemeSelect();
+  wireEvents();
+  renderSidebarButtons();
+  renderUserCard();
+  renderConvList();
+  if(!state.activeId){
+    updateView();
+    initHome();
+  }else{
+    openConversation(state.activeId, false);
+  }
+  document.body.classList.add('loaded');
+  const themeSelect = document.createElement('select');
+  themeSelect.id = 'themeSelect';
+  themeSelect.style.display = 'none';
+  document.body.appendChild(themeSelect);
+  themeSelect.innerHTML = THEMES.map(([v,l]) => '<option value="' + v + '">' + l + '</option>').join('');
+  themeSelect.value = state.theme;
+  themeSelect.addEventListener('change', () => setTheme(themeSelect.value));
+}
+
 init();
 </script>
 </body>
