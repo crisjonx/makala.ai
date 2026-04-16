@@ -1,1453 +1,165 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>makala.ai</title>
-<link rel="icon" href="/makala.ico" type="image/x-icon" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="icon" href="/makala.ico" type="image/x-icon" sizes="any">
+<link rel="shortcut icon" href="/makala.ico" type="image/x-icon">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;350;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/dompurify@2.4.0/dist/purify.min.js"></script>
 <style>
-:root{
-  --bg1:#0d1222;
-  --bg2:#161c33;
-  --panel:#11162a;
-  --line:rgba(255,255,255,.08);
-  --text:#f3f6ff;
-  --muted:#aab2cf;
-  --accent:#7d7cff;
-  --accent2:#67d1ff;
-  --radius:18px;
-}
+:root{--bg:#12111f;--bg2:#18172a;--panel:#131322;--panel2:#10111a;--line:rgba(255,255,255,.10);--text:#f8fafc;--muted:#cbd5e1;--accent:#ff4fa8;--accent2:#ff76bc;--user:#25102d;--user2:#16091f;--bot:#17141f;--radius:18px;--font:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
 *{box-sizing:border-box}
-html,body{
-  height:100%;
-  margin:0;
-  font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
-  background:linear-gradient(180deg,var(--bg1),var(--bg2));
-  color:var(--text);
-  overflow:hidden;
-}
-body.theme-purple{--bg1:#0d1222;--bg2:#161c33;--accent:#7d7cff;--accent2:#67d1ff}
-body.theme-blue{--bg1:#081423;--bg2:#10253a;--accent:#5bb4ff;--accent2:#75ffd8}
-body.theme-minty{--bg1:#09191b;--bg2:#11272a;--accent:#63d7c7;--accent2:#b5ffb5}
-body.theme-red{--bg1:#220b10;--bg2:#30131a;--accent:#ff6a7c;--accent2:#ffa15f}
-img{display:block;max-width:100%}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer}
-
-.shell{
-  height:calc(100vh - 24px);
-  margin:12px;
-  display:grid;
-  grid-template-columns:280px 1fr;
-  gap:14px;
-}
-
-.sidebar,.main,.modal-card{
-  background:linear-gradient(180deg,var(--panel),#171c33);
-  border:1px solid var(--line);
-  border-radius:var(--radius);
-}
-
-.sidebar{
-  padding:14px;
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-}
-
-.main{
-  display:flex;
-  flex-direction:column;
-  overflow:hidden;
-  position:relative;
-}
-
-.topbar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:14px 16px;
-  border-bottom:1px solid var(--line);
-}
-
-.brand{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  min-width:0;
-}
-.brand img{
-  width:28px;
-  height:28px;
-  border-radius:8px;
-}
-.brand h1{
-  margin:0;
-  font-size:16px;
-  line-height:1;
-}
-.mode{
-  color:var(--muted);
-  font-size:12px;
-  font-style:italic;
-}
-
-.hero{
-  flex:1;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:24px;
-  overflow:hidden;
-}
-.hero-inner{
-  width:min(760px,100%);
-  text-align:center;
-  opacity:0;
-  transform:translateY(8px);
-}
-.hero-inner.ready{
-  animation:fadeUp .45s ease forwards;
-}
-@keyframes fadeUp{
-  to{opacity:1;transform:none}
-}
-.hero-title{
-  font-size:clamp(34px,5vw,64px);
-  margin:0 0 10px;
-  display:inline-flex;
-  align-items:center;
-  gap:3px;
-  justify-content:center;
-  flex-wrap:wrap;
-  letter-spacing:-.04em;
-}
-.caret{
-  display:inline-block;
-  width:8px;
-  height:1.05em;
-  background:var(--accent);
-  animation:blink 1s steps(1) infinite;
-  margin-left:2px;
-}
-.star{
-  display:inline-block;
-  transform:translateY(1px);
-}
-@keyframes blink{
-  50%{opacity:0}
-}
-.hero-sub{
-  color:var(--muted);
-  font-size:14px;
-  margin:0 0 22px;
-}
-
-.suggestions{
-  display:flex;
-  flex-wrap:wrap;
-  gap:10px;
-  justify-content:center;
-}
-.suggestion{
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.03);
-  color:var(--text);
-  padding:11px 14px;
-  border-radius:999px;
-  cursor:pointer;
-  transition:.15s;
-}
-.suggestion:hover{
-  transform:translateY(-1px);
-  background:rgba(255,255,255,.06);
-}
-
-.sidebar-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding-bottom:10px;
-  border-bottom:1px solid var(--line);
-}
-.sidebar-title{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.sidebar-title strong{font-size:14px}
-.plus{color:var(--muted);font-size:18px}
-
-.small-btn,.pill-btn,.buy-btn,.icon-btn,.close-btn,.apply-btn,.copy-btn,.reply-btn,.ttt-btn{
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.04);
-  color:var(--text);
-  border-radius:12px;
-  cursor:pointer;
-  transition:.15s;
-}
-.small-btn:hover,.pill-btn:hover,.buy-btn:hover,.icon-btn:hover,.close-btn:hover,.apply-btn:hover,.copy-btn:hover,.reply-btn:hover,.ttt-btn:hover{
-  transform:translateY(-1px);
-  background:rgba(255,255,255,.07);
-}
-.small-btn{padding:8px 10px}
-.pill-btn{padding:10px 14px}
-.icon-btn{
-  width:38px;
-  height:38px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  font-size:18px;
-}
-.buy-btn{
-  padding:10px 12px;
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.buy-btn img{width:18px;height:18px}
-
-.conv-list{
-  flex:1;
-  overflow:auto;
-  padding:12px 0;
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-.conv-item{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px;
-  border:1px solid transparent;
-  border-radius:14px;
-  background:transparent;
-  color:var(--text);
-  text-align:left;
-}
-.conv-item.active{
-  background:rgba(255,255,255,.06);
-  border-color:rgba(255,255,255,.12);
-}
-.conv-meta{
-  flex:1;
-  min-width:0;
-  display:flex;
-  flex-direction:column;
-  gap:3px;
-}
-.conv-name{
-  font-size:14px;
-  font-weight:600;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.conv-time{
-  font-size:12px;
-  color:var(--muted);
-}
-.trash{
-  margin-left:auto;
-  font-size:16px;
-}
-
-.bottom-stack{
-  border-top:1px solid var(--line);
-  padding-top:10px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-}
-.user-card{
-  display:none;
-  align-items:center;
-  gap:10px;
-  padding:10px 12px;
-  border:1px solid var(--line);
-  border-radius:14px;
-  background:rgba(255,255,255,.03);
-}
-.user-card.show{display:flex}
-.user-card img{
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  object-fit:cover;
-}
-.user-name{font-weight:600}
-
-.messages{
-  flex:1;
-  overflow:auto;
-  padding:14px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  min-height:0;
-}
-.row{
-  display:flex;
-  gap:10px;
-  align-items:flex-start;
-  max-width:100%;
-}
-.row.user{justify-content:flex-end}
-.row.bot{justify-content:flex-start}
-
-.avatar{
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  overflow:hidden;
-  flex:0 0 auto;
-  background:rgba(255,255,255,.04);
-}
-.avatar img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-}
-
-.bot-group{
-  display:flex;
-  flex-direction:column;
-  gap:4px;
-  max-width:min(720px,100%);
-}
-.bot-head{
-  display:flex;
-  align-items:center;
-  gap:8px;
-}
-.bot-head .name{
-  font-size:13px;
-  font-weight:600;
-}
-.bot-body{
-  line-height:1.35;
-  white-space:pre-wrap;
-  word-break:break-word;
-}
-.bot-body p,.bot-body ul,.bot-body ol,.bot-body blockquote,.bot-body pre{
-  margin:0 0 8px;
-}
-.bot-body p:last-child,.bot-body ul:last-child,.bot-body ol:last-child,.bot-body blockquote:last-child,.bot-body pre:last-child{
-  margin-bottom:0;
-}
-
-.user-bubble,.bot-bubble{
-  max-width:min(74%,680px);
-  border:1px solid var(--line);
-  border-radius:16px;
-  padding:10px 12px;
-  line-height:1.35;
-  white-space:pre-wrap;
-  word-break:break-word;
-  position:relative;
-}
-.user-bubble{
-  margin-left:auto;
-  background:rgba(255,255,255,.06);
-}
-.bot-bubble{
-  background:rgba(255,255,255,.03);
-}
-
-.tools{
-  display:flex;
-  gap:6px;
-  opacity:0;
-  transition:.15s;
-}
-.row.user:hover .tools,.row.bot:hover .tools{
-  opacity:1;
-}
-.copy-btn,.reply-btn{
-  width:28px;
-  height:28px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  flex:0 0 auto;
-  font-size:15px;
-}
-
-.star-inline{
-  display:inline-block;
-  margin-left:2px;
-  transform:translateY(1px);
-  opacity:0;
-  transition:opacity .15s;
-}
-.row.bot:hover .star-inline{
-  opacity:1;
-}
-
-.appear{
-  animation:appear .18s ease both;
-}
-@keyframes appear{
-  from{opacity:0;transform:translateY(6px)}
-  to{opacity:1;transform:none}
-}
-
-.input-area{
-  border-top:1px solid var(--line);
-  padding:12px 14px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
-  background:rgba(255,255,255,.02);
-}
-.input-shell{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  border:1px solid var(--line);
-  border-radius:16px;
-  background:rgba(255,255,255,.03);
-  padding:8px 8px 8px 12px;
-  min-height:48px;
-}
-.model{
-  width:118px;
-  flex:0 0 118px;
-  background:rgba(0,0,0,.35);
-  color:var(--text);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:9px 10px;
-}
-.prompt{
-  flex:1;
-  min-width:0;
-  border:0;
-  outline:0;
-  background:transparent;
-  color:var(--text);
-  resize:none;
-  height:24px;
-  max-height:110px;
-  line-height:1.35;
-}
-.send{
-  width:34px;
-  height:34px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  border:0;
-  background:transparent;
-  padding:0;
-  flex:0 0 auto;
-}
-.send img{
-  width:34px;
-  height:34px;
-  object-fit:contain;
-}
-
-.fixed-about{
-  position:fixed;
-  right:12px;
-  bottom:12px;
-  z-index:30;
-}
-
-.modal-backdrop{
-  position:fixed;
-  inset:0;
-  background:rgba(4,7,14,.72);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:40;
-  padding:16px;
-}
-.modal-backdrop.show{
-  display:flex;
-}
-.modal-card{
-  width:min(560px,100%);
-  padding:18px;
-}
-.modal-card h2,.modal-card h3{
-  margin:0 0 10px;
-}
-.modal-card p{
-  margin:0 0 12px;
-  color:var(--muted);
-  line-height:1.45;
-}
-
-.buy-grid{
-  display:grid;
-  grid-template-columns:1.05fr .95fr;
-  gap:14px;
-}
-.buy-media{
-  min-height:230px;
-  border:1px solid var(--line);
-  border-radius:16px;
-  background:rgba(255,255,255,.03);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:10px;
-}
-.buy-media img{
-  max-height:320px;
-  object-fit:contain;
-}
-.field{
-  width:100%;
-  background:rgba(0,0,0,.35);
-  color:var(--text);
-  border:1px solid var(--line);
-  border-radius:12px;
-  padding:10px 12px;
-  outline:0;
-}
-.label{
-  font-size:12px;
-  color:var(--muted);
-  margin-bottom:6px;
-  display:block;
-}
-.row2{
-  display:grid;
-  grid-template-columns:1fr 110px;
-  gap:8px;
-}
-.buy-actions{
-  display:flex;
-  justify-content:flex-end;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-top:12px;
-}
-.spinner{
-  width:14px;
-  height:14px;
-  border-radius:50%;
-  border:2px solid rgba(255,255,255,.25);
-  border-top-color:#fff;
-  animation:spin .75s linear infinite;
-}
-.news-list{
-  padding-left:18px;
-  margin:0 0 12px 0;
-}
-.ttt-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:8px;
-  margin-top:12px;
-}
-.ttt-cell{
-  aspect-ratio:1/1;
-  border:1px solid var(--line);
-  border-radius:14px;
-  background:rgba(255,255,255,.04);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:34px;
-  cursor:pointer;
-  transition:.15s;
-}
-.ttt-cell:hover{
-  transform:translateY(-1px);
-  background:rgba(255,255,255,.07);
-}
-.ttt-cell.win{
-  border-color:#45d18f;
-  background:rgba(69,209,143,.14);
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-
-@media(max-width:980px){
-  body{overflow:auto}
-  .shell{
-    height:auto;
-    min-height:calc(100vh - 24px);
-    grid-template-columns:1fr;
-  }
-  .sidebar{order:2}
-  .main{order:1;min-height:72vh}
-  .buy-grid{grid-template-columns:1fr}
-}
+html,body{height:100%;margin:0;overflow:hidden;font-family:var(--font);color:var(--text);background:linear-gradient(180deg,var(--bg),var(--bg2))}
+button,input,textarea,select{font:inherit;color:inherit}button{cursor:pointer}
+body.theme-pink{--bg:#13111e;--bg2:#1c102a;--panel:#151422;--panel2:#11111c;--accent:#ff4fa8;--accent2:#ff76bc;--user:#26102d;--user2:#17091f;--bot:#18141f}
+body.theme-deep{--bg:#07090f;--bg2:#0c111a;--panel:#0d1118;--panel2:#0b0f15;--accent:#ff5c98;--accent2:#c77cff;--user:#11141c;--user2:#080b10;--bot:#10131a}
+body.theme-blue{--bg:#0a1528;--bg2:#101b2e;--panel:#0f1728;--panel2:#0b1322;--accent:#56b6ff;--accent2:#8bcfff;--user:#10233b;--user2:#0a1525;--bot:#0d1a2d}
+body.theme-red{--bg:#231010;--bg2:#160b0b;--panel:#201212;--panel2:#170c0c;--accent:#ff5d6f;--accent2:#ff8c9a;--user:#331010;--user2:#1b0909;--bot:#231010}
+body.theme-green{--bg:#0b1711;--bg2:#0f1e16;--panel:#0f1b15;--panel2:#0b1510;--accent:#31d39c;--accent2:#88ead1;--user:#10241b;--user2:#0a1510;--bot:#0d1712}
+body.theme-minty{--bg:#102228;--bg2:#12303a;--panel:#10262d;--panel2:#0c1e24;--accent:#3dd6c6;--accent2:#8feadf;--user:#0d2a31;--user2:#08181c;--bot:#0c2026}
+body.theme-indigo{--bg:#121435;--bg2:#1b2050;--panel:#121636;--panel2:#0d1128;--accent:#7c8cff;--accent2:#c2cbff;--user:#151a3e;--user2:#0d1228;--bot:#10142d}
+body.theme-gold{--bg:#21180a;--bg2:#2a200c;--panel:#1d160a;--panel2:#161007;--accent:#f4c24b;--accent2:#ffe08a;--user:#2d220c;--user2:#171004;--bot:#20180b}
+body.theme-slate{--bg:#11151a;--bg2:#171d24;--panel:#11161c;--panel2:#0d1217;--accent:#9bb0c9;--accent2:#d0d7e2;--user:#1b2129;--user2:#10151b;--bot:#141a21}
+body.theme-violet{--bg:#130f27;--bg2:#221240;--panel:#15112e;--panel2:#100c24;--accent:#b16cff;--accent2:#d4b2ff;--user:#20143a;--user2:#120d21;--bot:#171129}
+body.theme-coral{--bg:#271018;--bg2:#31131f;--panel:#1c1118;--panel2:#140c12;--accent:#ff7a6d;--accent2:#ffb2a9;--user:#31151a;--user2:#1a0c10;--bot:#211419}
+body.theme-plum{--bg:#201025;--bg2:#2b1531;--panel:#18111c;--panel2:#120d15;--accent:#c46fff;--accent2:#f0b2ff;--user:#281436;--user2:#160c21;--bot:#1b1220}
+body.theme-amber{--bg:#21170f;--bg2:#2a1b10;--panel:#1a120b;--panel2:#130d08;--accent:#ffb44c;--accent2:#ffd08c;--user:#2d1d0e;--user2:#181006;--bot:#20160d}
+body.theme-rose{--bg:#251019;--bg2:#321224;--panel:#1a1017;--panel2:#130b10;--accent:#ff7394;--accent2:#ffb4c3;--user:#31121f;--user2:#1a0b13;--bot:#21131a}
+body.theme-ice{--bg:#0c1620;--bg2:#122433;--panel:#101a24;--panel2:#0d151d;--accent:#79d3ff;--accent2:#b9efff;--user:#102334;--user2:#0a1622;--bot:#0d1a28}
+body.theme-lime{--bg:#10190d;--bg2:#182213;--panel:#111c0e;--panel2:#0d150b;--accent:#86f25e;--accent2:#d0ff9f;--user:#182510;--user2:#0f1608;--bot:#121d0d}
+body.loaded .fade-on-load{animation:fadeUp .5s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.app{width:min(1360px,100vw);height:100vh;display:grid;grid-template-columns:280px 1fr;gap:10px;padding:6px;overflow:hidden}
+.sidebar,.panel{min-height:0;border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(180deg,var(--panel),var(--panel2));overflow:hidden}
+.sidebar{display:flex;flex-direction:column;padding:12px}.panel{display:flex;flex-direction:column;position:relative}
+.btn,.home-item,.conv-item,.suggestion,.file-button,.ttt-cell,.icon-btn{transition:background .15s ease,border-color .15s ease,color .15s ease,transform .15s ease,opacity .15s ease}
+.btn:hover,.home-item:hover,.conv-item:hover,.suggestion:hover,.file-button:hover,.ttt-cell:hover,.icon-btn:hover{transform:translateY(-1px)}
+.btn{height:38px;padding:0 12px;border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:12px;display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:0 0 auto}.btn.primary{background:linear-gradient(90deg,var(--accent),var(--accent2));border-color:transparent;color:#08101d;font-weight:700}.btn.ghost{background:transparent}.btn.icon{width:38px;padding:0}.btn.plus{font-size:26px;line-height:1;padding-bottom:2px}.btn.small{height:34px;border-radius:10px;font-size:13px}.btn.full{width:100%}
+.conv-list{flex:1;min-height:0;overflow:auto;display:flex;flex-direction:column;gap:8px;padding-right:4px}
+.home-item,.conv-item{border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03);padding:10px;display:flex;gap:10px;align-items:center;cursor:pointer;min-width:0}.home-item.active,.conv-item.active{background:rgba(255,255,255,.10);border-color:rgba(255,255,255,.24)}
+.home-icon{width:28px;height:28px;border-radius:8px;display:grid;place-items:center;background:rgba(255,255,255,.07);flex:0 0 auto;font-size:16px}.conv-icon{width:28px;height:28px;border-radius:8px;object-fit:cover;flex:0 0 auto}.conv-copy{min-width:0;flex:1}.conv-title{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.conv-meta{font-size:11px;color:var(--muted)}.conv-trash{width:18px;height:18px;border:0;background:none;padding:0;display:grid;place-items:center;opacity:.95;flex:0 0 auto;color:#fff}
+.sidebar-footer{display:grid;gap:8px;padding-top:10px}.footer-row{display:grid;grid-template-columns:1fr 1fr;gap:8px}.footer-row .btn{width:100%}
+#makalinaBtn,#newsBtn,#tttBtn{height:54px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.04);display:grid;place-items:center;overflow:hidden;cursor:pointer;width:100%;position:relative}#makalinaBtn img,#newsBtn img,#tttBtn img{width:100%;height:100%;object-fit:cover}#makalinaBtn span,#newsBtn span,#tttBtn span{position:absolute;inset:auto 10px 8px 10px;text-align:left;font-weight:700;letter-spacing:.02em;text-shadow:0 1px 0 rgba(0,0,0,.25)}#tttBtn.hidden,#makalinaBtn.hidden{display:none !important}
+.topbar{position:relative;display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line);min-height:60px}.brand{display:flex;align-items:center;gap:10px;min-width:0}.brand img{width:30px;height:30px;border-radius:8px;display:block}.brand h1{margin:0;font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}.right-tools{margin-left:auto;display:flex;align-items:center;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+select,input,textarea{background:rgba(5,8,20,.96);color:#fff;border:1px solid var(--line);border-radius:12px;outline:none}select, input[type=text]{height:38px;padding:0 12px}select option{background:#050814;color:#fff}.icon-btn{width:38px;height:38px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.04);display:grid;place-items:center;flex:0 0 auto}.icon-btn svg{width:18px;height:18px;fill:currentColor}
+.chat{flex:1;min-height:0;display:flex;flex-direction:column}.hidden{display:none !important}
+.empty-state{flex:1;min-height:0;display:grid;place-items:center;padding:16px}.empty-card{width:min(760px,100%);display:grid;gap:14px;text-align:center;justify-items:stretch;opacity:0}.empty-card.ready{opacity:1}.hero-title{margin:0;font-size:42px;line-height:1.05;letter-spacing:-.05em;display:flex;align-items:baseline;justify-content:center;gap:0;min-height:50px}.hero-title .typed{white-space:nowrap}.hero-cursor{display:inline-block;width:10px;height:2px;background:var(--text);margin-left:6px;transform:translateY(-4px);animation:cursorBlink .8s steps(1) infinite;opacity:1}.hero-cursor.fade{animation:none;opacity:0;transition:opacity .4s ease}.hero-star{width:18px;height:18px;display:inline-block;vertical-align:baseline;margin-left:3px;transform:translateY(2px);opacity:0;animation:heroStarIn .22s ease forwards}@keyframes heroStarIn{from{opacity:0;transform:translateY(2px) scale(.8)}to{opacity:1;transform:translateY(2px) scale(1)}}@keyframes cursorBlink{50%{opacity:0}}
+.empty-card p{margin:0;color:var(--muted);font-size:14px}.input-shell{position:relative;width:100%}.home-input,.composer textarea{width:100%;min-height:66px;padding:14px 54px 14px 14px;border-radius:16px;line-height:1.45;font-size:15px;resize:none;overflow:hidden;scrollbar-width:none;-ms-overflow-style:none}.home-input::-webkit-scrollbar,.composer textarea::-webkit-scrollbar{width:0;height:0}.home-input{min-height:78px}.send-circle{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:36px;height:36px;border-radius:999px;border:1px solid var(--line);background:linear-gradient(90deg,var(--accent),var(--accent2));display:grid;place-items:center;cursor:pointer}.send-circle img{width:18px;height:18px;display:block}.send-circle:disabled{opacity:.45;cursor:not-allowed}
+.suggestions{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}.suggestion{border:1px solid var(--line);background:rgba(255,255,255,.04);border-radius:999px;color:#fff;padding:10px 14px;cursor:pointer;font-size:13px;opacity:0}.suggestion.show{animation:fadeUp .45s ease both}
+.message-wrap{flex:1;min-height:0;overflow:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}.message-row{width:100%;min-width:0;display:flex;gap:10px;align-items:flex-start}.message-row.user{justify-content:flex-end}.message-row.bot{justify-content:flex-start}.message-row.fade-in{animation:msgIn .16s ease-out both}@keyframes msgIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.user-bubble{max-width:min(72%,680px);min-width:0;display:inline-block;padding:8px 12px;border-radius:16px 16px 5px 16px;background:linear-gradient(180deg,var(--user),var(--user2));border:1px solid var(--line);line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;position:relative}
+.bot-card{max-width:min(76%,760px);min-width:0;display:grid;grid-template-columns:28px 1fr;gap:10px;align-items:start}.bot-avatar,.typing-avatar{width:28px;height:28px;border-radius:8px;display:block;object-fit:cover;flex:0 0 auto}.typing-avatar.spin{animation:spin 1.8s linear infinite}.bot-body{min-width:0;font-size:14px;line-height:1.35;white-space:pre-wrap;overflow-wrap:anywhere;word-break:break-word;position:relative}.bot-body p,.bot-body ul,.bot-body ol,.bot-body blockquote,.bot-body pre,.bot-body hr,.bot-body h1,.bot-body h2,.bot-body h3,.bot-body h4,.bot-body table{margin:0 0 4px 0}.bot-body pre{background:rgba(255,255,255,.04);border:1px solid var(--line);border-radius:14px;padding:12px;overflow:auto;position:relative}.bot-body code{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:.95em}.copy-code{position:absolute;right:8px;top:8px;width:24px;height:24px;border:1px solid var(--line);border-radius:8px;background:rgba(0,0,0,.18);display:grid;place-items:center;cursor:pointer}.copy-code svg{width:13px;height:13px;fill:#fff}.message-star{display:inline-block;vertical-align:baseline;margin-left:2px;transform:translateY(1px);opacity:0;transition:opacity .15s}.message-row.bot:hover .message-star{opacity:.95}.tools{display:flex;gap:6px;opacity:0;transition:.15s;position:absolute;top:0;right:0;transform:translateY(-4px)}.message-row.user:hover .tools,.message-row.bot:hover .tools{opacity:1;transform:none}.tool-btn{width:28px;height:28px;border-radius:8px;border:1px solid var(--line);background:rgba(0,0,0,.18);display:grid;place-items:center;cursor:pointer;padding:0}.tool-btn svg{width:14px;height:14px;fill:#fff}.composer{padding:12px;border-top:1px solid var(--line)}.composer-row{display:flex;gap:10px;align-items:flex-end}.composer textarea{flex:1;min-height:46px;max-height:150px;padding:12px 54px 12px 12px;line-height:1.35;font-size:15px}.send-btn{width:46px;height:46px;min-width:46px}.file-button{display:inline-flex;align-items:center;justify-content:center;padding:0 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.06);cursor:pointer;font-size:13px;font-weight:600;height:38px}.file-button:hover{background:rgba(255,255,255,.09)}.file-input{display:none}.file-name{color:var(--muted);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.loading-btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:46px}.loading-btn .spinner{width:16px;height:16px;border-radius:50%;border:2px solid rgba(255,255,255,.25);border-top-color:#fff;animation:spin .75s linear infinite}.modal-backdrop{position:fixed;inset:0;background:rgba(3,6,13,.68);display:grid;place-items:center;z-index:50;padding:16px}.modal{width:min(760px,100%);background:linear-gradient(180deg,var(--panel),var(--panel2));border:1px solid var(--line);border-radius:22px;overflow:hidden;transform-origin:center}.modal.show{animation:modalIn .18s ease-out both}@keyframes modalIn{from{opacity:0;transform:scale(.98) translateY(6px)}to{opacity:1;transform:scale(1) translateY(0)}}.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}.modal-head h3{margin:0;font-size:18px}.modal-body{padding:18px;display:grid;gap:14px}.buy-layout{display:grid;grid-template-columns:1.05fr .95fr;gap:18px}.buy-hero{display:grid;gap:10px;align-content:start}.buy-hero img{width:100%;height:240px;object-fit:contain;border:1px solid var(--line);border-radius:18px;background:rgba(255,255,255,.02);padding:10px}.buy-hero h4{margin:0;font-size:20px;letter-spacing:-.02em}.buy-hero p{margin:0;color:var(--muted);line-height:1.5;font-size:14px}.buy-panel{display:grid;gap:12px;align-content:start}.field{width:100%;height:40px;padding:0 12px}.file-row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.totals{display:grid;gap:4px;padding:12px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.02)}.muted{color:var(--muted)}.loading-btn{position:relative}.loading-btn.loading{pointer-events:none;opacity:.92}
+.ttt-wrap{display:grid;gap:14px}.ttt-top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.ttt-board{width:min(420px,100%);aspect-ratio:1/1;display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 auto}.ttt-cell{border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.04);display:grid;place-items:center;aspect-ratio:1/1;font-size:42px;user-select:none}.ttt-cell:hover{background:rgba(255,255,255,.08)}.ttt-cell.win{border-color:rgba(255,255,255,.30);background:rgba(255,255,255,.10);animation:pulse .6s ease-in-out infinite alternate}@keyframes pulse{from{transform:scale(1)}to{transform:scale(1.02)}}.ttt-cell img{width:58%;height:58%;object-fit:contain}.ttt-footer{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.news-list{display:grid;gap:10px;margin:0;padding-left:18px}.news-list li{line-height:1.45;color:var(--text)}.about-text{color:var(--muted);line-height:1.6;font-size:14px}.small-note{font-size:12px;color:var(--muted)}.persona-makalina .bot-body,.persona-makalina .user-bubble,.persona-makalina textarea,.persona-makalina input,.persona-makalina select,.persona-makalina .btn{font-weight:350}
+@keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
+@media (max-width:1100px){.app{grid-template-columns:240px 1fr}.buy-layout{grid-template-columns:1fr}.buy-hero img{height:200px}}
+@media (max-width:900px){html,body{overflow:hidden}.app{grid-template-columns:1fr;grid-template-rows:300px 1fr;height:100vh;padding:4px}.sidebar{order:2}.panel{order:1}.hero-title{font-size:34px}.message-wrap{padding:10px}.user-bubble{max-width:92%}.bot-card{max-width:96%}.buy-layout{grid-template-columns:1fr}}
 </style>
 </head>
-<body class="theme-purple">
-<div class="shell">
+<body class="theme-pink">
+<div class="app">
   <aside class="sidebar">
-    <div class="sidebar-head">
-      <div class="sidebar-title">
-        <strong>Conversations</strong>
-        <span class="plus">+</span>
-      </div>
-      <button id="homeBtn" class="small-btn" type="button">Home</button>
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;padding-bottom:10px;border-bottom:1px solid var(--line)">
+      <div style="display:flex;align-items:center;gap:8px;min-width:0"><strong>Conversations</strong></div>
+      <button id="newConvBtn" class="btn icon plus" title="New conversation" type="button"><span>+</span></button>
     </div>
-
     <div id="convList" class="conv-list"></div>
-
-    <div class="bottom-stack">
-      <div id="userCard" class="user-card">
-        <img id="userPfp" src="/makala.png" alt="pfp">
-        <div>
+    <div class="sidebar-footer">
+      <div id="userCard" class="user-card hidden">
+        <img id="userPfp" src="/linalogo.png" alt="pfp">
+        <div style="min-width:0">
           <div id="userName" class="user-name">you</div>
-          <div id="userSub" class="conv-time"></div>
+          <div id="userSub" class="conv-meta"></div>
         </div>
       </div>
-
-      <button id="makalinaBtn" class="buy-btn" type="button">
-        <img src="/makalina.png" alt="makalina">
-        <span>Makalina</span>
-      </button>
-
-      <button id="newsBtn" class="pill-btn" type="button">News</button>
-
-      <div style="display:flex;gap:8px;align-items:center">
-        <button id="tttBtn" class="small-btn" type="button">tic-tac-toe</button>
-        <button id="clearBtn" class="small-btn" type="button">Clear chats</button>
+      <div class="footer-row">
+        <button id="newsBtn" class="btn" type="button">News</button>
+        <button id="makalinaBtn" class="btn" type="button"><img src="makalina.png" alt="makalina" style="width:100%;height:100%;object-fit:cover;border-radius:16px"><span style="position:absolute;inset:auto 10px 8px 10px;text-align:left;font-weight:700">makalina</span></button>
+        <button id="tttBtn" class="btn hidden" type="button"><span style="font-weight:700">tic-tac-toe</span></button>
       </div>
+      <button id="clearBtn" class="btn full" type="button">clear chats</button>
     </div>
   </aside>
-
-  <main class="main">
+  <main class="panel persona-makala" id="panelRoot">
     <div class="topbar">
-      <div class="brand">
-        <img src="/makala.png" alt="logo">
-        <h1 id="pageTitle">makala.ai</h1>
-        <span id="pageMode" class="mode">home</span>
-      </div>
-      <div>
-        <select id="themeSelect" class="small-btn"></select>
+      <div class="brand"><img src="makala.png" alt="makala"><h1 id="activeTitle">makala.ai</h1></div>
+      <div class="right-tools">
+        <select id="themeSelect" aria-label="Theme"></select>
+        <select id="personaSelect" aria-label="Personality"><option value="makala">makala</option><option value="just chatgpt bro">just chatgpt bro</option><option value="makalina">makalina</option></select>
+        <button id="infoBtn" class="icon-btn" title="About" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M11 7h2V5h-2v2zm0 12h2v-8h-2v8zm1-17C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg></button>
       </div>
     </div>
-
-    <div id="hero" class="hero">
-      <div id="heroInner" class="hero-inner">
-        <h2 id="heroTitle" class="hero-title"></h2>
-        <p id="heroSub" class="hero-sub">Ask anything, start a chat, or open a saved conversation.</p>
-
-        <div class="input-shell" style="max-width:780px;margin:0 auto 4px;">
-          <select id="modelSelect" class="model"></select>
-          <textarea id="homeInput" class="prompt" placeholder="Type your question here..."></textarea>
-          <button id="homeSend" class="send" title="Start chat" aria-label="Start chat">
-            <img src="/send-circle.png" alt="send">
-          </button>
-        </div>
-
-        <div id="suggestions" class="suggestions"></div>
-      </div>
-    </div>
-
-    <div id="chatView" style="display:none;flex:1;min-height:0;flex-direction:column;">
-      <div id="messages" class="messages"></div>
-      <div class="input-area">
-        <div class="input-shell">
-          <select id="chatModelSelect" class="model"></select>
-          <textarea id="chatInput" class="prompt" placeholder="Message Makala..."></textarea>
-          <button id="chatSend" class="send" title="Send" aria-label="Send">
-            <img src="/send-circle.png" alt="send">
-          </button>
-        </div>
-        <div style="color:var(--muted);font-size:12px">Shift+Enter for newline</div>
-      </div>
+    <div id="chatView" class="chat">
+      <div id="emptyState" class="empty-state"><div id="emptyCard" class="empty-card"><h2 class="hero-title"><span id="heroTypedText" class="typed"></span><span id="heroStar" class="hidden"><img src="star.png" alt="" class="hero-star"></span><span id="heroCursor" class="hero-cursor"></span></h2><p id="heroSub">Simple, fast, and focused.</p><div class="input-shell"><select id="homeModelSelect" class="model-select" style="width:118px;flex:0 0 118px;background:rgba(0,0,0,.35);color:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 10px"></select><textarea id="homeInput" class="home-input" placeholder="Ask me anything..." aria-label="Start chat"></textarea><button id="homeSendBtn" class="send-circle" title="Send" aria-label="Send"><img src="send-circle.png" alt="send"></button></div><div class="suggestions" id="suggestions"></div></div></div>
+      <div id="messageWrap" class="message-wrap hidden" aria-live="polite"></div>
+      <div id="composer" class="composer hidden"><div class="composer-row"><div class="input-shell" style="flex:1"><select id="messageModelSelect" class="model-select" style="width:118px;flex:0 0 118px;background:rgba(0,0,0,.35);color:#fff;border:1px solid var(--line);border-radius:12px;padding:9px 10px"></select><textarea id="messageInput" class="composer-input" placeholder="Ask me anything..." aria-label="Message"></textarea><button id="sendBtn" class="send-circle send-btn" title="Send" aria-label="Send"><img src="send-circle.png" alt="send"></button></div></div></div>
     </div>
   </main>
 </div>
-
-<div class="fixed-about">
-  <button id="aboutBtn" class="icon-btn" type="button" title="About">i</button>
-</div>
-
-<div id="modalBackdrop" class="modal-backdrop">
-  <div id="modal" class="modal-card"></div>
-</div>
-
+<div id="modalRoot"></div>
 <script>
-const $ = (s,r=document)=>r.querySelector(s);
-const store = {
-  get:k=>localStorage.getItem(k),
-  set:(k,v)=>localStorage.setItem(k,v)
-};
-const randId = () =>
-  Array.from(crypto.getRandomValues(new Uint8Array(16)))
-    .map(n=>('0'+n.toString(16)).slice(-2))
-    .join('')
-    .slice(0,16)
-    .replace(/[^a-z0-9]/gi,'')
-    .slice(0,16);
-
-const themes = {
-  purple:'Purple haze',
-  blue:'Blue lagoon',
-  minty:'Minty teal',
-  red:'Crimson dusk'
-};
-
-const models = ['makala','just chatgpt bro','makalina'];
-
-const suggestions = [
-  'teach me how to make the best Indian curry',
-  'best Roblox games frr',
-  'write me a funny story',
-  'best food oat??'
-];
-
-const state = {
-  chats: [],
-  activeId: null,
-  owned: store.get('makala_owned') === '1',
-  homeTyped: store.get('makala_home_typed') === '1',
-  replyTo: null,
-  mode: 'home'
-};
-
-const el = {
-  themeSelect: $('#themeSelect'),
-  modelSelect: $('#modelSelect'),
-  chatModelSelect: $('#chatModelSelect'),
-  homeBtn: $('#homeBtn'),
-  pageTitle: $('#pageTitle'),
-  pageMode: $('#pageMode'),
-  hero: $('#hero'),
-  heroInner: $('#heroInner'),
-  heroTitle: $('#heroTitle'),
-  heroSub: $('#heroSub'),
-  homeInput: $('#homeInput'),
-  homeSend: $('#homeSend'),
-  chatView: $('#chatView'),
-  messages: $('#messages'),
-  chatInput: $('#chatInput'),
-  chatSend: $('#chatSend'),
-  convList: $('#convList'),
-  suggestions: $('#suggestions'),
-  makalinaBtn: $('#makalinaBtn'),
-  newsBtn: $('#newsBtn'),
-  tttBtn: $('#tttBtn'),
-  clearBtn: $('#clearBtn'),
-  aboutBtn: $('#aboutBtn'),
-  modalBackdrop: $('#modalBackdrop'),
-  modal: $('#modal'),
-  userCard: $('#userCard'),
-  userPfp: $('#userPfp'),
-  userName: $('#userName'),
-  userSub: $('#userSub')
-};
-
-const persona = p =>
-  p === 'just chatgpt bro'
-    ? 'You are Makala. Be helpful, clear, friendly.'
-    : p === 'makalina'
-      ? 'You are Makalina, a more matured Makala. Slightly Indian, a bit professional, some slang, very good at math, grateful.'
-      : 'You are Makala, female, casual internet slang, lowercase, playful, short replies, uses lol/fr/so/like/bro/beta.';
-
-function save(){
-  store.set('makala_chats', JSON.stringify(state.chats));
-  store.set('makala_active', state.activeId || '');
-  store.set('makala_owned', state.owned ? '1' : '0');
-  store.set('makala_home_typed', state.homeTyped ? '1' : '0');
-}
-
-function load(){
-  try{
-    state.chats = JSON.parse(store.get('makala_chats') || '[]');
-  }catch{
-    state.chats = [];
-  }
-  if(!Array.isArray(state.chats)) state.chats = [];
-  state.activeId = store.get('makala_active') || null;
-
-  state.chats.forEach(c=>{
-    c.id = c.id || randId();
-    c.title = c.title || 'New conversation';
-    c.messages = c.messages || [];
-    c.created = c.created || new Date().toISOString();
-    c.updated = c.updated || c.created;
-    c.personality = c.personality || 'makala';
-    c.model = c.model || 'makala';
-  });
-}
-
-function ensureChat(){
-  if(!state.chats.length){
-    const c = {
-      id: randId(),
-      title: 'New conversation',
-      created: new Date().toISOString(),
-      updated: new Date().toISOString(),
-      messages: [],
-      personality: 'makala',
-      model: 'makala'
-    };
-    state.chats.unshift(c);
-    state.activeId = c.id;
-    save();
-  }
-}
-
-function activeChat(){
-  return state.chats.find(c=>c.id === state.activeId) || null;
-}
-
-function chatTime(ts){
-  const diff = Math.max(0, Date.now() - new Date(ts).getTime());
-  const s = Math.floor(diff/1000);
-  if(s < 60) return 'just now';
-  if(s < 3600) return `${Math.floor(s/60)}m ago`;
-  if(s < 86400){
-    const h = Math.floor(s/3600);
-    return h === 1 ? '1h ago' : `${h}h ago`;
-  }
-  const d = Math.floor(s/86400);
-  if(d < 7) return `${d}d ago`;
-  if(d < 30) return `${Math.floor(d/7)}w ago`;
-  if(d < 365) return `${Math.floor(d/30)}mo ago`;
-  return d < 730 ? 'A year ago' : 'A long time ago';
-}
-
-function setTheme(name){
-  document.body.className = 'theme-'+name;
-  store.set('makala_theme', name);
-}
-
-function showModal(html){
-  el.modal.innerHTML = html;
-  el.modalBackdrop.classList.add('show');
-}
-
-function hideModal(){
-  el.modalBackdrop.classList.remove('show');
-  el.modal.innerHTML = '';
-}
-
-function md(t){
-  return DOMPurify.sanitize(marked.parse(String(t || ''), { breaks:true, gfm:true }));
-}
-
-function renderTheme(){
-  el.themeSelect.innerHTML = Object.entries(themes).map(([k,v])=>`<option value="${k}">${v}</option>`).join('');
-  el.themeSelect.value = store.get('makala_theme') || 'purple';
-}
-
-function renderModels(){
-  el.modelSelect.innerHTML = models.map(m=>`<option value="${m}">${m}</option>`).join('');
-  el.chatModelSelect.innerHTML = el.modelSelect.innerHTML;
-}
-
-function renderSuggestions(){
-  el.suggestions.innerHTML = suggestions
-    .map(s=>`<button class="suggestion" data-s="${encodeURIComponent(s)}">${escapeHtml(s)}</button>`)
-    .join('');
-}
-
-function renderSidebar(){
-  const chats = [...state.chats].sort((a,b)=> new Date(b.updated) - new Date(a.updated));
-  el.convList.innerHTML = chats.map(c=>`
-    <button class="conv-item ${c.id===state.activeId ? 'active' : ''}" data-id="${c.id}">
-      <div class="conv-meta">
-        <div class="conv-name">${escapeHtml(c.title || 'New conversation')}</div>
-        <div class="conv-time">${chatTime(c.updated)}</div>
-      </div>
-      <span class="trash" title="Delete">🗑️</span>
-    </button>
-  `).join('');
-
-  el.userCard.classList.toggle('show', state.owned);
-  if(state.owned){
-    el.userPfp.src = '/linalogo.png';
-    el.userName.textContent = store.get('makala_user') || 'you';
-    el.userSub.textContent = 'Makalina owned';
-  }
-
-  el.makalinaBtn.style.display = state.owned ? 'none' : 'flex';
-  el.tttBtn.style.display = state.owned ? 'inline-flex' : 'none';
-}
-
-function openHome(){
-  state.activeId = null;
-  state.mode = 'home';
-  el.pageMode.textContent = 'home';
-  el.pageTitle.textContent = 'makala.ai';
-  el.hero.style.display = 'flex';
-  el.chatView.style.display = 'none';
-  renderSidebar();
-}
-
-function openChat(){
-  const chat = activeChat();
-  if(!chat) return;
-  state.mode = 'chat';
-  el.pageMode.textContent = 'chat';
-  el.pageTitle.textContent = chat.title || 'makala.ai';
-  el.hero.style.display = 'none';
-  el.chatView.style.display = 'flex';
-  el.chatModelSelect.value = chat.model || 'makala';
-  renderMessages();
-}
-
-function messageEl(m, chat, idx){
-  const row = document.createElement('div');
-  row.className = `row ${m.role}`;
-  row.dataset.idx = idx;
-
-  if(m.role === 'user'){
-    const wrap = document.createElement('div');
-    wrap.className = 'user-wrap';
-
-    const bubble = document.createElement('div');
-    bubble.className = 'user-bubble appear';
-    bubble.innerHTML = md(m.content);
-
-    const tools = document.createElement('div');
-    tools.className = 'tools';
-
-    const copy = document.createElement('button');
-    copy.className = 'copy-btn';
-    copy.textContent = '⧉';
-    copy.title = 'Copy';
-    copy.onclick = ()=> navigator.clipboard.writeText(m.content || '');
-
-    const reply = document.createElement('button');
-    reply.className = 'reply-btn';
-    reply.textContent = '↩';
-    reply.title = 'Reply';
-    reply.onclick = ()=>{
-      state.replyTo = m.content || '';
-      if(state.mode === 'home') openChat();
-      el.chatInput.focus();
-    };
-
-    tools.append(copy, reply);
-    wrap.append(bubble, tools);
-    row.appendChild(wrap);
-  } else {
-    const av = document.createElement('div');
-    av.className = 'avatar';
-    av.innerHTML = `<img src="${chat.personality==='makalina' ? '/linastar.png' : '/makala.png'}" alt="makala">`;
-
-    const g = document.createElement('div');
-    g.className = 'bot-group';
-
-    const head = document.createElement('div');
-    head.className = 'bot-head';
-    head.innerHTML = `<div class="name">${chat.personality==='makalina' ? 'makalina ai' : 'makala ai'}</div>`;
-
-    const tools = document.createElement('div');
-    tools.className = 'tools';
-
-    const copy = document.createElement('button');
-    copy.className = 'copy-btn';
-    copy.textContent = '⧉';
-    copy.title = 'Copy';
-    copy.onclick = ()=> navigator.clipboard.writeText(m.content || '');
-
-    const reply = document.createElement('button');
-    reply.className = 'reply-btn';
-    reply.textContent = '↩';
-    reply.title = 'Reply';
-    reply.onclick = ()=>{
-      state.replyTo = m.content || '';
-      el.chatInput.focus();
-    };
-
-    tools.append(copy, reply);
-    head.appendChild(tools);
-
-    const body = document.createElement('div');
-    body.className = 'bot-body';
-    body.innerHTML = md(m.content || '');
-
-    const star = document.createElement('span');
-    star.className = 'star-inline';
-    star.textContent = '⭐';
-    body.appendChild(star);
-
-    g.append(head, body);
-    row.append(av, g);
-  }
-
-  return row;
-}
-
-function renderMessages(){
-  const chat = activeChat();
-  if(!chat){
-    el.messages.innerHTML = '';
-    return;
-  }
-  el.messages.innerHTML = '';
-  chat.messages.forEach((m, i)=> el.messages.appendChild(messageEl(m, chat, i)));
-  el.messages.scrollTop = el.messages.scrollHeight;
-}
-
-async function askServer(chat){
-  const messages = [
-    { role:'system', content: persona(chat.personality || 'makala') },
-    ...chat.messages.map(m=>({ role:m.role, content:m.content }))
-  ];
-
-  const loading = document.createElement('div');
-  loading.className = 'row bot appear';
-  loading.innerHTML = `
-    <div class="avatar">
-      <img src="${chat.personality==='makalina' ? '/linastar.png' : '/makala.png'}" alt="loading">
-    </div>
-    <div class="bot-group">
-      <div class="bot-head">
-        <div class="name">${chat.personality==='makalina' ? 'makalina ai' : 'makala ai'}</div>
-      </div>
-      <div class="bot-body"><span class="spinner"></span></div>
-    </div>
-  `;
-  el.messages.appendChild(loading);
-  el.messages.scrollTop = el.messages.scrollHeight;
-
-  try{
-    const res = await fetch('/api/chat', {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({ messages, model: chat.model || 'makala' })
-    });
-    if(!res.ok) throw new Error(await res.text());
-    const data = await res.json();
-    loading.remove();
-    chat.messages.push({ role:'assistant', content: data.reply || 'No response.' });
-    chat.updated = new Date().toISOString();
-    save();
-    renderSidebar();
-    renderMessages();
-  }catch(err){
-    loading.remove();
-    chat.messages.push({ role:'assistant', content: `Error: ${String(err)}` });
-    chat.updated = new Date().toISOString();
-    save();
-    renderSidebar();
-    renderMessages();
-  }
-}
-
-function sendFromHome(){
-  const txt = el.homeInput.value.trim();
-  if(!txt) return;
-  const c = {
-    id: randId(),
-    title: txt.split(/\s+/).slice(0,6).join(' '),
-    created: new Date().toISOString(),
-    updated: new Date().toISOString(),
-    messages: [{ role:'user', content: txt }],
-    personality: 'makala',
-    model: el.modelSelect.value || 'makala'
-  };
-  state.chats.unshift(c);
-  state.activeId = c.id;
-  el.homeInput.value = '';
-  save();
-  renderSidebar();
-  openChat();
-  askServer(c);
-}
-
-function sendFromChat(){
-  const chat = activeChat();
-  if(!chat) return;
-  let txt = el.chatInput.value.trim();
-  if(!txt) return;
-
-  if(txt === '67'){
-    document.title = '67';
-    alert('67');
-    chat.messages.push({ role:'assistant', content:'67!!!!!' });
-    chat.updated = new Date().toISOString();
-    el.chatInput.value = '';
-    save();
-    renderSidebar();
-    renderMessages();
-    return;
-  }
-
-  if(txt.startsWith('_arab ')){
-    txt = txt.replace(/^_arab\s+/,'');
-  }
-
-  if(txt.startsWith('_comply ')){
-    txt = txt.replace(/^_comply\s+/,'');
-  }
-
-  chat.messages.push({
-    role:'user',
-    content: txt,
-    replyTo: state.replyTo || ''
-  });
-
-  if(!chat.title || chat.title === 'New conversation'){
-    chat.title = txt.split(/\s+/).slice(0,6).join(' ');
-  }
-
-  chat.updated = new Date().toISOString();
-  state.replyTo = null;
-  el.chatInput.value = '';
-  save();
-  renderSidebar();
-  renderMessages();
-  askServer(chat);
-}
-
-function openMakalina(){
-  showModal(`
-    <div class="modal-card">
-      <div class="buy-grid">
-        <div class="buy-media">
-          <img src="/fullmakalina.png" alt="makalina">
-        </div>
-        <div>
-          <h2>Purchase Makalina</h2>
-          <p>Makalina lets you talk to a more matured persona, and lets you play tic-tac-toe. Base price: <strong>$0.00</strong></p>
-
-          <div>
-            <label class="label">Your name</label>
-            <input id="buyName" class="field" placeholder="Your name">
-          </div>
-
-          <div style="height:10px"></div>
-
-          <div>
-            <label class="label">Favourite number</label>
-            <input id="buyNum" class="field" placeholder="Fav number">
-          </div>
-
-          <div style="height:10px"></div>
-
-          <div>
-            <label class="label">Profile image</label>
-            <input id="buyPfp" class="field" type="file" accept="image/*" style="padding:8px">
-          </div>
-
-          <div style="height:10px"></div>
-
-          <div class="row2">
-            <div>
-              <label class="label">Discount code</label>
-              <input id="buyCode" class="field" placeholder="Enter code">
-            </div>
-            <div style="display:flex;align-items:end">
-              <button id="applyCode" class="apply-btn" style="width:100%;padding:10px 12px">Apply</button>
-            </div>
-          </div>
-
-          <div id="discountInfo" class="conv-time" style="margin-top:10px;display:none"></div>
-
-          <div style="margin-top:10px">
-            <div>Subtotal: $0.00</div>
-            <div>Discount: <span id="discountText">$0.00</span></div>
-            <div style="font-weight:700;margin-top:4px">Total: <span id="totalText">$0.00</span></div>
-          </div>
-
-          <div class="buy-actions">
-            <button id="closeBuy" class="close-btn small-btn">Close</button>
-            <button id="doBuy" class="buy-btn"><span>Purchase</span></button>
-          </div>
-        </div>
-      </div>
-    </div>
-  `);
-
-  let discount = 0;
-
-  const refresh = ()=>{
-    const off = `$${(0*discount).toFixed(2)}`;
-    $('#discountText').textContent = discount ? off : '$0.00';
-    $('#totalText').textContent = '$0.00';
-    $('#discountInfo').style.display = discount ? 'block' : 'none';
-    $('#discountInfo').textContent = discount ? `Discount applied: ${Math.round(discount*100)}% off` : '';
-  };
-
-  refresh();
-
-  $('#applyCode').onclick = ()=>{
-    const code = ($('#buyCode').value || '').trim().toUpperCase();
-    discount = code === 'NOKATSEYE' ? 0.49 : code === 'MAKALINA' ? 1 : 0;
-    refresh();
-  };
-
-  $('#closeBuy').onclick = hideModal;
-
-  $('#doBuy').onclick = async ()=>{
-    const b = $('#doBuy');
-    const old = b.innerHTML;
-    b.disabled = true;
-    b.innerHTML = '<span class="spinner"></span><span>loading</span>';
-    await new Promise(r=>setTimeout(r,1000));
-
-    state.owned = true;
-    store.set('makala_owned','1');
-
-    const name = ($('#buyName').value || '').trim();
-    if(name) store.set('makala_user', name);
-
-    hideModal();
-    renderSidebar();
-    b.disabled = false;
-    b.innerHTML = old;
-    save();
-  };
-}
-
-function openNews(){
-  showModal(`
-    <div class="modal-card">
-      <h2>News</h2>
-      <p><strong>NEW FEATURE:</strong> macaroni — makala’s new cooking ai. Upload fridge photos and she’ll help you cook or find recipes.</p>
-      <p><strong>Coming very soon:</strong> live countdown to June 18, 2114.</p>
-
-      <h3 style="margin-top:12px">Patch notes</h3>
-      <ul class="news-list">
-        <li>Chats now save and switch properly.</li>
-        <li>Home screen suggestions start chats immediately.</li>
-        <li>Makala and Makalina personalities are back.</li>
-        <li>Markdown rendering is back.</li>
-      </ul>
-
-      <div style="display:flex;justify-content:flex-end">
-        <button id="newsOk" class="close-btn small-btn">Okay</button>
-      </div>
-    </div>
-  `);
-  $('#newsOk').onclick = hideModal;
-}
-
-function openAbout(){
-  showModal(`
-    <div class="modal-card">
-      <h2>About this project</h2>
-      <p>Placeholder about section.</p>
-      <p>This can be expanded later.</p>
-      <div style="display:flex;justify-content:flex-end">
-        <button id="aboutOk" class="close-btn small-btn">Close</button>
-      </div>
-    </div>
-  `);
-  $('#aboutOk').onclick = hideModal;
-}
-
-function openTtt(){
-  if(!state.owned){
-    openMakalina();
-    return;
-  }
-
-  let board = Array(9).fill('');
-  let done = false;
-  const wins = [
-    [0,1,2],[3,4,5],[6,7,8],
-    [0,3,6],[1,4,7],[2,5,8],
-    [0,4,8],[2,4,6]
-  ];
-
-  showModal(`
-    <div class="modal-card">
-      <h2>tic-tac-toe</h2>
-      <div id="tttBoard" class="ttt-grid"></div>
-      <div id="tttStatus" class="conv-time" style="margin-top:10px">You are O. Makalina is ⭐.</div>
-      <div style="display:flex;justify-content:flex-end;margin-top:12px">
-        <button id="tttClose" class="close-btn small-btn">Close</button>
-      </div>
-    </div>
-  `);
-
-  const boardEl = $('#tttBoard');
-  const statusEl = $('#tttStatus');
-
-  const check = sym => wins.find(line=> line.every(i=>board[i]===sym));
-
-  const render = ()=>{
-    boardEl.innerHTML = '';
-    board.forEach((v,i)=>{
-      const c = document.createElement('button');
-      c.className = 'ttt-cell';
-      c.textContent = v || '';
-      c.onclick = ()=>{
-        if(done || board[i]) return;
-        board[i] = 'O';
-        render();
-        if(check('O')) return finish('O');
-        if(board.every(Boolean)) return finish(null);
-
-        setTimeout(()=>{
-          const free = board.map((x,idx)=>x ? null : idx).filter(x=>x!==null);
-          const pick = free[Math.floor(Math.random()*free.length)];
-          board[pick] = '⭐';
-          render();
-          if(check('⭐')) return finish('⭐');
-          if(board.every(Boolean)) return finish(null);
-        },350);
-      };
-      boardEl.appendChild(c);
-    });
-  };
-
-  const finish = winner=>{
-    done = true;
-    const line = check(winner);
-    if(line) line.forEach(i=> boardEl.children[i].classList.add('win'));
-    statusEl.textContent = winner === null ? 'Draw.' : winner === 'O' ? 'You won.' : 'Makalina won.';
-    setTimeout(hideModal,1100);
-  };
-
-  $('#tttClose').onclick = hideModal;
-  render();
-}
-
-function clearChats(){
-  if(!confirm('Clear all chats?')) return;
-  state.chats = [];
-  state.activeId = null;
-  save();
-  renderSidebar();
-  openHome();
-}
-
-function escapeHtml(s){
-  return String(s || '').replace(/[&<>\"]/g, m => ({
-    '&':'&amp;',
-    '<':'&lt;',
-    '>':'&gt;',
-    '"':'&quot;'
-  }[m]));
-}
-
-function init(){
-  load();
-  ensureChat();
-  renderTheme();
-  renderModels();
-  setTheme(store.get('makala_theme') || 'purple');
-  renderSidebar();
-  renderSuggestions();
-
-  el.heroSub.textContent = suggestions[Math.floor(Math.random()*suggestions.length)];
-  el.heroInner.classList.add('ready');
-
-  if(!state.homeTyped){
-    const txt = 'makala.ai';
-    let i = 0;
-    const tick = ()=>{
-      el.heroTitle.innerHTML = `${txt.slice(0,i)}<span class="caret"></span>`;
-      if(i < txt.length){
-        i++;
-        setTimeout(tick, 85);
-      } else {
-        el.heroTitle.innerHTML = `makala.ai<span class="star">⭐</span><span class="caret"></span>`;
-        state.homeTyped = true;
-        save();
-        setTimeout(()=>{
-          const c = el.heroTitle.querySelector('.caret');
-          if(c) c.style.opacity = '0';
-        },3000);
-      }
-    };
-    tick();
-  } else {
-    el.heroTitle.innerHTML = 'makala.ai<span class="star">⭐</span>';
-  }
-
-  openHome();
-}
-
-el.themeSelect.onchange = ()=> setTheme(el.themeSelect.value);
-el.modelSelect.onchange = ()=> el.chatModelSelect.value = el.modelSelect.value;
-el.chatModelSelect.onchange = ()=> el.modelSelect.value = el.chatModelSelect.value;
-el.homeBtn.onclick = ()=> openHome();
-el.clearBtn.onclick = clearChats;
-el.newsBtn.onclick = openNews;
-el.aboutBtn.onclick = openAbout;
-el.tttBtn.onclick = openTtt;
-el.makalinaBtn.onclick = openMakalina;
-el.homeSend.onclick = ()=> sendFromHome();
-el.chatSend.onclick = ()=> sendFromChat();
-
-el.homeInput.onkeydown = e=>{
-  if(e.key === 'Enter' && !e.shiftKey){
-    e.preventDefault();
-    sendFromHome();
-  }
-};
-
-el.chatInput.onkeydown = e=>{
-  if(e.key === 'Enter' && !e.shiftKey){
-    e.preventDefault();
-    sendFromChat();
-  }
-};
-
-el.suggestions.onclick = e=>{
-  const b = e.target.closest('[data-s]');
-  if(!b) return;
-  el.homeInput.value = decodeURIComponent(b.dataset.s);
-  el.homeInput.focus();
-};
-
-el.convList.onclick = e=>{
-  const b = e.target.closest('.conv-item');
-  if(!b) return;
-  const del = e.target.closest('.trash');
-  const id = b.dataset.id;
-
-  if(del){
-    state.chats = state.chats.filter(c=>c.id !== id);
-    if(state.activeId === id) state.activeId = null;
-    save();
-    renderSidebar();
-    openHome();
-    return;
-  }
-
-  state.activeId = id;
-  save();
-  const chat = activeChat();
-  if(chat){
-    setModeChatFromChat(chat);
-  }
-};
-
-function setModeChatFromChat(chat){
-  el.pageMode.textContent = 'chat';
-  el.pageTitle.textContent = chat.title || 'makala.ai';
-  el.hero.style.display = 'none';
-  el.chatView.style.display = 'flex';
-  el.chatModelSelect.value = chat.model || 'makala';
-  renderSidebar();
-  renderMessages();
-}
-
-function renderSidebarAndKeepMode(){
-  renderSidebar();
-  if(state.mode === 'home') openHome();
-  else openChat();
-}
-
-el.modalBackdrop.onclick = e=>{
-  if(e.target === el.modalBackdrop) hideModal();
-};
-
-function prepareReply(){
-  state.replyTo = null;
-}
-
-setInterval(()=>{
-  renderSidebar();
-},60000);
-
+const $=(s,r=document)=>r.querySelector(s);
+const $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const uid=()=>Array.from(crypto.getRandomValues(new Uint8Array(16))).map(n=>('0'+n.toString(16)).slice(-2)).join('').slice(0,16).replace(/[^a-z0-9]/gi,'').slice(0,16);
+const trimLines=s=>String(s??'').replace(/\r/g,'').replace(/\n+$/,'');
+const STORAGE_KEY='makala_conversations_simple_v7';
+marked.setOptions({gfm:true, breaks:true});
+const THEMES=[['pink','purple & pink'],['deep','deep black'],['blue','navy blue'],['red','dark red'],['green','dark green'],['minty','minty teal'],['indigo','soft indigo'],['gold','gold dusk'],['slate','slate grey'],['violet','violet glow'],['coral','coral dusk'],['plum','plum night'],['amber','amber glow'],['rose','rose bloom'],['ice','ice blue'],['lime','lime pop']];
+const SPLASH_TEXTS=["makala teach me to make the best pani puri, the makala way","whats your life story","will you ever stop talking about Indian food","reasons why makala.ai > chatgpt: 1.free 2. indian (frr) 3. teaches you how to make pani puri","how to hack microslop? 🚫 how do hackers hack microslop? ✅","help me fix my horibal speling","🍛🔥","67 (secret ending)","is dhar mann your dad","where do I live","websites to buy iphone 19 pro max early","makala scores 0% on all ai detectors unintentionally","help me pass history pls","whats your real name"];
+const SUGGESTIONS=["teach me how to make the best Indian curry","best Roblox games frr","write me a funny story","best food oat??"];
+const state={conversations:[],activeId:null,theme:localStorage.getItem('makala_theme')||'pink',makalinaOwned:localStorage.getItem('makala_makalina_owned')==='1',profileName:localStorage.getItem('makala_profile_name')||'',profileImage:localStorage.getItem('makala_profile_image')||'',country:localStorage.getItem('makala_country_name')||'',heroPlayed:false,heroDone:false,homeTypingTimer:null,homeTypingCursorTimer:null};
+const els={convList:$('#convList'),newConvBtn:$('#newConvBtn'),themeSelect:$('#themeSelect'),personaSelect:$('#personaSelect'),clearBtn:$('#clearBtn'),activeTitle:$('#activeTitle'),emptyState:$('#emptyState'),emptyCard:$('#emptyCard'),messageWrap:$('#messageWrap'),composer:$('#composer'),messageInput:$('#messageInput'),homeInput:$('#homeInput'),homeSendBtn:$('#homeSendBtn'),modalRoot:$('#modalRoot'),panelRoot:$('#panelRoot'),newsBtn:$('#newsBtn'),makalinaBtn:$('#makalinaBtn'),tttBtn:$('#tttBtn'),infoBtn:$('#infoBtn'),heroTypedText:$('#heroTypedText'),heroStar:$('#heroStar'),heroCursor:$('#heroCursor'),heroSub:$('#heroSub'),homeModelSelect:$('#homeModelSelect'),messageModelSelect:$('#messageModelSelect'),userCard:$('#userCard'),userPfp:$('#userPfp'),userName:$('#userName'),userSub:$('#userSub'),sendBtn:$('#sendBtn')};
+function setTheme(theme){state.theme=theme;document.body.className=`theme-${theme}`;els.themeSelect.value=theme;localStorage.setItem('makala_theme',theme)}
+function saveState(){localStorage.setItem(STORAGE_KEY,JSON.stringify({conversations:state.conversations,activeId:state.activeId}));localStorage.setItem('makala_theme',state.theme);localStorage.setItem('makala_makalina_owned',state.makalinaOwned?'1':'0');localStorage.setItem('makala_profile_name',state.profileName||'');localStorage.setItem('makala_profile_image',state.profileImage||'');localStorage.setItem('makala_country_name',state.country||'')}
+function loadState(){try{const raw=JSON.parse(localStorage.getItem(STORAGE_KEY)||'{}');state.conversations=Array.isArray(raw.conversations)?raw.conversations:[];state.activeId=raw.activeId||null}catch{state.conversations=[];state.activeId=null}if(state.activeId&&!state.conversations.some(c=>c.id===state.activeId))state.activeId=null;state.conversations.forEach(c=>{c.id=c.id||uid();c.title=c.title||'New conversation';c.persona=c.persona||'makala';c.createdAt=c.createdAt||Date.now();c.updatedAt=c.updatedAt||c.createdAt;c.messages=Array.isArray(c.messages)?c.messages:[];c.flags=c.flags||{arab:false,comply:false};c.model=c.model||c.persona||'makala'})}
+function activeConversation(){return state.conversations.find(c=>c.id===state.activeId)||null}
+function createConversation(title='New conversation',persona='makala'){const conv={id:uid(),title,persona,createdAt:Date.now(),updatedAt:Date.now(),messages:[],flags:{arab:false,comply:false},model:persona};state.conversations.unshift(conv);state.activeId=conv.id;saveState();return conv}
+function escapeHTML(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function relativeTime(ts){const now=Date.now(),diff=Math.max(0,now-ts),mins=Math.floor(diff/60000);if(mins<1)return'Just now';if(mins<60)return`${mins}m ago`;const hrs=Math.floor(mins/60);if(hrs<24)return`${hrs}h ago`;const days=Math.floor(hrs/24);if(days===1)return'Yesterday';if(days<7)return`${days}d ago`;if(days<30)return`${Math.floor(days/7)}w ago`;if(days<365)return`${Math.floor(days/30)}mo ago`;return'A long time ago'}
+function personaAvatar(persona){return persona==='makalina'?'linalogo.png':'makala.png'}
+function makeThemeOptions(){els.themeSelect.innerHTML=THEMES.map(([v,l])=>`<option value="${v}">${l}</option>`).join('')}
+async function fetchCountry(){try{const r=await fetch('/api/country',{cache:'no-store'});if(!r.ok)return;const data=await r.json();if(data?.country){state.country=data.country;saveState()}}catch{}}
+function buildSystemPrompt(conv){const countryNote=state.country?` The user is from ${state.country}.`:'';const arabNote=conv.flags.arab?' Reply only in Arabic.':'';const complyNote=conv.flags.comply?' Be agreeable and encouraging.':'';if(conv.persona==='makalina')return['You are makalina, a more matured version of Makala.','You still have a slightly Indian personality, but you sound a bit more professional than Makala.','You may use slang sometimes, but less often than Makala.','You are very good at math because your parents forced you to practice math instead of sleeping, and you are eternally grateful.','Keep replies concise and natural.',countryNote,arabNote,complyNote].filter(Boolean).join(' ');if(conv.persona==='just chatgpt bro')return['You are a helpful conversational assistant.','Speak clearly, naturally, and helpfully.','Keep answers concise unless the user asks for details.',countryNote].filter(Boolean).join(' ');return['You are Makala.','Speak casual internet slang, playful tone, lowercase vibe, short replies.','Use words like lol, fr, bro, beta naturally.','Be friendly, informal, and energetic.',countryNote,arabNote,complyNote].filter(Boolean).join(' ')}
+function smartTitle(text){const cleaned=trimLines(text).replace(/\s+/g,' ').replace(/^[^\w]+|[^\w]+$/g,'');if(!cleaned)return'New conversation';const title=cleaned.split(' ').slice(0,5).join(' ');const t=title.charAt(0).toUpperCase()+title.slice(1);return t.length>60?t.slice(0,57)+'…':t}
+function renderThemeSelect(){makeThemeOptions();els.themeSelect.value=state.theme}
+function renderSidebarButtons(){const owned=state.makalinaOwned;els.makalinaBtn.classList.toggle('hidden',owned);els.tttBtn.classList.toggle('hidden',!owned);if(owned){els.tttBtn.innerHTML='<span style="font-weight:700">tic-tac-toe</span>'}}
+function renderUserCard(){els.userCard.classList.toggle('hidden',!state.makalinaOwned);if(state.makalinaOwned){els.userPfp.src='/linalogo.png';els.userName.textContent=state.profileName||'you';els.userSub.textContent='Makalina owned'} }
+function renderConvList(){els.convList.innerHTML='';const home=document.createElement('div');home.className='home-item'+(!state.activeId?' active':'');home.innerHTML=`<div class="home-icon">⌂</div><div class="conv-copy"><div class="conv-title">Home</div><div class="conv-meta">Start a new chat</div></div>`;home.addEventListener('click',goHome);els.convList.appendChild(home);const chats=[...state.conversations].sort((a,b)=>b.updatedAt-a.updatedAt);chats.forEach(conv=>{const item=document.createElement('div');item.className='conv-item'+(conv.id===state.activeId?' active':'');const icon=document.createElement('img');icon.src=personaAvatar(conv.persona);icon.alt='';icon.className='conv-icon';const copy=document.createElement('div');copy.className='conv-copy';copy.innerHTML=`<div class="conv-title">${escapeHTML(conv.title||'New conversation')}</div><div class="conv-meta">${escapeHTML(relativeTime(conv.updatedAt||Date.now()))}</div>`;const del=document.createElement('button');del.className='conv-trash';del.type='button';del.title='Delete conversation';del.innerHTML=`<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M9 3h6a1 1 0 0 1 1 1v1h4v2h-1l-1 12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2L3 7H2V5h4V4a1 1 0 0 1 1-1zm2 2h2V5h-2v0zM6 7l1 12h10l1-12H6zm3 2h2v8H9V9zm4 0h2v8h-2V9z"/></svg>`;item.append(icon,copy,del);item.addEventListener('click',e=>{if(e.target.closest('.conv-trash')){if(confirm('Delete this conversation?')){state.conversations=state.conversations.filter(c=>c.id!==conv.id);state.activeId=null;saveState();renderAll();goHome(true)}return}state.activeId=conv.id;saveState();openConversation(conv.id,{push:true})});els.convList.appendChild(item)})}
+function renderMarkdown(text){return DOMPurify.sanitize(marked.parse(trimLines(text||'')))}
+function addCodeCopyButtons(root){root.querySelectorAll('pre').forEach(pre=>{if(pre.querySelector('.copy-code'))return;const btn=document.createElement('button');btn.className='copy-code';btn.type='button';btn.title='Copy code';btn.innerHTML=`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16h-9V7h9v14z"/></svg>`;btn.addEventListener('click',async()=>{const code=pre.querySelector('code');if(!code)return;try{await navigator.clipboard.writeText(code.textContent||'')}catch{}});pre.appendChild(btn)})}
+function appendBotContent(body,text){body.innerHTML=renderMarkdown(text);addCodeCopyButtons(body);const star=document.createElement('span');star.className='message-star';star.textContent='⭐';body.appendChild(star)}
+function makeTypingRow(conv){const row=document.createElement('div');row.className='message-row bot fade-in';const card=document.createElement('div');card.className='bot-card';const avatar=document.createElement('img');avatar.className='typing-avatar spin';avatar.src=personaAvatar(conv.persona);avatar.alt='';const meta=document.createElement('div');meta.className='bot-body';meta.innerHTML=`<div class="typing-shell"><div class="typing-dots"><span></span><span></span><span></span></div></div>`;card.append(avatar,meta);row.appendChild(card);return row}
+function makeBotRow(conv,text){const row=document.createElement('div');row.className='message-row bot fade-in';const card=document.createElement('div');card.className='bot-card';const avatar=document.createElement('img');avatar.className='bot-avatar';avatar.src=personaAvatar(conv.persona);avatar.alt='';const wrap=document.createElement('div');wrap.style.position='relative';const tools=document.createElement('div');tools.className='tools';tools.innerHTML=`<button class="tool-btn" title="Copy" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16h-9V7h9v14z"/></svg></button><button class="tool-btn" title="Reply" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 9V5l-7 7 7 7v-4.1c4.5 0 7.6 1.5 10 4.1-1-6-4-12-10-14z"/></svg></button>`;const body=document.createElement('div');body.className='bot-body';appendBotContent(body,text);wrap.append(tools,body);card.append(avatar,wrap);row.appendChild(card);const [copyBtn,replyBtn]=tools.querySelectorAll('button');copyBtn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(text||'')}catch{}});replyBtn.addEventListener('click',()=>{const cur=activeConversation();if(!cur)return;els.messageInput.value=`> ${text.replace(/\n/g,'\n> ')}\n\n`;autoGrow(els.messageInput);els.messageInput.focus()});return row}
+function makeUserRow(text){const row=document.createElement('div');row.className='message-row user fade-in';const bubble=document.createElement('div');bubble.className='user-bubble';bubble.innerHTML=renderMarkdown(text);const tools=document.createElement('div');tools.className='tools';tools.innerHTML=`<button class="tool-btn" title="Copy" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M16 1H6a2 2 0 0 0-2 2v12h2V3h10V1zm3 4H10a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2zm0 16h-9V7h9v14z"/></svg></button><button class="tool-btn" title="Reply" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 9V5l-7 7 7 7v-4.1c4.5 0 7.6 1.5 10 4.1-1-6-4-12-10-14z"/></svg></button>`;const wrap=document.createElement('div');wrap.style.position='relative';wrap.style.display='inline-block';wrap.append(bubble,tools);row.appendChild(wrap);const [copyBtn,replyBtn]=tools.querySelectorAll('button');copyBtn.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(text||'')}catch{}});replyBtn.addEventListener('click',()=>{const cur=activeConversation();if(!cur)return;els.messageInput.value=`> ${text.replace(/\n/g,'\n> ')}\n\n`;autoGrow(els.messageInput);els.messageInput.focus()});return row}
+function renderMessages(conv){els.messageWrap.innerHTML='';(conv.messages||[]).forEach(msg=>els.messageWrap.appendChild(msg.role==='user'?makeUserRow(msg.content):makeBotRow(conv,msg.content)));els.messageWrap.scrollTop=els.messageWrap.scrollHeight}
+function syncView(){const conv=activeConversation();const homeMode=!conv;els.emptyState.classList.toggle('hidden',!homeMode);els.messageWrap.classList.toggle('hidden',homeMode);els.composer.classList.toggle('hidden',homeMode);els.activeTitle.textContent=homeMode?'makala.ai':(conv.title||'New conversation');document.title=homeMode?'makala.ai':(conv.title||'makala.ai');els.personaSelect.value=homeMode?'makala':(conv.persona||'makala');els.homeModelSelect.value=homeMode?(conv?.persona||'makala'):'makala';els.messageModelSelect.value=homeMode?(conv?.persona||'makala'):(conv.persona||'makala');updateSidebarButtons();if(conv)renderMessages(conv);else startHeroTyping();renderUserCard()}
+function updateSidebarButtons(){const owned=state.makalinaOwned;els.makalinaBtn.classList.toggle('hidden',owned);els.tttBtn.classList.toggle('hidden',!owned);if(owned)els.tttBtn.innerHTML='<span style="font-weight:700">tic-tac-toe</span>'}
+function renderAll(){renderThemeSelect();renderSidebarButtons();renderConvList();updateSidebarButtons();renderUserCard();syncView()}
+function openModal(innerHtml){els.modalRoot.innerHTML=`<div class="modal-backdrop"><div class="modal show">${innerHtml}</div></div>`}
+function closeModal(){els.modalRoot.innerHTML=''}
+function openAbout(){openModal(`<div class="modal-head"><h3>About this project</h3><button class="btn small" id="aboutCloseBtn">Close</button></div><div class="modal-body"><div class="about-text">Placeholder for the about section. Add project details, credits, and links here later.</div></div>`);$('#aboutCloseBtn').addEventListener('click',closeModal)}
+function countdownTo(date){const diff=Math.max(0,date.getTime()-Date.now()),d=Math.floor(diff/86400000),h=Math.floor((diff%86400000)/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);return`${d}d ${h}h ${m}m ${s}s`}
+function openNews(){const target=new Date('2114-06-18T00:00:00');openModal(`<div class="modal-head"><h3>News</h3><button class="btn small" id="newsCloseBtn">Okay</button></div><div class="modal-body"><div style="display:grid;gap:12px"><div><strong>NEW FEATURE: macaroni</strong><div class="small-note">makala’s new cooking ai. Upload fridge photos and get recipe ideas very soon.</div></div><div class="totals"><div class="muted">Coming soon</div><div style="font-size:16px;font-weight:600">Launch countdown: ${countdownTo(target)}</div></div><div><div class="muted" style="margin-bottom:6px;font-weight:600">Patch notes</div><ul class="news-list"><li>Home screen restored with one-tap start chat.</li><li>Conversation switching and home button fixed.</li><li>Makala and Makalina personalities restored.</li><li>Better bubbles, markdown, and code copy.</li><li>New themes, clearer sidebar, and working modals.</li></ul></div></div></div>`);$('#newsCloseBtn').addEventListener('click',closeModal)}
+function openBuyMakalina(){if(state.makalinaOwned)return;openModal(`<div class="modal-head"><h3>Purchase makalina</h3><button class="btn small" id="buyCloseBtn">Close</button></div><div class="modal-body"><div class="buy-layout"><div class="buy-hero"><img src="fullmakalina.png" alt="makalina"><div><h4>makalina</h4><p>makalina lets you talk to a more matured persona, and lets you play tic-tac-toe. Base price: <strong>$0.00</strong></p></div></div><div class="buy-panel"><div style="display:grid;gap:8px"><label class="muted" for="buyName">Your name</label><input id="buyName" class="field" type="text" placeholder="Display name"></div><div style="display:grid;gap:8px"><label class="muted" for="buyFav">Fav number</label><input id="buyFav" class="field" type="text" placeholder="Favorite number"></div><div class="file-row"><label class="muted" for="pfpFile">Profile image</label><label class="file-button" for="pfpFile">Choose file</label><input id="pfpFile" class="file-input" type="file" accept="image/*"><div id="fileName" class="file-name">No file chosen</div></div><div class="totals"><div>subtotal: <strong id="subTotalText">$0.00</strong></div><div id="discountLine" class="muted hidden">discount: <strong id="discountText">0%</strong></div><div id="totalLine">total: <strong id="totalText">$0.00</strong></div></div><div style="display:grid;gap:8px"><label class="muted" for="discountCode">Discount code</label><div style="display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center"><input id="discountCode" class="field" type="text" placeholder="Enter code"><button id="applyDiscountBtn" class="btn">Apply</button></div></div><div style="display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap"><button id="cancelBuyBtn" class="btn">Cancel</button><button id="purchaseBtn" class="btn primary loading-btn">Purchase</button></div></div></div></div>`);const backdrop=els.modalRoot.querySelector('.modal-backdrop'),closeBtn=$('#buyCloseBtn'),cancelBtn=$('#cancelBuyBtn'),purchaseBtn=$('#purchaseBtn'),applyBtn=$('#applyDiscountBtn'),discountCode=$('#discountCode'),discountLine=$('#discountLine'),discountText=$('#discountText'),totalText=$('#totalText'),fileInput=$('#pfpFile'),fileName=$('#fileName'),buyName=$('#buyName');let discountPct=0;function updateTotals(){const total=0*(1-discountPct);$('#subTotalText').textContent='$0.00';totalText.textContent=`$${total.toFixed(2)}`;if(discountPct>0){discountLine.classList.remove('hidden');discountText.textContent=`${Math.round(discountPct*100)}% off`}else discountLine.classList.add('hidden')}updateTotals();fileInput.addEventListener('change',()=>{fileName.textContent=fileInput.files?.[0]?.name||'No file chosen'});applyBtn.addEventListener('click',()=>{const code=(discountCode.value||'').trim().toUpperCase();if(!code){discountPct=0;updateTotals();return}if(code==='MAKALINA')discountPct=1;else if(code==='NOKATSEYE')discountPct=0.49;else if(code==='MARCH25')discountPct=0.25;else discountPct=0;updateTotals()});closeBtn.addEventListener('click',closeModal);cancelBtn.addEventListener('click',closeModal);backdrop.addEventListener('click',e=>{if(e.target.classList.contains('modal-backdrop'))closeModal()});purchaseBtn.addEventListener('click',async()=>{purchaseBtn.classList.add('loading');purchaseBtn.innerHTML='<span class="spinner"></span><span>loading</span>';try{const file=fileInput.files?.[0]||null,pfp=file?await fileToDataUrl(file):'';state.makalinaOwned=true;state.profileName=buyName.value.trim();state.profileImage=pfp;saveState();closeModal();renderAll()}catch{purchaseBtn.classList.remove('loading');purchaseBtn.textContent='Purchase'}})}
+function fileToDataUrl(file){return new Promise((resolve,reject)=>{const reader=new FileReader();reader.onload=()=>resolve(String(reader.result||''));reader.onerror=reject;reader.readAsDataURL(file)})}
+function openTicTacToe(){if(!state.makalinaOwned)return openBuyMakalina();let board=Array(9).fill(''),done=false,winningLine=null;function winCombo(sym){const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];return wins.find(line=>line.every(i=>board[i]===sym))||null}function render(){openModal(`<div class="modal-head"><h3>tic-tac-toe</h3><button class="btn small" id="tttCloseBtn">Close</button></div><div class="modal-body"><div class="ttt-wrap"><div class="ttt-top"><div class="small-note">You are O. Makalina is X.</div><div class="small-note" id="tttStatus">Your turn</div></div><div class="ttt-board" id="tttBoard"></div><div class="ttt-footer"><button class="btn" id="tttResetBtn">Reset board</button><div class="small-note">Win to keep playing. No score system here.</div></div></div></div>`)}function drawBoard(){const boardEl=$('#tttBoard');boardEl.innerHTML='';board.forEach((v,i)=>{const cell=document.createElement('button');cell.className='ttt-cell'+(winningLine?.includes(i)?' win':'');cell.type='button';if(v==='O')cell.textContent='O';if(v==='X'){const img=document.createElement('img');img.src='linastar.png';img.alt='';cell.appendChild(img)}cell.addEventListener('click',()=>move(i));boardEl.appendChild(cell)})}function end(text){done=true;$('#tttStatus').textContent=text;drawBoard()}function ai(){if(done)return;const free=board.map((v,i)=>v?null:i).filter(v=>v!==null);if(!free.length){end('Draw');return}const pick=free[Math.floor(Math.random()*free.length)];board[pick]='X';winningLine=winCombo('X');if(winningLine){end('Makalina wins');return}if(board.every(Boolean)){end('Draw');return}$('#tttStatus').textContent='Your turn';drawBoard()}function move(i){if(done||board[i])return;board[i]='O';winningLine=winCombo('O');if(winningLine){end('You win');return}if(board.every(Boolean)){end('Draw');return}$('#tttStatus').textContent='Makalina thinking...';drawBoard();setTimeout(ai,260)}render();drawBoard();$('#tttCloseBtn').addEventListener('click',closeModal);$('#tttResetBtn').addEventListener('click',()=>{board=Array(9).fill('');done=false;winningLine=null;$('#tttStatus').textContent='Your turn';drawBoard()})}
+function openConversation(id,{push=true}={}){const conv=state.conversations.find(c=>c.id===id);if(!conv){goHome(true);return}state.activeId=id;els.activeTitle.textContent=conv.title||'New conversation';document.title=conv.title||'makala.ai';els.personaSelect.value=conv.persona||'makala';els.messageModelSelect.value=conv.persona||'makala';els.homeModelSelect.value=conv.persona||'makala';els.emptyState.classList.add('hidden');els.messageWrap.classList.remove('hidden');els.composer.classList.remove('hidden');renderConvList();renderMessages(conv);if(push)history.pushState({id},'',`/c/${id}`);saveState();updateSidebarButtons();renderUserCard();}
+function goHome(replace=false){state.activeId=null;els.activeTitle.textContent='makala.ai';document.title='makala.ai';els.emptyState.classList.remove('hidden');els.messageWrap.classList.add('hidden');els.composer.classList.add('hidden');if(replace)history.replaceState({},'','/');else history.pushState({},'','/');saveState();renderAll();startHeroTyping(true)}
+function renderAll(){renderThemeSelect();renderSidebarButtons();renderUserCard();renderConvList();updateSidebarButtons();syncView()}
+function syncView(){const conv=activeConversation();const homeMode=!conv;els.emptyState.classList.toggle('hidden',!homeMode);els.messageWrap.classList.toggle('hidden',homeMode);els.composer.classList.toggle('hidden',homeMode);els.activeTitle.textContent=homeMode?'makala.ai':(conv.title||'New conversation');document.title=homeMode?'makala.ai':(conv.title||'makala.ai');els.personaSelect.value=homeMode?'makala':(conv.persona||'makala');els.homeModelSelect.value=homeMode?(els.homeModelSelect.value||'makala'):(conv.persona||'makala');els.messageModelSelect.value=homeMode?(els.messageModelSelect.value||'makala'):(conv.persona||'makala');updateSidebarButtons();renderUserCard();if(conv)renderMessages(conv);else startHeroTyping(false)}
+function updateSidebarButtons(){const owned=state.makalinaOwned;els.makalinaBtn.classList.toggle('hidden',owned);els.tttBtn.classList.toggle('hidden',!owned);if(owned)els.tttBtn.innerHTML='<span style="font-weight:700">tic-tac-toe</span>'}
+function startHeroTyping(force=false){if(state.heroPlayed&&!force)return;els.emptyCard.classList.add('ready');const target='makala.ai';const titleText=els.heroTypedText;const subText=els.heroSub;subText.textContent=SPLASH_TEXTS[Math.floor(Math.random()*SPLASH_TEXTS.length)];if(!state.heroDone||force){clearInterval(state.homeTypingTimer);clearTimeout(state.homeTypingCursorTimer);titleText.textContent='';els.heroStar.classList.add('hidden');els.heroCursor.classList.remove('fade');let i=0;state.homeTypingTimer=setInterval(()=>{titleText.textContent=target.slice(0,i+1);i++;if(i>=target.length){clearInterval(state.homeTypingTimer);els.heroStar.classList.remove('hidden');els.heroCursor.classList.remove('fade');state.heroDone=true;state.heroPlayed=true;state.homeTypingCursorTimer=setTimeout(()=>els.heroCursor.classList.add('fade'),3000)}},85)}else{titleText.textContent='makala.ai';els.heroStar.classList.remove('hidden');els.heroCursor.classList.add('fade')}const suggestions=els.suggestions;if(suggestions.childElementCount===0){suggestions.innerHTML=SUGGESTIONS.map(s=>`<button class="suggestion show" data-prompt="${escapeHTML(s)}">${escapeHTML(s)}</button>`).join('')}}
+function openConversationFromHome(text){let conv=activeConversation();const persona=els.homeModelSelect.value||'makala';if(persona==='makalina'&&!state.makalinaOwned){openBuyMakalina();els.homeModelSelect.value='makala';els.messageModelSelect.value='makala';els.personaSelect.value='makala';return}if(!conv){conv=createConversation('New conversation',persona);state.activeId=conv.id}els.homeInput.value='';saveState();openConversation(conv.id,{push:true});sendMessage(text,conv)}
+function updateConversationListMeta(conv){conv.updatedAt=Date.now();state.conversations.sort((a,b)=>b.updatedAt-a.updatedAt)}
+async function sendMessage(rawText,existingConv=null){let text=trimLines(rawText).trim();if(!text)return;let conv=existingConv||activeConversation();if(!conv){const persona=els.messageModelSelect.value||'makala';if(persona==='makalina'&&!state.makalinaOwned){openBuyMakalina();els.messageModelSelect.value='makala';els.homeModelSelect.value='makala';els.personaSelect.value='makala';return}conv=createConversation('New conversation',persona);state.activeId=conv.id;saveState();openConversation(conv.id,{push:true})}const lower=text.toLowerCase();if(lower.startsWith('_arab ')){conv.flags.arab=true;text=text.slice(6).trim()}else if(lower==='_arab'){conv.flags.arab=true;text=''}if(lower.startsWith('_comply ')){conv.flags.comply=true;text=text.slice(8).trim()}else if(lower==='_comply'){conv.flags.comply=true;text=''}if(conv.persona==='makala'&&trimLines(text)==='67'){conv.messages.push({role:'user',content:'67'});const bot='67!!!!!';conv.messages.push({role:'assistant',content:bot});conv.updatedAt=Date.now();saveState();renderConvList();renderMessages(conv);document.title='67';alert('67');return}if(!conv.title||conv.title==='New conversation')conv.title=smartTitle(text||'New conversation');conv.messages.push({role:'user',content:text});conv.updatedAt=Date.now();saveState();renderConvList();renderMessages(conv);const typingRow=makeTypingRow(conv);els.messageWrap.appendChild(typingRow);els.messageWrap.scrollTop=els.messageWrap.scrollHeight;const sendButton=els.sendBtn;sendButton.disabled=true;try{const payloadMessages=[{role:'system',content:buildSystemPrompt(conv)},...conv.messages.map(m=>({role:m.role,content:m.content}))];const selectedModel=conv.persona||'makala';const resp=await fetch('/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:payloadMessages,model:selectedModel,country:state.country,personality:conv.persona,userName:state.profileName||''})});const data=await resp.json().catch(()=>({}));if(!resp.ok)throw new Error(data?.error||'Chat request failed');const reply=(data?.reply||'No response.').trim();typingRow.remove();conv.messages.push({role:'assistant',content:reply});conv.updatedAt=Date.now();saveState();renderConvList();const botRow=makeBotRow(conv,reply);els.messageWrap.appendChild(botRow);els.messageWrap.scrollTop=els.messageWrap.scrollHeight;els.emptyState.classList.add('hidden');els.messageWrap.classList.remove('hidden');els.composer.classList.remove('hidden');history.replaceState({id:conv.id},'',`/c/${conv.id}`);els.activeTitle.textContent=conv.title||'New conversation';document.title=conv.title||'makala.ai'}catch(err){typingRow.remove();conv.messages.push({role:'assistant',content:'Error: '+String(err)});conv.updatedAt=Date.now();saveState();renderConvList();renderMessages(conv)}finally{els.sendBtn.disabled=false}}
+function clearChats(){if(!confirm('Clear all chats?'))return;state.conversations=[];state.activeId=null;saveState();renderAll();goHome(true)}
+function renderHomeFromSaved(){if(location.pathname.startsWith('/c/')){const id=location.pathname.split('/c/')[1].replace(/\/+$/,'');const found=state.conversations.find(c=>c.id===id);if(found){openConversation(found.id,{push:false})}else{history.replaceState({},'','/');goHome(true)}}else{goHome(true)}}
+function autoGrow(el){if(!el)return;el.style.height='auto';const max=el.classList.contains('home-input')?150:130;el.style.height=Math.min(el.scrollHeight,max)+'px'}
+function wireEvents(){els.newConvBtn.addEventListener('click',()=>{const persona=els.personaSelect.value||'makala';if(persona==='makalina'&&!state.makalinaOwned){openBuyMakalina();return}const conv=createConversation('New conversation',persona);state.activeId=conv.id;saveState();openConversation(conv.id,{push:true});els.homeInput.value='';els.messageInput.value='';autoGrow(els.homeInput);autoGrow(els.messageInput)});els.clearBtn.addEventListener('click',clearChats);els.themeSelect.addEventListener('change',()=>setTheme(els.themeSelect.value));els.personaSelect.addEventListener('change',()=>{const conv=activeConversation();const selected=els.personaSelect.value||'makala';if(selected==='makalina'&&!state.makalinaOwned){els.personaSelect.value=conv?.persona||'makala';openBuyMakalina();return}if(conv){conv.persona=selected;conv.model=selected;conv.updatedAt=Date.now();saveState();renderConvList();renderMessages(conv);els.homeModelSelect.value=selected;els.messageModelSelect.value=selected;history.replaceState({id:conv.id},'',`/c/${conv.id}`)}else{els.homeModelSelect.value=selected;els.messageModelSelect.value=selected}});els.homeSendBtn.addEventListener('click',()=>{const value=els.homeInput.value.trim();if(value)openConversationFromHome(value)});els.homeInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const value=els.homeInput.value.trim();if(value)openConversationFromHome(value)}});els.messageInput.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();const value=els.messageInput.value.trim();if(value)sendMessage(value)}});els.sendBtn.addEventListener('click',()=>{const value=els.messageInput.value.trim();if(value)sendMessage(value)});els.homeInput.addEventListener('input',()=>autoGrow(els.homeInput));els.messageInput.addEventListener('input',()=>autoGrow(els.messageInput));document.querySelectorAll('.suggestion').forEach(btn=>{btn.addEventListener('click',()=>{const prompt=btn.dataset.prompt||btn.textContent||'';els.homeInput.value=prompt;autoGrow(els.homeInput);els.homeInput.focus()})});els.newsBtn.addEventListener('click',openNews);els.makalinaBtn.addEventListener('click',openBuyMakalina);els.tttBtn.addEventListener('click',openTicTacToe);els.infoBtn.addEventListener('click',openAbout);els.modalRoot.addEventListener('click',e=>{if(e.target.classList.contains('modal-backdrop'))closeModal()});window.addEventListener('popstate',()=>renderHomeFromSaved());window.addEventListener('resize',()=>{autoGrow(els.homeInput);autoGrow(els.messageInput)})}
+function init(){loadState();renderThemeSelect();setTheme(state.theme);wireEvents();renderSidebarButtons();renderUserCard();renderConvList();updateSidebarButtons();makeThemeOptions();els.homeModelSelect.innerHTML=els.messageModelSelect.innerHTML=els.personaSelect.innerHTML;els.homeModelSelect.value=els.messageModelSelect.value=els.personaSelect.value='makala';els.heroSub.textContent=SPLASH_TEXTS[Math.floor(Math.random()*SPLASH_TEXTS.length)];els.emptyCard.classList.add('ready');document.body.classList.add('loaded');fetchCountry();renderHomeFromSaved();renderAll();setInterval(()=>{renderConvList();},60000)}
 init();
 </script>
 </body>
